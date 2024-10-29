@@ -1,28 +1,30 @@
-import { Ploeg } from '../model/ploeg'; // Zorg ervoor dat je het juiste pad naar de Ploeg klasse gebruikt
-import { Speler } from '../model/speler'; // Zorg ervoor dat je het juiste pad naar de Speler klasse gebruikt
-
-// Voorbeeld van spelers
-const speler1 = new Speler({naam:'Jan Jansen',spelerlicentie: '0050766', leeftijd:25, ploeg:undefined});
-const speler2 = new Speler({naam:'Piet Pietersen', spelerlicentie:'0050767',leeftijd :30, ploeg:undefined});
-const speler3 = new Speler({naam:'Klaas Klaassen', spelerlicentie:'0050768', leeftijd:22,ploeg:undefined});
+import { Ploeg } from '../model/ploeg'; 
+import { Speler } from '../model/speler';
 
 // Voorbeeld van ploegen
-const ploeg1 = new Ploeg({niveau:'1e promo', ploegnaam:'Heren f', spelers: []});
-const ploeg2 = new Ploeg({niveau:'Liga A', ploegnaam:'Team B', spelers:[]});
-const ploegen = [ploeg1,ploeg2];
+const ploeg1 = new Ploeg({ niveau: '1e promo', ploegnaam: 'Heren f', spelers: [] });
+const ploeg2 = new Ploeg({ niveau: 'Liga A', ploegnaam: 'Heren A', spelers: [] });
+
+const ploegen = [ploeg1, ploeg2];
+
 // Voeg spelers toe aan de ploegen
-ploeg1.addSpeler(speler1);
-ploeg1.addSpeler(speler3);
-ploeg2.addSpeler(speler2);
 
-// Koppel de spelers aan hun ploegen
-speler1.setPloeg(ploeg1);
-speler2.setPloeg(ploeg2);
-speler3.setPloeg(ploeg1);
+const spelers = [
+    new Speler({ naam: 'Jan Jansen', spelerlicentie: '0050766', leeftijd: 25}),
+    new Speler({ naam: 'Piet Pietersen', spelerlicentie: '0050767', leeftijd: 30 }),
+    new Speler({ naam: 'Klaas Klaassen', spelerlicentie: '0050768', leeftijd: 22})
+];
+ploeg1.addSpeler(spelers[0]); 
+ploeg1.addSpeler(spelers[1]); 
+ploeg2.addSpeler(spelers[2]); 
 
-const getPloegByNaam = ({ ploegnaam }: { ploegnaam: string }): Ploeg | null => {
+const getAllSpelers = () =>{
+    return spelers;
+}
+
+const getPloegByNaam = ({ ploegnaam }: { ploegnaam: string }): Ploeg | undefined => {
     try {
-        return [ploeg1, ploeg2].find((ploeg) => ploeg.getPloegnaam() === ploegnaam) || null;
+        return ploegen.find((ploeg) => ploeg.getPloegnaam() === ploegnaam) || undefined;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');
@@ -39,17 +41,18 @@ const getSpelersInPloeg = ({ ploegnaam }: { ploegnaam: string }): Speler[] => {
     }
 };
 
-const getAllPloegen = ():Ploeg[]=>{
+const getAllPloegen = (): Ploeg[] => {
     return ploegen;
-}
+};
 
-const addPloeg = (ploeg:Ploeg) => {
+const addPloeg = (ploeg: Ploeg) => {
     ploegen.push(ploeg);
-}
+};
 
 export default {
     getPloegByNaam,
     getSpelersInPloeg,
     getAllPloegen,
-    addPloeg
+    addPloeg,
+    getAllSpelers
 };
