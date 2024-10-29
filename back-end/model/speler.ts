@@ -4,13 +4,13 @@ export class Speler {
     private naam!: string;
     private spelerlicentie!: string;
     private leeftijd!: number;
-    private ploeg!: Ploeg;
+    private ploeg!: Ploeg |undefined;
 
-    constructor(naam: string, spelerlicentie: string, leeftijd: number, ploeg: Ploeg) {
-        this.setNaam(naam);
-        this.setSpelerlicentie(spelerlicentie);
-        this.setLeeftijd(leeftijd);
-        this.setPloeg(ploeg);
+    constructor(speler:{naam: string, spelerlicentie: string, leeftijd: number, ploeg?: Ploeg}) {
+        this.setNaam(speler.naam);
+        this.setSpelerlicentie(speler.spelerlicentie);
+        this.setLeeftijd(speler.leeftijd);
+        this.setPloeg(speler.ploeg);
     }
 
     public getNaam(): string {
@@ -25,7 +25,7 @@ export class Speler {
         return this.leeftijd;
     }
 
-    public getPloeg(): Ploeg {
+    public getPloeg(): Ploeg | undefined {
         return this.ploeg;
     }
 
@@ -52,7 +52,7 @@ export class Speler {
         this.leeftijd = leeftijd;
     }
 
-    public setPloeg(ploeg: Ploeg) {
+    public setPloeg(ploeg: Ploeg |undefined) {
         this.ploeg = ploeg; 
     }
 }

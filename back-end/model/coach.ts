@@ -1,18 +1,19 @@
 import { Ploeg } from "./ploeg"; 
 
 export class Coach {
-    private ploeg!: Ploeg; 
+  
+    private ploeg!: Ploeg | undefined; 
     private naam!: string; 
     private coachlicentie!: string; 
 
-    constructor(ploeg: Ploeg, naam: string, coachlicentie: string) {
-        this.setPloeg(ploeg);
-        this.setNaam(naam);
-        this.setCoachlicentie(coachlicentie);
+    constructor(coach:{naam: string, coachlicentie: string,ploeg?: Ploeg}) {
+        this.setPloeg(coach.ploeg);
+        this.setNaam(coach.naam);
+        this.setCoachlicentie(coach.coachlicentie);
     }
 
     // Getters
-    public getPloeg(): Ploeg {
+    public getPloeg(): Ploeg | undefined {
         return this.ploeg;
     }
 
@@ -25,9 +26,13 @@ export class Coach {
     }
 
     // Setters
-    public setPloeg(ploeg: Ploeg) {
+    public setPloeg(ploeg: Ploeg |undefined) {
         this.ploeg = ploeg; 
     }
+
+
+
+
 
     public setNaam(naam: string) {
         if (!naam || naam.trim().length === 0) {

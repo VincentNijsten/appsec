@@ -1,14 +1,16 @@
+import { Coach } from './coach';
 import { Speler } from './speler'; 
 
 export class Ploeg {
+   
     private niveau!: string;
     private ploegnaam!: string;
     private spelers: Speler[];
 
-    constructor(niveau: string, ploegnaam: string, spelers: Speler[]) {
-        this.setNiveau(niveau);
-        this.setPloegnaam(ploegnaam);
-        this.spelers = spelers; 
+    constructor(ploeg:{niveau: string, ploegnaam: string, spelers: Speler[]}) {
+        this.setNiveau(ploeg.niveau);
+        this.setPloegnaam(ploeg.ploegnaam);
+        this.spelers = ploeg.spelers; 
     }
 
     public getNiveau(): string {
@@ -29,6 +31,7 @@ export class Ploeg {
         }
         this.niveau = niveau;
     }
+
 
     public setPloegnaam(ploegnaam: string) {
         if (!ploegnaam || ploegnaam.trim().length === 0) {
