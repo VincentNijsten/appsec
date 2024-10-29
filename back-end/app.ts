@@ -5,6 +5,8 @@ import * as bodyParser from 'body-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { coachRouter } from './controller/coach.routes';
+import { ploegRouter } from './controller/ploeg.routes';
+import { spelersRouter } from './controller/speler.routes';
 
 const app = express();
 dotenv.config();
@@ -48,6 +50,11 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 //coach router
 app.use('/coaches', coachRouter)
+
+//ploeg router
+app.use('/ploegen',ploegRouter )
+
+app.use('/spelers', spelersRouter)
 
 
 

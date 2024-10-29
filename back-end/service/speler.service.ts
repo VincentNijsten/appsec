@@ -18,7 +18,7 @@ const getSpelerByNaam = (naam: string): Speler | undefined => {
 }
 
 const getSpelerByLicentie = (licentie: string): Speler | null => {
-    return spelersDb.getSpelerByLicentie({licentie});
+    return spelersDb.getSpelerByLicentie(licentie);
 }
 
 // Functie om een speler toe te voegen

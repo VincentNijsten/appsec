@@ -8,7 +8,7 @@ const ploeg2 = ploegDb.getPloegByNaam({ ploegnaam: 'Heren A' });
 // Voorbeeld van spelers
 const spelers = ploegDb.getAllSpelers();
 
-const getSpelerByLicentie = ({ licentie }: { licentie: string }): Speler | null => {
+const getSpelerByLicentie = (licentie: string ): Speler | null => {
     try {
         return spelers.find((speler) => speler.getSpelerlicentie() === licentie) || null;
     } catch (error) {
@@ -35,4 +35,3 @@ export default {
     getSpelerByNaam,
     addSpeler
 };
-``

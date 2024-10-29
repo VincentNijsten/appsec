@@ -5,7 +5,7 @@ export class Ploeg {
    
     private niveau!: string;
     private ploegnaam!: string;
-    private spelers: Speler[];
+    public spelers: Speler[];
 
     constructor(ploeg:{niveau: string, ploegnaam: string, spelers: Speler[]}) {
         this.setNiveau(ploeg.niveau);
