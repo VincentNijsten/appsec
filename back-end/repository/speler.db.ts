@@ -1,9 +1,7 @@
 import { Speler } from '../model/speler'; 
 import ploegDb from './ploeg.db'; 
 
-// Voorbeeld van ploegen ophalen
-const ploeg1 = ploegDb.getPloegByNaam({ ploegnaam: 'Heren f' });
-const ploeg2 = ploegDb.getPloegByNaam({ ploegnaam: 'Heren A' });
+
 
 // Voorbeeld van spelers
 const spelers = ploegDb.getAllSpelers();

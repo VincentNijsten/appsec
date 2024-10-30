@@ -38,6 +38,7 @@ const coachRouter = express.Router();
  * /coaches:
  *   get:
  *     summary: Retrieve all coaches
+ *     tags: [coaches]
  *     responses:
  *       200:
  *         description: A list of coaches
@@ -62,6 +63,7 @@ coachRouter.get('/', async (req: Request, res: Response, next: NextFunction) => 
  * /coaches/{naam}:
  *   get:
  *     summary: Retrieve a coach by name
+ *     tags: [coaches]
  *     parameters:
  *       - in: path
  *         name: naam
@@ -95,6 +97,7 @@ coachRouter.get('/:naam', async (req: Request, res: Response, next: NextFunction
  * /coaches:
  *   post:
  *     summary: Add a new coach
+ *     tags: [coaches]
  *     requestBody:
  *       required: true
  *       content:

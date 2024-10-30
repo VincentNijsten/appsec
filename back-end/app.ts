@@ -7,6 +7,8 @@ import swaggerUi from 'swagger-ui-express';
 import { coachRouter } from './controller/coach.routes';
 import { ploegRouter } from './controller/ploeg.routes';
 import { spelersRouter } from './controller/speler.routes';
+import { zaalRouter } from './controller/zaal.routes';
+import { trainingSessionRouter } from './controller/trainingSessions.routes';
 
 const app = express();
 dotenv.config();
@@ -55,6 +57,12 @@ app.use('/coaches', coachRouter)
 app.use('/ploegen',ploegRouter )
 
 app.use('/spelers', spelersRouter)
+
+//zaal routes
+app.use('/zalen', zaalRouter)
+
+//trainingsessions routes
+app.use('/training-sessions', trainingSessionRouter)
 
 
 

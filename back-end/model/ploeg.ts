@@ -3,8 +3,8 @@ import { Speler } from './speler';
 
 export class Ploeg {
    
-    private niveau!: string;
-    private ploegnaam!: string;
+    public niveau!: string;
+    public ploegnaam!: string;
     public spelers: Speler[];
 
     constructor(ploeg:{niveau: string, ploegnaam: string, spelers: Speler[]}) {
