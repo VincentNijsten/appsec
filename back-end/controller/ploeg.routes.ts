@@ -229,4 +229,51 @@ ploegRouter.put('/:ploegnaam/:spelerslicentie', (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /ploegen/add-coach/{coachLicentie}/{ploegnaam}:
+ *   put:
+ *     summary: Add a coach to a team
+ *     description: Adds a coach to a specified team using the coach's license and team name.
+ *     tags: [Ploegen]
+ *     parameters:
+ *       - name: coachLicentie
+ *         in: path
+ *         required: true
+ *         description: The license of the coach to be added.
+ *         schema:
+ *           type: string
+ *       - name: ploegnaam
+ *         in: path
+ *         required: true
+ *         description: The name of the team to which the coach will be added.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Coach successfully added to the team.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *       400:
+ *         description: Bad request, either the team or coach was not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ */
+
+
+ploegRouter.put('/add-coach/:coachLicentie/:ploegnaam', (req, res) => {
+    const { coachLicentie, ploegnaam } = req.params;
+
+    try {
+        const result = ploegService.addCoach(coachLicentie, ploegnaam);
+        res.status(200).send(result);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
 export { ploegRouter };

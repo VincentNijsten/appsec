@@ -6,11 +6,13 @@ export class Ploeg {
     public niveau!: string;
     public ploegnaam!: string;
     public spelers: Speler[];
+    public coach?: Coach;
 
-    constructor(ploeg:{niveau: string, ploegnaam: string, spelers: Speler[]}) {
+    constructor(ploeg:{niveau: string, ploegnaam: string, spelers: Speler[], coach?:Coach}) {
         this.setNiveau(ploeg.niveau);
         this.setPloegnaam(ploeg.ploegnaam);
         this.spelers = ploeg.spelers; 
+        this.setCoach(ploeg.coach);
     }
 
     public getNiveau(): string {
@@ -25,11 +27,19 @@ export class Ploeg {
         return this.spelers;
     }
 
+    public getCoach():Coach | undefined {
+        return this.coach
+    }
+
     public setNiveau(niveau: string) {
         if (!niveau || niveau.trim().length === 0) {
             throw new Error('Niveau is verplicht.');
         }
         this.niveau = niveau;
+    }
+
+    public setCoach(coach?:Coach){
+        this.coach = coach
     }
 
 

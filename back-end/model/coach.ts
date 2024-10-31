@@ -2,20 +2,18 @@ import { Ploeg } from "./ploeg";
 
 export class Coach {
   
-    private ploeg!: Ploeg | undefined; 
-    private naam!: string; 
-    private coachlicentie!: string; 
+    
+    public naam!: string; 
+    public coachlicentie!: string; 
 
-    constructor(coach:{naam: string, coachlicentie: string,ploeg?: Ploeg}) {
-        this.setPloeg(coach.ploeg);
+    constructor(coach:{naam: string, coachlicentie: string}) {
+       
         this.setNaam(coach.naam);
         this.setCoachlicentie(coach.coachlicentie);
     }
 
     // Getters
-    public getPloeg(): Ploeg | undefined {
-        return this.ploeg;
-    }
+
 
     public getNaam(): string {
         return this.naam;
@@ -26,9 +24,7 @@ export class Coach {
     }
 
     // Setters
-    public setPloeg(ploeg: Ploeg |undefined) {
-        this.ploeg = ploeg; 
-    }
+
 
 
 
