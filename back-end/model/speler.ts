@@ -1,9 +1,9 @@
 import { Ploeg } from "./ploeg";
 
 export class Speler {
-    private naam!: string;
-    private spelerlicentie!: string;
-    private leeftijd!: number;
+    public naam!: string;
+    public spelerlicentie!: string;
+    public leeftijd!: number;
     
 
     constructor(speler:{naam: string, spelerlicentie: string, leeftijd: number}) {

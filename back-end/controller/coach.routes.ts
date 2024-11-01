@@ -16,16 +16,6 @@
  *            coachlicentie:
  *              type: string
  *              description: Coach licentie.
- *            ploeg:
- *              type: object
- *              description: De ploeg van de coach.
- *              properties:
- *                ploegnaam:
- *                  type: string
- *                  description: Naam van de ploeg.
- *                niveau:
- *                  type: string
- *                  description: Niveau van de ploeg.
  */
 
 import express, { NextFunction, Request, Response } from 'express';
@@ -119,5 +109,41 @@ coachRouter.post('/', async (req: Request, res: Response, next: NextFunction) =>
         next(error); 
     }
 });
+
+
+/**
+ * @swagger
+ * /coaches/{coachLicentie}:
+ *   delete:
+ *     summary: Verwijder een coach
+ *     description: Verwijdert een coach op basis van de gegeven coachlicentie.
+ *     tags: [coaches]
+ *     parameters:
+ *       - name: coachLicentie
+ *         in: path
+ *         required: true
+ *         description: De coachlicentie van de coach die verwijderd moet worden.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Coach succesvol verwijderd
+ *       404:
+ *         description: Coach niet gevonden
+ *       500:
+ *         description: Fout bij het verwijderen van de coach
+ */
+coachRouter.delete('/:coachLicentie', async (req : Request, res : Response) => {
+    const  {coachLicentie}  = req.params;
+
+    try {
+        const message = coachService.removeCoach(coachLicentie);
+        return res.status(200).json({ message });
+    } catch (error) {
+     
+        return res.status(500).json({ message: 'Fout bij het verwijderen van de coach' });
+    }
+});
+
 
 export { coachRouter };

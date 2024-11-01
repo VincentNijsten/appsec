@@ -3,6 +3,8 @@ import { Ploeg } from "../model/ploeg";
 import { Speler } from "../model/speler";
 import spelerDb from "../repository/speler.db";
 import spelerService from "./speler.service";
+import coachDb from "../repository/coach.db";
+import { error } from "console";
 
 // Functie om alle ploegen op te halen
 const getAllPloegen = (): Ploeg[] => {
@@ -67,6 +69,20 @@ const addSpelerToPloeg = (ploegnaam: string, spelerslicentie: string) => {
     return ploeg; 
 };
 
+const addCoach = (coachLicentie: string, ploegnaam: string) => {
+    const ploeg = ploegDb.getAllPloegen().find(p => p.getPloegnaam() === ploegnaam);
+    const coach = coachDb.getAllCoaches().find(c => c.getCoachlicentie() === coachLicentie);
+    if(!ploeg){
+        throw new Error ('ploeg niet gevonden')
+    }
+    if(!coach){
+        throw new Error('coach niet gevonden')
+    }
+    ploegDb.addCoach(coach,ploeg);
+    return `Coach: ${coach.naam} is succesvol toegevoegd aan ploeg: ${ploegnaam}`;
+ 
+}
+
 
 // Exporteer de functies
 export default {
@@ -74,5 +90,6 @@ export default {
     getPloegByNaam,
     addPloeg,
     getSpelersInPloeg,
-    addSpelerToPloeg
+    addSpelerToPloeg,
+    addCoach
 }

@@ -1,12 +1,18 @@
+import { Coach } from '../model/coach';
 import { Ploeg } from '../model/ploeg'; 
 import { Speler } from '../model/speler';
+import coachDb from './coach.db';
+
+const coaches = coachDb.getAllCoaches();
+const coach1 = coaches[0];
+const coach2 = coaches[1];
 
 
 const ploegen: Ploeg[] = [];
 
 // Voorbeeld van ploegen
-const ploeg1 = new Ploeg({ niveau: '1e promo', ploegnaam: 'Heren f', spelers: [] });
-const ploeg2 = new Ploeg({ niveau: 'Liga A', ploegnaam: 'Heren A', spelers: [] });
+const ploeg1 = new Ploeg({ niveau: '1e promo', ploegnaam: 'Heren f', spelers: [], coach: coach1 });
+const ploeg2 = new Ploeg({ niveau: 'Liga A', ploegnaam: 'Heren A', spelers: [] ,coach: undefined});
 
 
 // Voeg spelers toe aan de ploegen
@@ -66,10 +72,18 @@ const addPloeg = (ploeg: Ploeg) => {
     ploegen.push(ploeg);
 };
 
+const addCoach = (coach:Coach, ploeg:Ploeg) => {
+    ploeg.setCoach(coach);
+    
+
+
+}
+
 export default {
     getPloegByNaam,
     getSpelersInPloeg,
     getAllPloegen,
     addPloeg,
-    getAllSpelers
+    getAllSpelers,
+    addCoach
 };
