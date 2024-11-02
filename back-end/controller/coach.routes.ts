@@ -20,6 +20,7 @@
 
 import express, { NextFunction, Request, Response } from 'express';
 import coachService from '../service/coach.service';
+import { CoachInput } from '../types';
 
 const coachRouter = express.Router();
 
@@ -101,9 +102,10 @@ coachRouter.get('/:naam', async (req: Request, res: Response, next: NextFunction
  *         description: Invalid input
  */
 coachRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
-    const newCoach = req.body; 
+     
     try {
-        const result = await coachService.addCoach(newCoach);
+        const newCoach = req.body;
+        const result =  coachService.addCoach(newCoach);
         res.status(201).json({ message: result }); 
     } catch (error) {
         next(error); 
