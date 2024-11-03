@@ -15,17 +15,20 @@ let mockGetAllCoaches: jest.Mock;
 let mockGetCoachByNaam: jest.Mock;
 let mockRemoveCoach: jest.Mock;
 let mockAddCoach: jest.Mock;
+let mochGetCpachesByCoachlicentie: jest.Mock;
 
 beforeEach(() => {
     mockGetAllCoaches = jest.fn();
     mockGetCoachByNaam = jest.fn();
     mockRemoveCoach = jest.fn();
     mockAddCoach = jest.fn();
+    mochGetCpachesByCoachlicentie = jest.fn();
 
     coachDb.getAllCoaches = mockGetAllCoaches;
     coachDb.getCoachByNaam = mockGetCoachByNaam;
     coachDb.removeCoach = mockRemoveCoach;
     coachDb.addCoach = mockAddCoach;
+    coachDb.getCoachByCoachLicentie = mochGetCpachesByCoachlicentie;
 });
 
 afterEach(() => {
@@ -89,4 +92,15 @@ test('given a non-existing coach license, when removing a coach, then an error i
 
     // then
     expect(removeCoach).toThrow('coach verwijderen mislukt');
+});
+
+test('given a coach that already exists, when adding a coach, then an error is thrown', () => {
+    // given
+    mochGetCpachesByCoachlicentie.mockReturnValue(coach); 
+    
+    // when
+    const addCoach = () => coachService.addCoach(coach);
+    
+    // then
+    expect(addCoach).toThrow(`de coach met licentie : ${coach.coachlicentie}, bestaal al : ${coach.naam}`);
 });

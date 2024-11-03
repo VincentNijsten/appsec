@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import trainingSessionService from '../service/trainingSession.service';
 import { Ploeg } from '../model/ploeg';
 import { Zaal } from '../model/zaal';
+import { TrainingSessionInput } from '../types';
 
 const trainingSessionRouter = express.Router();
 

@@ -2,7 +2,6 @@
 
 
 type SpelerInput = {
-    
     naam: string;
     spelerlicentie: string;
     leeftijd: number;
@@ -17,7 +16,7 @@ type PloegInput = {
     niveau: string;
     ploegnaam: string;
     spelers: SpelerInput[];
-    coach: CoachInput;
+    coach?: CoachInput;
 };
 
 type ZaalInput = {

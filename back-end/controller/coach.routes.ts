@@ -104,7 +104,7 @@ coachRouter.get('/:naam', async (req: Request, res: Response, next: NextFunction
 coachRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
      
     try {
-        const newCoach = req.body;
+        const newCoach = <CoachInput>req.body;
         const result =  coachService.addCoach(newCoach);
         res.status(201).json({ message: result }); 
     } catch (error) {

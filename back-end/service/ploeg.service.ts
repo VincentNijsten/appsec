@@ -5,6 +5,7 @@ import spelerDb from "../repository/speler.db";
 import spelerService from "./speler.service";
 import coachDb from "../repository/coach.db";
 import { error } from "console";
+import { PloegInput } from "../types";
 
 // Functie om alle ploegen op te halen
 const getAllPloegen = (): Ploeg[] => {
@@ -27,9 +28,32 @@ const getSpelersInPloeg = (ploegnaam: string):Speler[]=>{
 }
 
 // Functie om een ploeg toe te voegen
-const addPloeg = (ploeg: Ploeg): string => {
-    ploegDb.addPloeg(ploeg);
-    return "Ploeg succesvol toegevoegd";
+const addPloeg = ({ploegnaam,niveau, coach:coachInput}: PloegInput) => {
+    const exists = ploegDb.getPloegByNaam({ploegnaam});
+    if (exists) {
+        throw new Error(`de ploeg met naam ${ploegnaam} bestaat al`)
+    }
+    
+    let coach;
+    if(coachInput){
+        coach = coachDb.getCoachByCoachLicentie(coachInput.coachlicentie);
+        if(!coach){
+            throw new Error(`er is een fout met de licentie : ${coachInput.coachlicentie} opgetreden`)
+
+        }
+    };
+
+
+     
+    const newPloeg = new Ploeg({
+        ploegnaam, 
+        niveau, 
+        spelers:[], 
+        coach
+    });
+
+    ploegDb.addPloeg(newPloeg);
+    return `${ploegnaam} is succesvol toegevoegd`;
 }
 //funtie om speler toe te voegen aan ploeg
 

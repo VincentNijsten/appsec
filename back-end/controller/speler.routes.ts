@@ -2,6 +2,7 @@ import express from 'express';
 import spelersDb from '../repository/speler.db'; // Zorg ervoor dat je het juiste pad naar je spelers.db.ts bestand gebruikt
 import spelerService from '../service/speler.service'; // Zorg ervoor dat je het juiste pad naar de speler service gebruikt
 import { Speler } from '../model/speler'; // Zorg ervoor dat je het juiste pad naar de Speler klasse gebruikt
+import { SpelerInput } from '../types';
 
 const spelersRouter = express.Router();
 
@@ -151,7 +152,7 @@ spelersRouter.get('/licentie/:licentie', (req, res) => {
  *         description: Fout bij het toevoegen van de speler
  */
 spelersRouter.post('/', (req, res) => {
-    const newSpeler = req.body;
+    const newSpeler = <SpelerInput>req.body;
     try {
         spelerService.addSpeler(newSpeler);
         res.status(201).json({ message: 'Speler succesvol toegevoegd' });

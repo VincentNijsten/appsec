@@ -13,9 +13,9 @@ zalen.push(zaal1);
 zalen.push(zaal2);
 
 // Functie om een zaal op naam te vinden
-const getZaalByNaam = ({ zaalnaam }: { zaalnaam: string }): Zaal | null => {
+const getZaalByNaam = ({ naam }: { naam: string }): Zaal | null => {
     try {
-        return zalen.find((zaal) => zaal.getNaam() === zaalnaam) || null;
+        return zalen.find((zaal) => zaal.getNaam() === naam) || null;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');

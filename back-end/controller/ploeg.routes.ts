@@ -1,6 +1,7 @@
 import express from 'express';
 import ploegDb from '../repository/ploeg.db';
 import ploegService from '../service/ploeg.service';
+import { PloegInput } from '../types';
 
 const ploegRouter = express.Router();
 
@@ -34,11 +35,7 @@ const ploegRouter = express.Router();
  *         ploegnaam:
  *           type: string
  *           description: Ploegnaam.
- *         spelers:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Speler'
- *           description: De spelers van de ploeg.
+ *         
  */
 
 /**
@@ -172,7 +169,7 @@ ploegRouter.get('/:ploegnaam/spelers', (req, res) => {
  *         description: Fout bij het toevoegen van de ploeg
  */
 ploegRouter.post('/', (req, res) => {
-    const newPloeg = req.body;
+    const newPloeg = <PloegInput>req.body;
     try {
         const result = ploegService.addPloeg(newPloeg);
         res.status(201).json(result);

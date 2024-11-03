@@ -1,6 +1,7 @@
 import express from 'express';
 import zaalDb from '../repository/zaal.db';
 import zaalService from '../service/zaal.service';
+import { ZaalInput } from '../types';
 
 const zaalRouter = express.Router();
 
@@ -115,7 +116,7 @@ zaalRouter.get('/:zaalnaam', (req, res) => {
  *         description: Fout bij het toevoegen van de zaal
  */
 zaalRouter.post('/', (req, res) => {
-    const newZaal = req.body;
+    const newZaal = <ZaalInput>req.body;
     try {
         zaalService.addZaal(newZaal);
         res.status(201).json(newZaal);

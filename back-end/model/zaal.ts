@@ -1,7 +1,7 @@
 export class Zaal {
-    private address!: string;
-    private naam!: string;
-    private beschikbaarheid!: boolean;
+    public address!: string;
+    public naam!: string;
+    public beschikbaarheid!: boolean;
 
     constructor(zaal: { address: string; naam: string; beschikbaarheid: boolean }) {
         this.setAddress(zaal.address);

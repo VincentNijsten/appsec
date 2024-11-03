@@ -2,6 +2,8 @@ import coachDb from "../repository/coach.db";
 import { Coach } from "../model/coach";
 import ploegDb from "../repository/ploeg.db";
 import { Ploeg } from "../model/ploeg";
+import { off } from "process";
+import { CoachInput } from "../types";
 
 const getAllCoaches = ():Coach[] => {
     return coachDb.getAllCoaches();
@@ -10,7 +12,7 @@ const getAllCoaches = ():Coach[] => {
 const getCoachByNaam =( coachnaam :string): Coach | null=> {
      const coach =  coachDb.getCoachByNaam({coachnaam});
 
-     if ( coach == null ){
+     if (!coach){
         throw new Error('deze coach kan niet gevonden worden')
      }else{
         return coach
@@ -36,9 +38,20 @@ const removeCoach = (coachLicentie: string) => {
     }
 }
 
-const addCoach = (coach:Coach)=>{
+const addCoach = ({naam, coachlicentie}: CoachInput)=>{
+    const exists = coachDb.getCoachByCoachLicentie(coachlicentie);
     
-    coachDb.addCoach(coach)
+    if(exists){
+        throw new Error(`de coach met licentie : ${coachlicentie}, bestaal al : ${naam}`);
+     }
+    
+
+    const newCoach = new Coach({
+        naam, 
+        coachlicentie
+    });
+    
+    coachDb.addCoach(newCoach)
     return 'succes'
 }
 

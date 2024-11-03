@@ -13,6 +13,7 @@ const spelerInput: SpelerInput = {
     leeftijd: 22,
 };
 
+
 const spelerinput2: SpelerInput = {
     naam: 'Speler 2',
     spelerlicentie: '1234567',
@@ -22,11 +23,11 @@ const spelerinput2: SpelerInput = {
 
 const coachInput: CoachInput = {
     naam: 'Coach 1',
-    coachlicentie: '2836272',
+    coachlicentie: '8910112',
 };
 
-// Maak een Speler object aan
-const speler = new Speler(spelerInput);
+
+const speler = new Speler({...spelerInput,});
 const speler2 = new Speler(spelerinput2);
 const coach = new Coach(coachInput);
 
@@ -41,8 +42,8 @@ const ploegInput: PloegInput = {
 const ploeg = new Ploeg({
     niveau: ploegInput.niveau,
     ploegnaam: ploegInput.ploegnaam,
-    spelers: ploegInput.spelers.map(speler => new Speler(speler)), 
-    coach: new Coach(ploegInput.coach), 
+    spelers: [], 
+    coach: undefined, 
 });
 
 let mockGetAllPloegen: jest.Mock;
@@ -76,7 +77,7 @@ test('given a valid ploeg, when adding a ploeg, then the ploeg is added successf
     const result = ploegService.addPloeg(ploeg);
 
     // then
-    expect(result).toEqual('Ploeg succesvol toegevoegd');
+    expect(result).toEqual(`${ploeg.getPloegnaam()} is succesvol toegevoegd`);
     expect(mockAddPloeg).toHaveBeenCalledWith(ploeg);
 });
 
@@ -147,4 +148,15 @@ test('given a ploegnaam and spelerlicentie, when adding a speler that already ex
 
     // then
     expect(addSpeler).toThrow(`De speler ${speler.naam} speelt al in de ploeg ${anderePloeg.getPloegnaam()}`);
+});
+
+test('given a ploeg that already exists, when adding a ploeg, then an error is thrown', () => {
+    // given
+    mockGetPloegByNaam.mockReturnValue(ploeg); 
+    
+    // when
+    const addPloeg = () => ploegService.addPloeg(ploeg);
+    
+    // then
+    expect(addPloeg).toThrow(`de ploeg met naam ${ploeg.getPloegnaam()} bestaat al`);
 });

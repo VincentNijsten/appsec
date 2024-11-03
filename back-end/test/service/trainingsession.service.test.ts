@@ -1,16 +1,24 @@
 import { TrainingSession } from '../../model/trainingSession';
 import { Ploeg } from '../../model/ploeg';
 import { Zaal } from '../../model/zaal';
-import { PloegInput, SpelerInput, ZaalInput } from '../../types';
+import { CoachInput, PloegInput, SpelerInput, ZaalInput } from '../../types';
 import { Speler } from '../../model/speler';
 import { Coach } from '../../model/coach';
+
+const coachInput : CoachInput = {
+    naam: 'Coach A',
+    coachlicentie: '1234567'
+}
+
 
 const ploegInput : PloegInput = {
     niveau: 'Professioneel',
     ploegnaam: 'Team A',
     spelers: [],
-    coach: { naam: 'Coach A', coachlicentie: '1234567' },
+    coach: coachInput,
 };
+
+
 
 const zaalInput :ZaalInput= {
     naam: 'Zaal 1',
@@ -22,7 +30,7 @@ const ploeg = new Ploeg({
     niveau: ploegInput.niveau,
     ploegnaam: ploegInput.ploegnaam,
     spelers: ploegInput.spelers.map(speler => new Speler(speler)), 
-    coach: new Coach(ploegInput.coach), 
+    coach: new Coach(coachInput), 
 });
 const zaal = new Zaal(zaalInput);
 

@@ -1,8 +1,16 @@
 import { Speler } from '../../model/speler';
+import spelerDb from '../../repository/speler.db';
+import spelerService from '../../service/speler.service';
 
 let speler: Speler;
 
+let mockGetSpelerBySpelerlicentie : jest.Mock;
+
+
 beforeEach(() => {
+    mockGetSpelerBySpelerlicentie = jest.fn();
+    spelerDb.getSpelerByLicentie = mockGetSpelerBySpelerlicentie;
+
     const spelerInput = {
         naam: 'Speler 1',
         spelerlicentie: '1234567',
@@ -10,6 +18,7 @@ beforeEach(() => {
     };
     speler = new Speler(spelerInput);
 });
+
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -42,4 +51,16 @@ test('given an invalid leeftijd, when setting leeftijd, then an error is thrown'
 test('given a valid leeftijd, when setting leeftijd, then the leeftijd is set successfully', () => {
     speler.setLeeftijd(30);
     expect(speler.getLeeftijd()).toEqual(30);
+});
+
+
+test('given a speler that already exists, when adding a speler, then an error is thrown', () => {
+    // given
+    mockGetSpelerBySpelerlicentie.mockReturnValue(speler); 
+    
+    // when
+    const addSpeler = () => spelerService.addSpeler(speler);
+    
+    // then
+    expect(addSpeler).toThrow(`de speler met de licentie: ${speler.spelerlicentie} bestaal al, ${speler.getNaam()}`);
 });

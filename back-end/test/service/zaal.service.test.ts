@@ -38,7 +38,7 @@ describe('Zaal Service', () => {
 
         // Then
         expect(result).toEqual(zaal);
-        expect(zaalDb.getZaalByNaam).toHaveBeenCalledWith({ zaalnaam: 'Zaal 1' });
+        expect(zaalDb.getZaalByNaam).toHaveBeenCalledWith({ naam: 'Zaal 1' });
     });
 
     test('getZaalByNaam should throw an error if the zaal does not exist', () => {
@@ -60,7 +60,8 @@ describe('Zaal Service', () => {
         const result = zaalService.addZaal(zaal);
 
         // Then
-        expect(result).toEqual('Zaal Zaal 1 succesvol toegevoegd.');
+        expect(result).toEqual(`Zaal: ${zaal.naam} succesvol toegevoegd op addres: ${zaal.address}`);
         expect(zaalDb.addZaal).toHaveBeenCalledWith(zaal);
     });
+    
 });
