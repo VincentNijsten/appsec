@@ -26,10 +26,8 @@ const Spelers: React.FC = () => {
 
 
         await SpelerService.addSpeler(newSpeler);
-        setError(null); // Reset de foutmelding
-        await getSpelers(); // Refresh the list of players
-        setNewSpeler({ naam: "", spelerlicentie: "", leeftijd: 0 }); // Reset formulier
-
+        setError(null);
+        getSpelers();
     };
 
 

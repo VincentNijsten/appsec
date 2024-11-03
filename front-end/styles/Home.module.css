@@ -1,3 +1,4 @@
+/* navigation */
 .navLink {
   color: #fff;
   transition: color 0.3s ease;
@@ -7,6 +8,7 @@
   color: gray;
 }
 
+/* Homepage */
 .main {
   display: flex;
   flex-direction: column;
@@ -38,8 +40,7 @@
   margin-bottom: 2em;
 }
 
-/* Add player */
-/* styles/Spelers.module.css */
+/* Add player, coach, zaal form */
 .container {
   display: flex;
   flex-direction: column;
@@ -70,6 +71,7 @@
 }
 
 .formcontainer {
+  padding-top: 2rem;
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
