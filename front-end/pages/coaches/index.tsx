@@ -33,6 +33,11 @@ const Coaches: React.FC = () => {
     const handleDeleteCoach = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!coachlicentieToDelete) {
+            setError("Vul alstublieft alle velden in.");
+            return
+        }
+
         await CoachService.deleteCoach(coachlicentieToDelete);
         setError(null);
         getCoaches();
@@ -50,6 +55,9 @@ const Coaches: React.FC = () => {
                 <title>Coaches</title>
             </Head>
             <Header />
+
+            {error && <p className={styles.error}>{error}</p>} { }
+
             <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Coaches</h1>
                 <section>
@@ -59,7 +67,7 @@ const Coaches: React.FC = () => {
                 </section>
                 <section className={styles.formcontainer}>
                     <h2>Voeg een nieuwe coach toe</h2>
-                    <form onSubmit={handleAddSpeler}>
+                    <form onSubmit={handleAddCoach}>
                         <div className={styles.formGroup}>
                             <label>Naam:</label>
                             <input

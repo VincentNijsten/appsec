@@ -19,7 +19,7 @@ const Spelers: React.FC = () => {
 
     const handleAddSpeler = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newSpeler.naam || !newSpeler.spelerlicentie) {
+        if (!newSpeler.naam || !newSpeler.spelerlicentie || !newSpeler.leeftijd) {
             setError("Vul alstublieft alle velden in.");
             return;
         }
@@ -42,9 +42,10 @@ const Spelers: React.FC = () => {
                 <title>Spelers</title>
             </Head>
             <Header />
+            
             {error && <p className={styles.error}>{error}</p>} { }
 
-            <main className={styles.container}>
+            <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Spelers</h1>
                 <section className={styles.tables}>
                     {spelers && <SpelersOvervieuwTable spelers={spelers} />}
