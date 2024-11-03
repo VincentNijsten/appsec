@@ -19,7 +19,7 @@ const Spelers: React.FC = () => {
     const handleAddSpeler = async (e: React.FormEvent) => {
         e.preventDefault();
         await SpelerService.addSpeler(newSpeler);
-        getSpelers(); // Refresh the list of players
+        getSpelers();
     };
 
     useEffect(() => {

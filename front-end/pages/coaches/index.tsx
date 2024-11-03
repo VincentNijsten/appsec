@@ -8,11 +8,25 @@ import styles from "@/styles/Home.module.css"
 
 const Coaches: React.FC = () => {
     const [coaches, setCoaches] = useState<Array<Coach>>();
+    const [newCoach, setNewCoach] = useState<Coach>({ naam: "", coachlicentie: ""})
+    const [coachlicentieToDelete, setCoachlicentieToDelete] = useState<string>("");
 
     const getCoaches = async () => {
         const response = await CoachService.getAllCoaches();
         const coachess = await response.json();
         setCoaches(coachess);
+    };
+
+    const handleAddSpeler = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await CoachService.addCoach(newCoach);
+        getCoaches();
+    };
+
+    const handleDeleteCoach = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await CoachService.deleteCoach(coachlicentieToDelete);
+        getCoaches();
     };
 
     useEffect(() => {
@@ -33,6 +47,42 @@ const Coaches: React.FC = () => {
                     { coaches &&
                         <CoachOverviewTable coaches={coaches}/>
                     }
+                </section>
+                <section className={styles.formcontainer}>
+                    <h2>Voeg een nieuwe coach toe</h2>
+                    <form onSubmit={handleAddSpeler}>
+                        <div className={styles.formGroup}>
+                            <label>Naam:</label>
+                            <input
+                                type="text"
+                                value={newCoach.naam}
+                                onChange={(e) => setNewCoach({ ...newCoach, naam: e.target.value })}
+                            />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label>Coachlicentie:</label>
+                            <input
+                                type="text"
+                                value={newCoach.coachlicentie}
+                                onChange={(e) => setNewCoach({ ...newCoach, coachlicentie: e.target.value })}
+                            />
+                        </div>
+                        <button type="submit">Voeg Speler Toe</button>
+                    </form>
+                </section>
+                <section className={styles.formcontainer}>
+                    <h2>Verwijder een coach</h2>
+                    <form onSubmit={handleDeleteCoach}>
+                        <div className={styles.formGroup}>
+                            <label>Coachlicentie:</label>
+                            <input
+                                type="text"
+                                value={coachlicentieToDelete}
+                                onChange={(e) => setCoachlicentieToDelete(e.target.value)}
+                            />
+                        </div>
+                        <button type="submit">Verwijder Coach</button>
+                    </form>
                 </section>
             </main>
         </>
