@@ -24,7 +24,7 @@ const Home: React.FC = () => {
           <h1 className={styles.title}>Welcome!</h1>
           <div className={styles.text}>
             <p>Welkom bij VHL. We zijn een van de grootste jeugdclub in Vlaanderen. Hier is er plaats voor iedereen en willen we je helpen je talent voor volleybal te vinden.</p>
-            <p>Naast jeugdploegen hebben we twee ploegen op het hoogste niveau van heel België. De Dames A en de Heren A. Word jij hun nieuwe grootste supporter? We verwelkomen je graag bij hun matchen.</p>
+            <p>Naast jeugdploegen hebben we twee ploegen op het hoogste niveau van België. De Dames A en de Heren A. Word jij hun nieuwe grootste supporter? We verwelkomen je graag bij hun matchen.</p>
           </div>
         </section>
       </main>
