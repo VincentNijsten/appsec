@@ -1,11 +1,12 @@
 import React from "react";
-import { Ploeg } from "../../types";
+import { Ploeg } from "@/types";
 
 type Props = {
     ploegen: Array<Ploeg>
+    selectPloeg: (ploeg: Ploeg) => void;
 }
 
-const PloegenOverviewTable: React.FC<Props> = ({ploegen}: Props) => {
+const PloegenOverviewTable: React.FC<Props> = ({ploegen, selectPloeg}: Props) => {
     return (
         <>
             {ploegen && (
@@ -15,11 +16,12 @@ const PloegenOverviewTable: React.FC<Props> = ({ploegen}: Props) => {
                             <th scope="col">niveau</th>
                             <th scope="col">ploegnaam</th>
                             <th scope="col">spelers</th>
+                            <th scope="col">coach</th>
                         </tr>
                     </thead>
                     <tbody>
                         {ploegen.map((ploeg, index) => (
-                            <tr key={index}>
+                            <tr key={index} onClick={() => selectPloeg(ploeg)} role="button">
                                 <td>{ploeg.niveau}</td>
                                 <td>{ploeg.ploegnaam}</td>
                                 <td>
@@ -29,6 +31,7 @@ const PloegenOverviewTable: React.FC<Props> = ({ploegen}: Props) => {
                                         ))}
                                     </ul>
                                 </td>
+                                <td>{ploeg.coach?.naam}</td>
                             </tr>
                         ))}
                     </tbody>

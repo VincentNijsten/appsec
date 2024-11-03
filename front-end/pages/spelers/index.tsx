@@ -1,9 +1,11 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { Speler } from "../../types";
-import Header from "../../components/header";
-import SpelerOvervieuwTable from "../../components/spelers/SpelerOverviewTable";
-import SpelerService from "../../services/SpelerService";
+import { Speler } from "@/types";
+import Header from "@/components/header";
+import SpelersOvervieuwTable from "@/components/spelers/SpelersOverviewTable";
+import SpelerService from "@/services/SpelerService";
+import styles from "@/styles/Home.module.css"
+
 
 const Spelers: React.FC = () => {
     const [spelers, setSpelers] = useState<Array<Speler>>();
@@ -14,7 +16,6 @@ const Spelers: React.FC = () => {
         setSpelers(spelerss)
     }
     
-    // Call back-end
     useEffect(() => {
         getSpelers()
         },
@@ -28,10 +29,10 @@ const Spelers: React.FC = () => {
             </Head>
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
-                <h1>Spelers</h1>
+                <h1 className={styles.tabletitle}>Spelers</h1>
                 <section>
                     { spelers &&
-                        <SpelerOvervieuwTable spelers={spelers}/>
+                        <SpelersOvervieuwTable spelers={spelers}/>
                     }
                 </section>
             </main>

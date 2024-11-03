@@ -13,8 +13,6 @@ export class Coach {
     }
 
     // Getters
-
-
     public getNaam(): string {
         return this.naam;
     }
@@ -24,12 +22,6 @@ export class Coach {
     }
 
     // Setters
-
-
-
-
-
-
     public setNaam(naam: string) {
         if (!naam || naam.trim().length === 0) {
             throw new Error('Naam van de coach is verplicht.');

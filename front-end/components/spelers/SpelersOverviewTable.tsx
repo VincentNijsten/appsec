@@ -1,11 +1,11 @@
 import React from "react";
-import { Speler } from "../../types";
+import { Speler } from "@/types";
 
 type Props = {
     spelers: Array<Speler>
 };
 
-const SpelerOvervieuwTable: React.FC<Props> = ({spelers}: Props) => {
+const SpelerOverviewTable: React.FC<Props> = ({spelers}: Props) => {
     return (
         <>
             {spelers &&(
@@ -32,4 +32,4 @@ const SpelerOvervieuwTable: React.FC<Props> = ({spelers}: Props) => {
     );
 };
 
-export default SpelerOvervieuwTable;
+export default SpelerOverviewTable;
