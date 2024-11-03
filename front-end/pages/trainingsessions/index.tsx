@@ -29,7 +29,7 @@ const TrainingSessions: React.FC = () => {
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Spelers</h1>
-                <section>
+                <section className={styles.tables}>
                     { trainingsessions &&
                         <TrainingSessionsOverviewTable trainingsessions={trainingsessions}/>
                     }

@@ -30,7 +30,7 @@ const Zalen: React.FC = () => {
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Zalen</h1>
-                <section>
+                <section className={styles.tables}>
                     { zalen &&
                         <ZaalOverviewTable zalen={zalen} />
                     }

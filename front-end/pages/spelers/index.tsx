@@ -32,13 +32,13 @@ const Spelers: React.FC = () => {
                 <title>Spelers</title>
             </Head>
             <Header />
-            <main className={styles.container}>
+            <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Spelers</h1>
-                <section>
+                <section className={styles.tables}>
                     {spelers && <SpelersOvervieuwTable spelers={spelers} />}
                 </section>
                 <section className={styles.formcontainer}>
-                    <h2>Voeg een nieuwe speler toe</h2>
+                    <h3>Voeg een nieuwe speler toe</h3>
                     <form onSubmit={handleAddSpeler}>
                         <div className={styles.formGroup}>
                             <label>Naam:</label>

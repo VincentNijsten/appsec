@@ -43,13 +43,13 @@ const Coaches: React.FC = () => {
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Coaches</h1>
-                <section>
+                <section className={styles.tables}>
                     { coaches &&
                         <CoachOverviewTable coaches={coaches}/>
                     }
                 </section>
                 <section className={styles.formcontainer}>
-                    <h2>Voeg een nieuwe coach toe</h2>
+                    <h3>Voeg een nieuwe coach toe</h3>
                     <form onSubmit={handleAddSpeler}>
                         <div className={styles.formGroup}>
                             <label>Naam:</label>
@@ -71,7 +71,7 @@ const Coaches: React.FC = () => {
                     </form>
                 </section>
                 <section className={styles.formcontainer}>
-                    <h2>Verwijder een coach</h2>
+                    <h3>Verwijder een coach</h3>
                     <form onSubmit={handleDeleteCoach}>
                         <div className={styles.formGroup}>
                             <label>Coachlicentie:</label>

@@ -41,14 +41,12 @@
   margin-bottom: 2em;
 }
 
-/* Add player, coach, zaal form */
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+/* tables */
+.tables{
+  margin-bottom: 2rem;
 }
 
+/* Forms */
 .tabletitle {
   font-size: 2em;
   margin-bottom: 20px;
@@ -71,8 +69,8 @@
 }
 
 .formcontainer {
-  padding-top: 2rem;
-  max-width: 400px;
+  margin-top: 2rem;
+  min-width: 55%;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
