@@ -50,8 +50,8 @@ const ploegRouter = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
+ *              type: array
+ *              items:
  *                 $ref: '#/components/schemas/Ploeg'
  *       500:
  *         description: Fout bij het ophalen van ploegen
@@ -125,7 +125,7 @@ ploegRouter.get('/:ploegnaam', (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- * type: array
+ *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Speler'
  *       404:
