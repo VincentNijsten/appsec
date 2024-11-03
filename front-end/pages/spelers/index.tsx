@@ -32,15 +32,15 @@ const Spelers: React.FC = () => {
                 <title>Spelers</title>
             </Head>
             <Header />
-            <main className="d-flex flex-column justify-content-center align-items-center">
+            <main className={styles.container}>
                 <h1 className={styles.tabletitle}>Spelers</h1>
                 <section>
                     {spelers && <SpelersOvervieuwTable spelers={spelers} />}
                 </section>
-                <section>
+                <section className={styles.formcontainer}>
                     <h2>Voeg een nieuwe speler toe</h2>
                     <form onSubmit={handleAddSpeler}>
-                        <div>
+                        <div className={styles.formGroup}>
                             <label>Naam:</label>
                             <input
                                 type="text"
@@ -48,7 +48,7 @@ const Spelers: React.FC = () => {
                                 onChange={(e) => setNewSpeler({ ...newSpeler, naam: e.target.value })}
                             />
                         </div>
-                        <div>
+                        <div className={styles.formGroup}>
                             <label>Spelerlicentie:</label>
                             <input
                                 type="text"
@@ -56,7 +56,7 @@ const Spelers: React.FC = () => {
                                 onChange={(e) => setNewSpeler({ ...newSpeler, spelerlicentie: e.target.value })}
                             />
                         </div>
-                        <div>
+                        <div className={styles.formGroup}>
                             <label>Leeftijd:</label>
                             <input
                                 type="number"
