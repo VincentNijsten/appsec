@@ -23,11 +23,18 @@ const spelers : Speler[] = [];
 const speler1 =  new Speler({ naam: 'Jan Jansen', spelerlicentie: '0050766', leeftijd: 25});
 const speler2 =  new Speler({ naam: 'Piet Pietersen', spelerlicentie: '0050767', leeftijd: 30 });
 const speler3 =  new Speler({ naam: 'Klaas Klaassen', spelerlicentie: '0050768', leeftijd: 22});
+const speler4 =  new Speler({ naam: 'Lucas Willibal', spelerlicentie: '0050789', leeftijd: 19});
+const speler5 =  new Speler({ naam: 'Vincent Nijsten', spelerlicentie: '0067832', leeftijd: 19});
+const speler6 =  new Speler({ naam: 'jan janssens', spelerlicentie: '0023832', leeftijd: 29});
+
+
 
 //spellers toevoegen aan database
 spelers.push(speler1);
 spelers.push(speler2);
 spelers.push(speler3);
+spelers.push(speler4);
+spelers.push(speler5);
 
 //spelers toevoegen aan ploeg
 ploeg1.addSpeler(speler1);
