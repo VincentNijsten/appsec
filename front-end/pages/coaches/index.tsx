@@ -8,8 +8,10 @@ import styles from "@/styles/Home.module.css"
 
 const Coaches: React.FC = () => {
     const [coaches, setCoaches] = useState<Array<Coach>>();
-    const [newCoach, setNewCoach] = useState<Coach>({ naam: "", coachlicentie: ""})
+    const [newCoach, setNewCoach] = useState<Coach>({ naam: "", coachlicentie: "" })
     const [coachlicentieToDelete, setCoachlicentieToDelete] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
+
 
     const getCoaches = async () => {
         const response = await CoachService.getAllCoaches();
@@ -17,21 +19,28 @@ const Coaches: React.FC = () => {
         setCoaches(coachess);
     };
 
-    const handleAddSpeler = async (e: React.FormEvent) => {
+    const handleAddCoach = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!newCoach.coachlicentie || !newCoach.naam) {
+            setError("Vul alstublieft alle velden in.");
+            return
+        }
         await CoachService.addCoach(newCoach);
+        setError(null);
         getCoaches();
     };
 
     const handleDeleteCoach = async (e: React.FormEvent) => {
         e.preventDefault();
+
         await CoachService.deleteCoach(coachlicentieToDelete);
+        setError(null);
         getCoaches();
     };
 
     useEffect(() => {
         getCoaches()
-        },
+    },
         []
     )
 
@@ -43,13 +52,13 @@ const Coaches: React.FC = () => {
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className={styles.tabletitle}>Coaches</h1>
-                <section className={styles.tables}>
+                <section>
                     { coaches &&
                         <CoachOverviewTable coaches={coaches}/>
                     }
                 </section>
                 <section className={styles.formcontainer}>
-                    <h3>Voeg een nieuwe coach toe</h3>
+                    <h2>Voeg een nieuwe coach toe</h2>
                     <form onSubmit={handleAddSpeler}>
                         <div className={styles.formGroup}>
                             <label>Naam:</label>
@@ -67,7 +76,7 @@ const Coaches: React.FC = () => {
                                 onChange={(e) => setNewCoach({ ...newCoach, coachlicentie: e.target.value })}
                             />
                         </div>
-                        <button type="submit">Voeg Speler Toe</button>
+                        <button type="submit">Voeg Coach Toe</button>
                     </form>
                 </section>
                 <section className={styles.formcontainer}>

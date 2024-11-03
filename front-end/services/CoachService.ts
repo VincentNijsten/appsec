@@ -10,13 +10,20 @@ const getAllCoaches = async () => {
 };
 
 const addCoach = async (coach: Coach) => {
-    return fetch(process.env.NEXT_PUBLIC_API_URL + "/coaches", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/coaches", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(coach),
     });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+    }
+
+    return response.json();
 };
 
 const deleteCoach = async (coachlicentie: string) => {

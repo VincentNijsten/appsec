@@ -9,6 +9,7 @@ import Head from "next/head";
 const Spelers: React.FC = () => {
     const [spelers, setSpelers] = useState<Array<Speler>>([]);
     const [newSpeler, setNewSpeler] = useState<Speler>({ naam: "", spelerlicentie: "", leeftijd: 0 });
+    const [error, setError] = useState<string | null>(null);
 
     const getSpelers = async () => {
         const response = await SpelerService.getAllSpelers();
@@ -18,9 +19,18 @@ const Spelers: React.FC = () => {
 
     const handleAddSpeler = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!newSpeler.naam || !newSpeler.spelerlicentie) {
+            setError("Vul alstublieft alle velden in.");
+            return;
+        }
+
+
         await SpelerService.addSpeler(newSpeler);
+        setError(null);
         getSpelers();
     };
+
+
 
     useEffect(() => {
         getSpelers();
@@ -32,7 +42,9 @@ const Spelers: React.FC = () => {
                 <title>Spelers</title>
             </Head>
             <Header />
-            <main className="d-flex flex-column justify-content-cneter align-items-center">
+            {error && <p className={styles.error}>{error}</p>} { }
+
+            <main className={styles.container}>
                 <h1 className={styles.tabletitle}>Spelers</h1>
                 <section className={styles.tables}>
                     {spelers && <SpelersOvervieuwTable spelers={spelers} />}
@@ -56,6 +68,7 @@ const Spelers: React.FC = () => {
                                 onChange={(e) => setNewSpeler({ ...newSpeler, spelerlicentie: e.target.value })}
                             />
                         </div>
+
                         <div className={styles.formGroup}>
                             <label>Leeftijd:</label>
                             <input
