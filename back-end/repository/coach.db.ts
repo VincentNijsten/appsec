@@ -1,64 +1,79 @@
 import { Coach } from '../model/coach'; 
-import { Ploeg } from '../model/ploeg';
-import ploegDb from './ploeg.db';
+import database from './database';
+import { Coach as CoachPrisma } from '@prisma/client';
 
-const coaches: Coach[] = [];
-
-
-// Voorbeeld van coaches
-const coach1 = new Coach({naam:'John Doe',coachlicentie: '0018728'});
-const coach2 = new Coach({naam:'Jane Smith', coachlicentie:'0028925'});
-
-coaches.push(coach1);
-coaches.push(coach2);
-
-
-// werkt voor bestaande coaches maar als ik er een toevoeg werkt het nog niet en ik heb gee nidee wrm 
-const getCoachByNaam = ({ coachnaam }: { coachnaam: string }): Coach | null => {
+const getCoachByNaam = async ({ coachnaam }: { coachnaam: string }): Promise<Coach | null> => {
     try {
-        return coaches.find((coach) => coach.getNaam().toLowerCase() === coachnaam.toLowerCase()) || null;
+        const coachPrisma = await database.coach.findFirst({
+            where: {
+                naam: coachnaam,
+            },
+        });
+        return coachPrisma ? Coach.from(coachPrisma) : null;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };
 
-const getAllCoaches = (): Coach[] =>{
-    return coaches;
-}
+const getAllCoaches = async (): Promise<Coach[]> => {
+    try {
+        const coachPrisma = await database.coach.findMany();
+        return coachPrisma.map((coachPrisma) => Coach.from(coachPrisma));
+    } catch (error) {
+        console.log(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
 
-const addCoach = (coach :{
-   
-    naam : string;
-    coachlicentie : string
-    
-
-})=>{
-    const newCoach = new Coach({
-       
-        naam : coach.naam,
-        coachlicentie : coach.coachlicentie
-    })
-
-     coaches.push(newCoach);
-}
+const addCoach = async (coach: { naam: string; coachLicentie: string }): Promise<Coach> => {
+    try {
+        const newCoachPrisma = await database.coach.create({
+            data: {
+                naam: coach.naam,
+                coachLicentie: coach.coachLicentie,
+            },
+        });
+        return Coach.from(newCoachPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
 
 // Functie om een coach op licentie op te halen
-const getCoachByCoachLicentie = (coachlicentie: string): Coach | null => {
-    return coaches.find(coach => coach.getCoachlicentie() === coachlicentie) || null;
+const getCoachByCoachLicentie = async (coachlicentie: string): Promise<Coach | null> => {
+    try {
+        const coachPrisma = await database.coach.findUnique({
+            where: {
+                coachLicentie: coachlicentie,
+            },
+        });
+        return coachPrisma ? Coach.from(coachPrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
 };
 
 // Functie om een coach te verwijderen op basis van licentie
-const removeCoach = (coachIndex:number) => {
-     coaches.splice(coachIndex, 1);
-    };
-
-
+const removeCoach = async (coachlicentie: string): Promise<void> => {
+    try {
+        await database.coach.delete({
+            where: {
+                coachLicentie: coachlicentie,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
 
 export default {
     getCoachByNaam,
     getAllCoaches,
     addCoach,
     getCoachByCoachLicentie,
-    removeCoach
+    removeCoach,
 };

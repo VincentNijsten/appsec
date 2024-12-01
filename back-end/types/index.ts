@@ -3,20 +3,20 @@
 
 type SpelerInput = {
     naam: string;
-    spelerlicentie: string;
+    spelerLicentie: string;
     leeftijd: number;
+    ploegNaam: string;
 };
 
 type CoachInput = {
     naam: string;
-    coachlicentie: string;
+    coachLicentie: string;
 };
 
 type PloegInput = {
     niveau: string;
     ploegnaam: string;
-    spelers: SpelerInput[];
-    coach?: CoachInput;
+    coachLicentie: string | null;
 };
 
 type ZaalInput = {

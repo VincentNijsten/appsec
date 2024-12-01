@@ -1,22 +1,25 @@
 import React from "react";
-import { Ploeg } from "@/types";
+import { Ploeg, Speler, Coach } from "@/types"; // Zorg ervoor dat je ook het Speler type importeert
+
 
 type Props = {
-    ploegen: Array<Ploeg>
+    ploegen: Array<Ploeg>;
+    spelers?: Array<Speler>; 
+    coaches?: Array<Coach>;
     selectPloeg: (ploeg: Ploeg) => void;
-}
+};
 
-const PloegenOverviewTable: React.FC<Props> = ({ploegen, selectPloeg}: Props) => {
+const PloegenOverviewTable: React.FC<Props> = ({ ploegen, spelers,coaches, selectPloeg }: Props) => {
     return (
         <>
             {ploegen && (
                 <table className="table table-hover">
                     <thead>
                         <tr>
-                            <th scope="col">niveau</th>
-                            <th scope="col">ploegnaam</th>
-                            <th scope="col">spelers</th>
-                            <th scope="col">coach</th>
+                            <th scope="col">Niveau</th>
+                            <th scope="col">Ploegnaam</th>
+                            <th scope="col">Spelers</th>
+                            <th scope="col">Coach</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -26,12 +29,21 @@ const PloegenOverviewTable: React.FC<Props> = ({ploegen, selectPloeg}: Props) =>
                                 <td>{ploeg.ploegnaam}</td>
                                 <td>
                                     <ul>
-                                        {ploeg.spelers.map((speler) => (
-                                            <li key={speler.spelerlicentie}>{speler.naam}</li>
-                                        ))}
+                                        {spelers
+                                            ?.filter(speler => speler.ploegNaam === ploeg.ploegnaam) 
+                                            .map(speler => (
+                                                <li key={speler.spelerLicentie}>{speler.naam}</li>
+                                            ))}
                                     </ul>
                                 </td>
-                                <td>{ploeg.coach?.naam}</td>
+                                <td>  <ul>
+                                        {coaches
+                                            ?.filter(coach => coach.coachLicentie === ploeg.coachLicentie) 
+                                            .map(coach => (
+                                                <li key={coach.coachLicentie}>{coach.naam}</li>
+                                            ))}
+                                    </ul>
+                                    </td>
                             </tr>
                         ))}
                     </tbody>

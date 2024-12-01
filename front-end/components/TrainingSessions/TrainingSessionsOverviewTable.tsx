@@ -22,8 +22,8 @@ const TrainingSessionsOverviewTable: React.FC<Props> = ({trainingsessions}: Prop
                     <tbody>
                         {trainingsessions.map((trainingsession, index) => (
                             <tr key={index}>
-                                <td>{trainingsession.ploeg.ploegnaam}</td>
-                                <td>{trainingsession.zaal.naam}</td>
+                                <td>{trainingsession.ploegNaam}</td>
+                                <td>{trainingsession.zaalNaam}</td>
                                 {/* <td>{trainingsession.datum.getDate()}</td> */}
                                 <td>{trainingsession.startTijd}</td>
                                 <td>{trainingsession.eindTijd}</td>

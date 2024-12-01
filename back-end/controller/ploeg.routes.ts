@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import ploegDb from '../repository/ploeg.db';
 import ploegService from '../service/ploeg.service';
 import { PloegInput } from '../types';
@@ -56,9 +56,9 @@ const ploegRouter = express.Router();
  *       500:
  *         description: Fout bij het ophalen van ploegen
  */
-ploegRouter.get('/', (req, res) => {
+ploegRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const ploegen = ploegService.getAllPloegen();
+        const ploegen = await ploegService.getAllPloegen();
         res.json(ploegen);
     } catch (error) {
         console.error(error);
@@ -133,16 +133,16 @@ ploegRouter.get('/:ploegnaam', (req, res) => {
  *       500:
  *         description: Fout bij het ophalen van de spelers
  */
-ploegRouter.get('/:ploegnaam/spelers', (req, res) => {
-    const ploegnaam = req.params.ploegnaam;
-    try {
-        const spelers = ploegService.getSpelersInPloeg(ploegnaam);
-        res.json(spelers);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving players' });
-    }
-});
+// ploegRouter.get('/:ploegnaam/spelers', (req, res) => {
+//     const ploegnaam = req.params.ploegnaam;
+//     try {
+//         const spelers = ploegService.getSpelersInPloeg(ploegnaam);
+//         res.json(spelers);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Error retrieving players' });
+//     }
+// });
 
 /**
  * @swagger

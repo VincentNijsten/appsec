@@ -1,65 +1,58 @@
 import coachDb from "../repository/coach.db";
 import { Coach } from "../model/coach";
-import ploegDb from "../repository/ploeg.db";
-import { Ploeg } from "../model/ploeg";
-import { off } from "process";
 import { CoachInput } from "../types";
 
-const getAllCoaches = ():Coach[] => {
-    return coachDb.getAllCoaches();
-}
+const getAllCoaches = async (): Promise<Coach[]> => {
+    return await coachDb.getAllCoaches();
+};
 
-const getCoachByNaam =( coachnaam :string): Coach | null=> {
-     const coach =  coachDb.getCoachByNaam({coachnaam});
+const getCoachByNaam = async (coachnaam: string): Promise<Coach | null> => {
+    const coach = await coachDb.getCoachByNaam({ coachnaam });
 
-     if (!coach){
-        throw new Error('deze coach kan niet gevonden worden')
-     }else{
-        return coach
-     }
+    if (!coach) {
+        throw new Error('Deze coach kan niet gevonden worden');
+    } else {
+        return coach;
+    }
+};
 
-}
-
-const removeCoach = (coachLicentie: string) => {
+const removeCoach = async (coachLicentie: string): Promise<string> => {
     try {
         // Zoek de coach op basis van de coachlicentie
-        const coachIndex = coachDb.getAllCoaches().findIndex(existingCoach => existingCoach.getCoachlicentie() === coachLicentie);
+        const coach = await coachDb.getCoachByCoachLicentie(coachLicentie);
 
         // Controleer of de coach bestaat
-        if (coachIndex !== -1) {
-            coachDb.removeCoach(coachIndex); 
+        if (coach) {
+            await coachDb.removeCoach(coachLicentie); 
             return "Coach succesvol verwijderd"; 
         } else {
             throw new Error('Coach niet gevonden');
         }
         
     } catch (error) {
-        throw new Error('coach verwijderen mislukt');
+        throw new Error('Coach verwijderen mislukt');
     }
-}
+};
 
-const addCoach = ({naam, coachlicentie}: CoachInput)=>{
-    const exists = coachDb.getCoachByCoachLicentie(coachlicentie);
+const addCoach = async ({ naam, coachLicentie }: CoachInput): Promise<string> => {
+    const exists = await coachDb.getCoachByCoachLicentie(coachLicentie);
     
-    if(exists){
-        throw new Error(`de coach met licentie : ${coachlicentie}, bestaal al : ${naam}`);
-     }
-    
+    if (exists) {
+        throw new Error(`De coach met licentie: ${coachLicentie}, bestaat al: ${naam}`);
+    }
 
     const newCoach = new Coach({
         naam, 
-        coachlicentie
+        coachLicentie: coachLicentie
     });
     
-    coachDb.addCoach(newCoach)
-    return 'succes'
-}
-
-
+    await coachDb.addCoach(newCoach);
+    return 'Succes';
+};
 
 export default {
     getAllCoaches,
     getCoachByNaam,
     removeCoach,
     addCoach
-}
+};

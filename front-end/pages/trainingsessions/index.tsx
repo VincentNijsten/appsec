@@ -24,11 +24,11 @@ const TrainingSessions: React.FC = () => {
     return (
         <>
             <Head>
-                <title>Spelers</title>
+                <title>sessions</title>
             </Head>
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
-                <h1 className={styles.tabletitle}>Spelers</h1>
+                <h1 className={styles.tabletitle}>Sessions</h1>
                 <section className={styles.tables}>
                     { trainingsessions &&
                         <TrainingSessionsOverviewTable trainingsessions={trainingsessions}/>

@@ -1,35 +1,91 @@
-import { Speler } from '../model/speler'; 
-import ploegDb from './ploeg.db'; 
+import { PrismaClient } from '@prisma/client';
+import { Speler } from '../model/speler';
 
+const prisma = new PrismaClient();
 
-
-// Voorbeeld van spelers
-const spelers = ploegDb.getAllSpelers();
-
-const getSpelerByLicentie = (licentie: string ): Speler | null => {
+// Functie om een speler op basis van licentie op te halen
+const getSpelerByLicentie = async (licentie: string): Promise<Speler | null> => {
     try {
-        return spelers.find((speler) => speler.getSpelerlicentie() === licentie) || null;
+        const spelerPrisma = await prisma.speler.findUnique({
+            where: {
+                spelerLicentie: licentie,
+            },
+        });
+        return spelerPrisma ? Speler.from(spelerPrisma) : null;
     } catch (error) {
         console.error(error);
-        throw new Error('Database error. See server log for details.');
+        throw new Error('Database error. Zie serverlog voor details.');
     }
 };
 
-const getAllSpelers = (): Speler[] => {
-    return spelers;
+// Functie om alle spelers op te halen
+const getAllSpelers = async (): Promise<Speler[]> => {
+    try {
+        const spelersPrisma = await prisma.speler.findMany();
+        return spelersPrisma.map((spelerPrisma) => Speler.from(spelerPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
 };
 
-const getSpelerByNaam = ({ naam }: { naam: string }): Speler | undefined => {
-    return spelers.find((speler) => speler.getNaam() === naam);
+// Functie om een speler op basis van naam op te halen
+const getSpelerByNaam = async (naam: string): Promise<Speler | undefined> => {
+    try {
+        const spelerPrisma = await prisma.speler.findFirst({
+            where: {
+                naam: naam,
+            },
+        });
+        return spelerPrisma ? Speler.from(spelerPrisma) : undefined;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
 };
 
-const addSpeler = (speler: Speler) => {
-    spelers.push(speler);
+// Functie om een speler toe te voegen
+const addSpeler = async (speler: Speler): Promise<Speler> => {
+    try {
+        const newSpelerPrisma = await prisma.speler.create({
+            data: {
+                naam: speler.naam,
+                spelerLicentie: speler.spelerLicentie,
+                leeftijd: speler.leeftijd,
+                ploegNaam: speler.ploegNaam, // Voeg ploegnaam toe
+            },
+        });
+        return Speler.from(newSpelerPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
+};
+
+// Functie om een speler bij te werken
+const updateSpeler = async (licentie: string, spelerData: Partial<Speler>): Promise<Speler> => {
+    try {
+        const updatedSpelerPrisma = await prisma.speler.update({
+            where: {
+                spelerLicentie: licentie,
+            },
+            data: {
+                naam: spelerData.naam,
+                leeftijd: spelerData.leeftijd,
+                ploegNaam: spelerData.ploegNaam,
+            },
+        });
+        return Speler.from(updatedSpelerPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
 };
 
 export default {
     getSpelerByLicentie,
     getAllSpelers,
     getSpelerByNaam,
-    addSpeler
+    addSpeler,
+    updateSpeler, // Voeg de update functie toe aan de export
 };

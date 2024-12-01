@@ -1,3 +1,5 @@
+import { Zaal as ZaalPrisma } from '@prisma/client';
+
 export class Zaal {
     public address!: string;
     public naam!: string;
@@ -42,4 +44,23 @@ export class Zaal {
     public setBeschikbaarheid(value: boolean) {
         this.beschikbaarheid = value; 
     }
+
+
+
+
+    static from({
+        address,
+        naam,
+        beschikbaarheid
+ 
+     }: ZaalPrisma 
+         
+     ) {
+         return new Zaal({
+            address,
+            naam,
+            beschikbaarheid
+ 
+         });
+     }
 }

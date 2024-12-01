@@ -1,33 +1,38 @@
 import { Zaal } from './zaal'; 
 import { Ploeg } from './ploeg'; 
+import { Coach as CoachPrisma, Speler as SpelerPrisma, Ploeg as PloegPrisma, TrainingSession as TrainingSessionPrisma } from '@prisma/client';
+
 
 export class TrainingSession {
-    public ploeg!: Ploeg;
-    public zaal!: Zaal;
+    public id?: string;
+    public ploegNaam!: string;
+    public zaalNaam!: string;
     public datum!: Date;
     public startTijd!: string;
     public eindTijd!: string;
 
     constructor(trainingSession: {
-        ploeg: Ploeg;
-        zaal: Zaal;
+        id: string;
+        ploegNaam: string;
+        zaalNaam: string;
         datum: Date;
         startTijd: string;
         eindTijd: string;
     }) {
-        this.setPloeg(trainingSession.ploeg);
-        this.setZaal(trainingSession.zaal);
+        this.setPloegNaam(trainingSession.ploegNaam);
+        this.setZaal(trainingSession.zaalNaam);
         this.setDatum(trainingSession.datum);
         this.setTijden(trainingSession.startTijd, trainingSession.eindTijd);
+        this.id = trainingSession.id;
     }
 
     // Getters
-    public getPloeg(): Ploeg {
-        return this.ploeg;
+    public getPloegNaam(): string {
+        return this.ploegNaam;
     }
 
-    public getZaal(): Zaal {
-        return this.zaal;
+    public getZaalNaam(): string {
+        return this.zaalNaam;
     }
 
     public getDatum(): Date {
@@ -57,22 +62,24 @@ export class TrainingSession {
         this.eindTijd = eindTijd;
     }
 
-    public setPloeg(ploeg: Ploeg) {
+    public setPloegNaam(ploegNaam: string) {
      
-        this.ploeg = ploeg;
+        this.ploegNaam = ploegNaam;
     }
 
-    public setZaal(zaal: Zaal) {
+    public setZaal(zaalNaam: string) {
     
-        this.zaal = zaal;
+        this.zaalNaam = zaalNaam;
     }
 
-    // Methode om de details van de trainingssessie weer te geven
-    public displaySessionDetails(): string {
-        return `Training Session:
-        Team: ${this.ploeg.getPloegnaam()}
-        Hall: ${this.zaal.getNaam()}
-        Date: ${this.datum.toDateString()}
-        Time: ${this.startTijd} - ${this.eindTijd}`;
+
+
+    static from({ id, ploegNaam, zaalNaam, datum, startTijd,eindTijd}: TrainingSessionPrisma) {
+        return new TrainingSession({
+            id, ploegNaam, zaalNaam, datum, startTijd,eindTijd
+        });
     }
+
+
+
 }

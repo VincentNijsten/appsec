@@ -1,19 +1,19 @@
 export type Speler = {
     naam: string;
-    spelerlicentie: string;
+    spelerLicentie: string;
     leeftijd: number;
+    ploegNaam: String;
 };
 
 export type Coach = {
     naam: string;
-    coachlicentie: string;
+    coachLicentie: string;
 };
 
 export type Ploeg = {
     niveau: string;
     ploegnaam: string;
-    spelers: Speler[];
-    coach: Coach;
+    coachLicentie: String;
 };
 
 export type Zaal = {
@@ -23,8 +23,8 @@ export type Zaal = {
 };
 
 export type TrainingSession = {
-    ploeg: Ploeg;
-    zaal: Zaal;
+    ploegNaam: string;
+    zaalNaam: string;
     datum: Date;
     startTijd: string;
     eindTijd: string;

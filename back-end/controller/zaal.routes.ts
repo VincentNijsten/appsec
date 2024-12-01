@@ -1,7 +1,8 @@
-import express from 'express';
 import zaalDb from '../repository/zaal.db';
 import zaalService from '../service/zaal.service';
 import { ZaalInput } from '../types';
+import express, { NextFunction, Request, Response } from 'express';
+
 
 const zaalRouter = express.Router();
 
@@ -41,10 +42,10 @@ const zaalRouter = express.Router();
  *       500:
  *         description: Fout bij het ophalen van zalen
  */
-zaalRouter.get('/', (req, res) => {
+zaalRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const zalen = zaalService.getAllZalen();
-        res.json(zalen);
+        const zalen = await zaalService.getAllZalen();
+        res.status(200).json(zalen);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error retrieving rooms' });

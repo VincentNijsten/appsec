@@ -21,7 +21,7 @@ const SpelerOverviewTable: React.FC<Props> = ({spelers}: Props) => {
                         {spelers.map((speler, index) => (
                             <tr key={index}>
                                 <td>{speler.naam}</td>
-                                <td>{speler.spelerlicentie}</td>
+                                <td>{speler.spelerLicentie}</td>
                                 <td>{speler.leeftijd}</td>
                             </tr>
                         ))}

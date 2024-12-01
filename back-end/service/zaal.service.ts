@@ -1,15 +1,19 @@
-import zaalDb from "../repository/zaal.db"; // Zorg ervoor dat je het juiste pad naar je zaal.db.ts bestand gebruikt
-import { Zaal } from "../model/zaal"; // Zorg ervoor dat je het juiste pad naar de Zaal klasse gebruikt
+import zaalDb from "../repository/zaal.db"; 
+import { Zaal } from "../model/zaal"; 
 import { ZaalInput } from "../types";
 
 // Functie om alle zalen op te halen
-const getAllZalen = (): Zaal[] => {
-    return zaalDb.getAllZalen();
+const getAllZalen = async (): Promise<Zaal[]> => {
+    const zalen = await zaalDb.getAllZalen();
+    if (zalen.length === 0) {
+        throw new Error("Geen zalen gevonden.");
+    }
+    return zalen;
 }
 
 // Functie om een zaal op naam op te halen
-const getZaalByNaam = (naam: string): Zaal | null => {
-    const zaal = zaalDb.getZaalByNaam({ naam });
+const getZaalByNaam = async (naam: string): Promise<Zaal | null> => {
+    const zaal = await zaalDb.getZaalByNaam(naam);
 
     if (zaal == null) {
         throw new Error('Deze zaal kan niet gevonden worden');
@@ -19,15 +23,15 @@ const getZaalByNaam = (naam: string): Zaal | null => {
 }
 
 // Functie om een zaal toe te voegen
-const addZaal = ({naam,address,beschikbaarheid}:ZaalInput) => {
-    const exist = zaalDb.getZaalByNaam({naam});
-    if(exist){
-        throw new Error(`de zaal met naam ${naam} bestaat al`);
+const addZaal = async ({ naam, address, beschikbaarheid }: ZaalInput): Promise<string> => {
+    const exist = await zaalDb.getZaalByNaam(naam);
+    if (exist) {
+        throw new Error(`De zaal met naam ${naam} bestaat al`);
     }
 
-    const newZaal = new Zaal({naam, address, beschikbaarheid});
-    zaalDb.addZaal(newZaal);
-    return `Zaal: ${naam} succesvol toegevoegd op addres: ${address}`;
+    const newZaal = new Zaal({ naam, address, beschikbaarheid });
+    await zaalDb.addZaal(newZaal);
+    return `Zaal: ${naam} succesvol toegevoegd op adres: ${address}`;
 }
 
 // Exporteer de functies

@@ -1,96 +1,151 @@
+import { PrismaClient } from '@prisma/client';
 import { Coach } from '../model/coach';
-import { Ploeg } from '../model/ploeg'; 
+import { Ploeg } from '../model/ploeg';
 import { Speler } from '../model/speler';
-import coachDb from './coach.db';
 
-const coaches = coachDb.getAllCoaches();
-const coach1 = coaches[0];
-const coach2 = coaches[1];
+const prisma = new PrismaClient();
 
-
-const ploegen: Ploeg[] = [];
-
-// Voorbeeld van ploegen
-const ploeg1 = new Ploeg({ niveau: '1e promo', ploegnaam: 'Heren f', spelers: [], coach: coach1 });
-const ploeg2 = new Ploeg({ niveau: 'Liga A', ploegnaam: 'Heren A', spelers: [] ,coach: undefined});
-
-
-// Voeg spelers toe aan de ploegen
-
-const spelers : Speler[] = [];
-
-
-const speler1 =  new Speler({ naam: 'Jan Jansen', spelerlicentie: '0050766', leeftijd: 25});
-const speler2 =  new Speler({ naam: 'Piet Pietersen', spelerlicentie: '0050767', leeftijd: 30 });
-const speler3 =  new Speler({ naam: 'Klaas Klaassen', spelerlicentie: '0050768', leeftijd: 22});
-const speler4 =  new Speler({ naam: 'Lucas Willibal', spelerlicentie: '0050789', leeftijd: 19});
-const speler5 =  new Speler({ naam: 'Vincent Nijsten', spelerlicentie: '0067832', leeftijd: 19});
-const speler6 =  new Speler({ naam: 'jan janssens', spelerlicentie: '0023832', leeftijd: 29});
-
-
-
-//spellers toevoegen aan database
-spelers.push(speler1);
-spelers.push(speler2);
-spelers.push(speler3);
-spelers.push(speler4);
-spelers.push(speler5);
-
-//spelers toevoegen aan ploeg
-ploeg1.addSpeler(speler1);
-ploeg1.addSpeler(speler2);
-ploeg2.addSpeler(speler3);
-
-
-
-
-//ploegen toevoegen aan database
-ploegen.push(ploeg1);
-ploegen.push(ploeg2);
-
-const getAllSpelers = () =>{
-    return spelers;
-}
-
-const getPloegByNaam = ({ ploegnaam }: { ploegnaam: string }): Ploeg | undefined => {
+// Functie om een coach op naam op te halen
+const getCoachByNaam = async (coachnaam: string): Promise<Coach | null> => {
     try {
-        return ploegen.find((ploeg) => ploeg.getPloegnaam() === ploegnaam) || undefined;
+        const coachPrisma = await prisma.coach.findFirst({
+            where: {
+                naam: coachnaam,
+            },
+        });
+        return coachPrisma ? Coach.from(coachPrisma) : null;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };
 
-const getSpelersInPloeg = ({ ploegnaam }: { ploegnaam: string }): Speler[] => {
+// Functie om alle coaches op te halen
+const getAllCoaches = async (): Promise<Coach[]> => {
     try {
-        const ploeg = getPloegByNaam({ ploegnaam });
-        return ploeg ? ploeg.getSpelers() : [];
+        const coachPrisma = await prisma.coach.findMany();
+        return coachPrisma.map((coachPrisma) => Coach.from(coachPrisma));
+    } catch (error) {
+        console.log(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+// Functie om een coach toe te voegen
+// Functie om een coach aan een ploeg toe te voegen
+const addCoach = async (coachLicentie: string, ploegNaam: string) => {
+    try {
+        // Zoek de ploeg op basis van de ploegnaam
+        const ploeg = await prisma.ploeg.findUnique({
+            where: {
+                ploegnaam: ploegNaam,
+            },
+        });
+
+        // Controleer of de ploeg bestaat
+        if (!ploeg) {
+            throw new Error(`Ploeg met naam ${ploegNaam} niet gevonden`);
+        }
+
+        // Update de ploeg met de coachlicentie
+        const updatedPloeg = await prisma.ploeg.update({
+            where: {
+                ploegnaam: ploegNaam,
+            },
+            data: {
+                coachLicentie: coachLicentie,
+            },
+        });
+
+        return Ploeg.from(updatedPloeg);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
+};
+
+// Functie om een ploeg toe te voegen
+const addPloeg = async (ploeg: { ploegnaam: string; niveau: string; coachLicentie?: string | null }): Promise<Ploeg> => {
+    try {
+        const newPloegPrisma = await prisma.ploeg.create({
+            data: {
+                ploegnaam: ploeg.ploegnaam,
+                niveau: ploeg.niveau,
+                coachLicentie: ploeg.coachLicentie || null,
+            },
+        });
+        return Ploeg.from(newPloegPrisma);
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };
 
-const getAllPloegen = (): Ploeg[] => {
-    return ploegen;
+// Functie om een speler toe te voegen
+const addSpeler = async (speler: { naam: string; spelerlicentie: string; leeftijd: number }): Promise<Speler> => {
+    try {
+        const newSpelerPrisma = await prisma.speler.create({
+            data: {
+                naam: speler.naam,
+                spelerLicentie: speler.spelerlicentie,
+                leeftijd: speler.leeftijd,
+            },
+        });
+        return Speler.from(newSpelerPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
 };
 
-const addPloeg = (ploeg: Ploeg) => {
-    ploegen.push(ploeg);
+// Functie om een speler aan een ploeg toe te voegen
+const addSpelerToPloeg = async (spelerLicentie: string, ploegnaam: string) => {
+    try {
+        await prisma.speler.update({
+            where: { spelerLicentie: spelerLicentie },
+            data: {
+                ploegNaam: ploegnaam,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
 };
 
-const addCoach = (coach:Coach, ploeg:Ploeg) => {
-    ploeg.setCoach(coach);
-    
+// Functie om een ploeg op naam op te halen
+const getPloegByNaam = async (ploegnaam: string): Promise<Ploeg | null> => {
+    try {
+        const ploegPrisma = await prisma.ploeg.findUnique({
+            where: {
+                ploegnaam: ploegnaam,
+            },
+        });
+        return ploegPrisma ? Ploeg.from(ploegPrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
 
-
-}
+// Functie om alle ploegen op te halen
+const getAllPloegen = async (): Promise<Ploeg[]> => {
+    try {
+        const ploegPrisma = await prisma.ploeg.findMany();
+        return ploegPrisma.map((ploegPrisma) => Ploeg.from(ploegPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
 
 export default {
-    getPloegByNaam,
-    getSpelersInPloeg,
-    getAllPloegen,
+    getCoachByNaam,
+    getAllCoaches,
+    addCoach,
     addPloeg,
-    getAllSpelers,
-    addCoach
+    addSpeler,
+    addSpelerToPloeg,
+    getPloegByNaam,
+    getAllPloegen,
 };

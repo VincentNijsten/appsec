@@ -1,27 +1,36 @@
 import { Ploeg } from "./ploeg";
+import { Coach as CoachPrisma, Speler as SpelerPrisma, Ploeg as PloegPrisma } from '@prisma/client';
+
 
 export class Speler {
     public naam!: string;
-    public spelerlicentie!: string;
+    public spelerLicentie!: string;
     public leeftijd!: number;
+    public ploegNaam!: string |null;
     
 
-    constructor(speler:{naam: string, spelerlicentie: string, leeftijd: number}) {
+    constructor(speler:{naam: string, spelerLicentie: string, leeftijd: number,ploegNaam: string| null;}) {
         this.setNaam(speler.naam);
-        this.setSpelerlicentie(speler.spelerlicentie);
+        this.setspelerLicentie(speler.spelerLicentie);
         this.setLeeftijd(speler.leeftijd);
+        this.setPloegNaam(speler.ploegNaam);
     }
 
     public getNaam(): string {
         return this.naam;
     }
 
-    public getSpelerlicentie(): string {
-        return this.spelerlicentie;
+    public getspelerLicentie(): string {
+        return this.spelerLicentie;
     }
 
     public getLeeftijd(): number {
         return this.leeftijd;
+    }
+
+    public setPloegNaam(ploegNaam: string |null) {
+        this.ploegNaam = ploegNaam;
+
     }
 
 
@@ -33,13 +42,13 @@ export class Speler {
         this.naam = naam;
     }
 
-    public setSpelerlicentie(spelerlicentie: string) {
+    public setspelerLicentie(spelerLicentie: string) {
         const licentieRegex = /^[0-9]{7}$/; // Reguliere expressie voor zeven cijfers
 
-        if (!spelerlicentie.match(licentieRegex)) {
+        if (!spelerLicentie.match(licentieRegex)) {
             throw new Error('Coachlicentie moet uit zeven cijfers bestaan.');
         }
-        this.spelerlicentie = spelerlicentie;
+        this.spelerLicentie = spelerLicentie;
     }
 
     public setLeeftijd(leeftijd: number) {
@@ -47,6 +56,16 @@ export class Speler {
             throw new Error('Leeftijd moet een geldig getal zijn tussen 0 en 120.');
         }
         this.leeftijd = leeftijd;
+    }
+
+
+
+
+
+    static from({ naam, spelerLicentie, leeftijd, ploegNaam }: SpelerPrisma) {
+        return new Speler({
+            naam, spelerLicentie, leeftijd, ploegNaam
+        });
     }
 
    

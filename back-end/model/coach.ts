@@ -1,15 +1,14 @@
-import { Ploeg } from "./ploeg"; 
+import { Coach as CoachPrisma} from '@prisma/client';
 
 export class Coach {
   
-    
     public naam!: string; 
-    public coachlicentie!: string; 
+    public coachLicentie!: string; 
 
-    constructor(coach:{naam: string, coachlicentie: string}) {
+    constructor(coach:{naam: string, coachLicentie: string}) {
        
         this.setNaam(coach.naam);
-        this.setCoachlicentie(coach.coachlicentie);
+        this.setCoachlicentie(coach.coachLicentie);
     }
 
     // Getters
@@ -18,7 +17,7 @@ export class Coach {
     }
 
     public getCoachlicentie(): string {
-        return this.coachlicentie;
+        return this.coachLicentie;
     }
 
     // Setters
@@ -29,12 +28,28 @@ export class Coach {
         this.naam = naam;
     }
 
-    public setCoachlicentie(coachlicentie: string) {
+    public setCoachlicentie(coachLicentie: string) {
         const licentieRegex = /^[0-9]{7}$/; // Reguliere expressie voor zeven cijfers
 
-        if (!coachlicentie.match(licentieRegex)) {
+        if (!coachLicentie.match(licentieRegex)) {
             throw new Error('Coachlicentie moet uit zeven cijfers bestaan.');
         }
-        this.coachlicentie = coachlicentie;
+        this.coachLicentie = coachLicentie;
+    }
+
+
+
+    static from({
+       naam,
+       coachLicentie
+
+    }: CoachPrisma 
+        
+    ) {
+        return new Coach({
+            naam,
+            coachLicentie
+
+        });
     }
 }

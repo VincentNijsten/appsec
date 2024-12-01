@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Speler {
+  spelerLicentie String  @id @unique
+  naam           String
+  leeftijd       Int
+  Ploeg          Ploeg?  @relation(fields: [ploegNaam], references: [ploegnaam])
+  ploegNaam String?
+}
+
+model Coach {
+  coachLicentie String  @id @unique
+  naam          String
+  ploegen       Ploeg[] @relation("PloegCoach")
+}
+
+model Ploeg {
+  ploegnaam          String            @id @unique
+  niveau             String
+  spelers            Speler[]
+  coach              Coach?            @relation("PloegCoach", fields: [coachLicentie], references: [coachLicentie])
+  coachLicentie      String?
+  TrainingSession    TrainingSession[]
+}
+
+model TrainingSession {
+  id             String   @id @unique @default(cuid())
+  ploeg          Ploeg    @relation(fields: [ploegNaam], references: [ploegnaam])
+  zaal           Zaal     @relation(fields: [zaalNaam], references: [naam])
+  datum          DateTime
+  startTijd      String
+  eindTijd       String
+  ploegNaam      String
+  zaalNaam       String
+}
+
+model Zaal {
+  naam            String            @id @unique
+  address         String
+  beschikbaarheid Boolean           @default(true)
+  TrainingSession TrainingSession[]
+}

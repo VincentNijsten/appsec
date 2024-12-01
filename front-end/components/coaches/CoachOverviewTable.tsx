@@ -20,7 +20,7 @@ const CoachOverviewTable: React.FC<Props> = ({coaches}: Props) => {
                         {coaches.map((coach, index) => (
                             <tr key={index}>
                                 <td>{coach.naam}</td>
-                                <td>{coach.coachlicentie}</td>
+                                <td>{coach.coachLicentie}</td>
                             </tr>
                         ))}
                     </tbody>

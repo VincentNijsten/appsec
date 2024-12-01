@@ -1,21 +1,15 @@
-import { Zaal } from '../model/zaal'; // Zorg ervoor dat je het juiste pad naar de Zaal klasse gebruikt
+import { PrismaClient } from '@prisma/client';
+import { Zaal } from '../model/zaal';
 
-
-const zalen : Zaal[] = [];
-
-
-
-// Voorbeeld van zalen
-const zaal1 = new Zaal({naam:'haasrode zaal 1', address:'schapenstraat 141', beschikbaarheid:true}); 
-const zaal2 = new Zaal({naam:'haasrode zaal 2', address:'schapenstraat 141', beschikbaarheid:false}); 
-
-zalen.push(zaal1);
-zalen.push(zaal2);
+const prisma = new PrismaClient();
 
 // Functie om een zaal op naam te vinden
-const getZaalByNaam = ({ naam }: { naam: string }): Zaal | null => {
+const getZaalByNaam = async (naam: string): Promise<Zaal | null> => {
     try {
-        return zalen.find((zaal) => zaal.getNaam() === naam) || null;
+        const zaalData = await prisma.zaal.findUnique({
+            where: { naam }
+        });
+        return zaalData ? Zaal.from(zaalData) : null;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');
@@ -23,10 +17,10 @@ const getZaalByNaam = ({ naam }: { naam: string }): Zaal | null => {
 };
 
 // Functie om alle zalen op te halen
-const getAllZalen = (): Zaal[] => {
-    
+const getAllZalen = async (): Promise<Zaal[]> => {
     try {
-        return zalen; // Retourneer de lijst van zalen
+        const zalenData = await prisma.zaal.findMany();
+        return zalenData.map(zaal => Zaal.from(zaal));
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');
@@ -34,9 +28,17 @@ const getAllZalen = (): Zaal[] => {
 };
 
 // Functie om een zaal toe te voegen
-const addZaal = (zaal: Zaal): void => {
+const addZaal = async (zaal: Zaal): Promise<Zaal> => {
     try {
-        console.log(`Zaal ${zaal.getNaam()} toegevoegd.`);
+        const newZaal = await prisma.zaal.create({
+            data: {
+                naam: zaal.getNaam(),
+                address: zaal.getAddress(),
+                beschikbaarheid: zaal.getBeschikbaarheid(),
+            }
+        });
+        console.log(`Zaal ${newZaal.naam} toegevoegd.`);
+        return Zaal.from(newZaal);
     } catch (error) {
         console.error(error);
         throw new Error('Database error. See server log for details.');

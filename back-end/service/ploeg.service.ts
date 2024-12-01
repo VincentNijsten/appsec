@@ -4,17 +4,16 @@ import { Speler } from "../model/speler";
 import spelerDb from "../repository/speler.db";
 import spelerService from "./speler.service";
 import coachDb from "../repository/coach.db";
-import { error } from "console";
 import { PloegInput } from "../types";
 
 // Functie om alle ploegen op te halen
-const getAllPloegen = (): Ploeg[] => {
-    return ploegDb.getAllPloegen();
+const getAllPloegen = async (): Promise<Ploeg[]> => {
+    return await ploegDb.getAllPloegen();
 }
 
 // Functie om een ploeg op naam op te halen
-const getPloegByNaam = (ploegnaam: string): Ploeg | null => {
-    const ploeg = ploegDb.getPloegByNaam({ ploegnaam });
+const getPloegByNaam = async (ploegnaam: string): Promise<Ploeg | null> => {
+    const ploeg = await ploegDb.getPloegByNaam(ploegnaam);
 
     if (ploeg == null) {
         throw new Error('Deze ploeg kan niet gevonden worden');
@@ -23,48 +22,26 @@ const getPloegByNaam = (ploegnaam: string): Ploeg | null => {
     }
 }
 
-const getSpelersInPloeg = (ploegnaam: string):Speler[]=>{
-    return ploegDb.getSpelersInPloeg({ploegnaam});
-}
-
 // Functie om een ploeg toe te voegen
-const addPloeg = ({ploegnaam,niveau, coach:coachInput}: PloegInput) => {
-    const exists = ploegDb.getPloegByNaam({ploegnaam});
+const addPloeg = async ({ ploegnaam, niveau, coachLicentie }: PloegInput): Promise<string> => {
+    const exists = await ploegDb.getPloegByNaam(ploegnaam);
     if (exists) {
-        throw new Error(`de ploeg met naam ${ploegnaam} bestaat al`)
+        throw new Error(`De ploeg met naam ${ploegnaam} bestaat al`);
     }
-    
-    let coach;
-    if(coachInput){
-        coach = coachDb.getCoachByCoachLicentie(coachInput.coachlicentie);
-        if(!coach){
-            throw new Error(`er is een fout met de licentie : ${coachInput.coachlicentie} opgetreden`)
-
-        }
-    };
-
-
-     
     const newPloeg = new Ploeg({
         ploegnaam, 
         niveau, 
-        spelers:[], 
-        coach
+        coachLicentie
     });
 
-    ploegDb.addPloeg(newPloeg);
+    await ploegDb.addPloeg(newPloeg);
     return `${ploegnaam} is succesvol toegevoegd`;
 }
-//funtie om speler toe te voegen aan ploeg
 
-const addSpelerToPloeg = (ploegnaam: string, spelerslicentie: string) => {
-    console.log(`Zoeken naar ploeg: ${ploegnaam}`);
-    const ploeg = ploegDb.getPloegByNaam({ ploegnaam });
-    console.log(`Gevonden ploeg: ${ploeg}`);
-
-    console.log(`Zoeken naar speler met licentie: ${spelerslicentie}`);
-    const speler = spelerService.getSpelerByLicentie(spelerslicentie);
-    console.log(`Gevonden speler: ${speler}`);
+// Functie om een speler aan een ploeg toe te voegen
+const addSpelerToPloeg = async (ploegnaam: string, spelerslicentie: string): Promise<string> => {
+    const ploeg = await ploegDb.getPloegByNaam(ploegnaam);
+    const speler = await spelerService.getSpelerByLicentie(spelerslicentie);
 
     if (!ploeg) {
         throw new Error('Ploeg niet gevonden');
@@ -73,39 +50,36 @@ const addSpelerToPloeg = (ploegnaam: string, spelerslicentie: string) => {
         throw new Error('Speler niet gevonden');
     }
 
-    // Controleer of de speler al in de ploeg zit
-    const spelerAlInPloeg = ploeg.spelers.some(existingSpeler => existingSpeler.getSpelerlicentie() === spelerslicentie);
-    if (spelerAlInPloeg) {
-        throw new Error('Speler is al toegevoegd aan deze ploeg');
-    }
-
     // Controleer of de speler al in een andere ploeg speelt
-    const allePloegen = ploegDb.getAllPloegen(); // Veronderstel dat je een functie hebt om alle ploegen op te halen
-    const anderePloeg = allePloegen.find(anderPloeg => 
-        anderPloeg.spelers.some(existingSpeler => existingSpeler.getSpelerlicentie() === spelerslicentie)
-    );
-
-    if (anderePloeg && anderePloeg.getPloegnaam() !== ploegnaam) {
-        throw new Error(`De speler ${speler.getNaam()} speelt al in de ploeg ${anderePloeg.getPloegnaam()}`);
+    if (speler.ploegNaam && speler.ploegNaam !== ploegnaam) {
+        throw new Error(`De speler ${speler.naam} speelt al in de ploeg ${speler.ploegNaam}`);
     }
 
-    ploeg.spelers.push(speler); 
-    return ploeg; 
+    // Update de ploegnaam van de speler
+    speler.ploegNaam = ploegnaam;
+
+    // Update de speler in de database
+    await spelerDb.updateSpeler(speler.spelerLicentie, speler); 
+
+    return `Speler ${speler.naam} is succesvol toegevoegd aan ploeg ${ploegnaam}`;
 };
 
-const addCoach = (coachLicentie: string, ploegnaam: string) => {
-    const ploeg = ploegDb.getAllPloegen().find(p => p.getPloegnaam() === ploegnaam);
-    const coach = coachDb.getAllCoaches().find(c => c.getCoachlicentie() === coachLicentie);
-    if(!ploeg){
-        throw new Error ('ploeg niet gevonden')
+// Functie om een coach aan een ploeg toe te voegen
+const addCoach = async (coachLicentie: string, ploegnaam: string): Promise<string> => {
+    const ploeg = await ploegDb.getPloegByNaam(ploegnaam);
+    const coach = await coachDb.getCoachByCoachLicentie(coachLicentie);
+    
+    if (!ploeg) {
+        throw new Error('Ploeg niet gevonden');
     }
-    if(!coach){
-        throw new Error('coach niet gevonden')
+    if (!coach) {
+        throw new Error('Coach niet gevonden');
     }
-    ploegDb.addCoach(coach,ploeg);
+    
+    await ploegDb.addCoach(coachLicentie, ploegnaam);
     return `Coach: ${coach.naam} is succesvol toegevoegd aan ploeg: ${ploegnaam}`;
- 
-}
+};
+
 
 
 // Exporteer de functies
@@ -113,7 +87,7 @@ export default {
     getAllPloegen,
     getPloegByNaam,
     addPloeg,
-    getSpelersInPloeg,
     addSpelerToPloeg,
-    addCoach
-}
+    addCoach,
+   
+};

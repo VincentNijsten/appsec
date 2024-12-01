@@ -1,7 +1,5 @@
-import express from 'express';
-import spelersDb from '../repository/speler.db'; // Zorg ervoor dat je het juiste pad naar je spelers.db.ts bestand gebruikt
+import express, { NextFunction, Request, Response } from 'express';
 import spelerService from '../service/speler.service'; // Zorg ervoor dat je het juiste pad naar de speler service gebruikt
-import { Speler } from '../model/speler'; // Zorg ervoor dat je het juiste pad naar de Speler klasse gebruikt
 import { SpelerInput } from '../types';
 
 const spelersRouter = express.Router();
@@ -42,10 +40,10 @@ const spelersRouter = express.Router();
  *       500:
  *         description: Fout bij het ophalen van spelers
  */
-spelersRouter.get('/', (req, res) => {
+spelersRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const spelers = spelersDb.getAllSpelers();
-        res.json(spelers);
+        const spelers = await spelerService.getAllSpelers();
+        res.status(200).json(spelers);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error retrieving players' });

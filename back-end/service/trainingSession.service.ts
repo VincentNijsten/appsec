@@ -6,16 +6,17 @@ import ploegDb from "../repository/ploeg.db";
 import zaalDb from "../repository/zaal.db";
 
 // Functie om alle trainingssessies op te halen
-const getAllTrainingSessions = (): TrainingSession[] => {
-    if(trainingSessionsDb.getAllTrainingSessions().length === 0) {
+const getAllTrainingSessions = async (): Promise<TrainingSession[]> => {
+    const sessions = await trainingSessionsDb.getAllTrainingSessions();
+    if (sessions.length === 0) {
         throw new Error("No training sessions");
     }
-    return trainingSessionsDb.getAllTrainingSessions();
+    return sessions;
 }
 
 // Functie om een trainingssessie op basis van ploegnaam op te halen
-const getTrainingSessionByPloegNaam = (ploegnaam: string): TrainingSession | null => {
-    const session = trainingSessionsDb.getTrainingSessionByPloegNaam({ ploegnaam });
+const getTrainingSessionByPloegNaam = async (ploegnaam: string): Promise<TrainingSession | null> => {
+    const session = await trainingSessionsDb.getTrainingSessionByPloegNaam(ploegnaam);
 
     if (session == null) {
         throw new Error('Deze trainingssessie kan niet gevonden worden');
@@ -23,16 +24,18 @@ const getTrainingSessionByPloegNaam = (ploegnaam: string): TrainingSession | nul
         return session;
     }
 }
+
 // Functie om een trainingssessie toe te voegen
-const addTrainingSession = (trainingSessionData: {
+const addTrainingSession = async (trainingSessionData: {
+    id: string,
     ploegnaam: string;
     zaalnaam: string;
     datum: Date;
     startTijd: string;
     eindTijd: string;
 }) => {
-    const ploeg = ploegDb.getAllPloegen().find(p => p.getPloegnaam() === trainingSessionData.ploegnaam);
-    const zaal = zaalDb.getAllZalen().find(z => z.getNaam() === trainingSessionData.zaalnaam);
+    const ploeg = await ploegDb.getAllPloegen().then(ploegen => ploegen.find(p => p.getPloegnaam() === trainingSessionData.ploegnaam));
+    const zaal = await zaalDb.getAllZalen().then(zalen => zalen.find(z => z.getNaam() === trainingSessionData.zaalnaam));
 
     if (!ploeg) {
         throw new Error(`Ploeg met naam ${trainingSessionData.ploegnaam} niet gevonden.`);
@@ -47,7 +50,7 @@ const addTrainingSession = (trainingSessionData: {
     const eindTijd = new Date(`${trainingSessionData.datum.toISOString().split('T')[0]}T${trainingSessionData.eindTijd}`);
 
     // Controleer of de zaal al bezet is in de opgegeven tijd
-    const bestaandeTrainingen = trainingSessionsDb.getTrainingSessionsByZaal(zaal);
+    const bestaandeTrainingen = await trainingSessionsDb.getTrainingSessionsByZaal(zaal.getNaam());
     for (const training of bestaandeTrainingen) {
         const trainingStart = new Date(training.datum);
         const trainingEind = new Date(training.datum);
@@ -62,25 +65,23 @@ const addTrainingSession = (trainingSessionData: {
 
     // Maak een nieuwe instantie van TrainingSession
     const newSession = new TrainingSession({
-        ploeg: ploeg,
-        zaal: zaal,
+        id: trainingSessionData.id,
+        ploegNaam: ploeg.getPloegnaam(),
+        zaalNaam: zaal.getNaam(),
         datum: trainingSessionData.datum,
         startTijd: trainingSessionData.startTijd,
         eindTijd: trainingSessionData.eindTijd
     });
 
     // Voeg de nieuwe sessie toe aan de database
-    trainingSessionsDb.addTrainingSession(newSession);
+    await trainingSessionsDb.addTrainingSession(newSession);
 
     return "Training succesvol toegevoegd";
 };
 
-
-
-
-// Functie om een trainingssessie te verwijderen op basis van index
-const removeTrainingSession = (index: number): string => {
-    const success = trainingSessionsDb.removeTrainingSession(index);
+// Functie om een trainingssessie te verwijderen op basis van ID
+const removeTrainingSession = async (id: string): Promise<string> => {
+    const success = await trainingSessionsDb.removeTrainingSession(id);
     if (success) {
         return "Training sessie succesvol verwijderd";
     } else {
