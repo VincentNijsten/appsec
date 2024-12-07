@@ -10,6 +10,7 @@ import styles from "@/styles/Home.module.css";
 import Head from "next/head";
 import CoachService from "@/services/CoachService";
 import SpelerService from "@/services/SpelerService";
+import UpdatePloeg from "@/components/ploegen/UpdatePLoeg";
 
 const Ploegen: React.FC = () => {
     const [ploegen, setPloegen] = useState<Array<Ploeg>>([]);
@@ -56,6 +57,14 @@ const Ploegen: React.FC = () => {
         setPloegen(prevPloegen => prevPloegen.filter(ploeg => ploeg.ploegnaam !== ploegnaam));
     };
 
+    const handlePloegUpdated = (updatedPloeg: Ploeg) => {
+        setPloegen(prevPloegen => prevPloegen.map(ploeg => ploeg.ploegnaam === updatedPloeg.ploegnaam ? updatedPloeg : ploeg));
+    };
+
+    const handleSpelerAddedToPloeg = (ploegnaam: string, spelerLicentie: string) => {
+        // Update the state or perform any necessary actions after adding a player to a team
+    };
+
     const handleSelectedPloeg = (ploeg: Ploeg) => {
         setSelectedPloeg(ploeg);
     };
@@ -96,6 +105,11 @@ const Ploegen: React.FC = () => {
                     <h3>Verwijder een ploeg</h3>
                     <DeletePloeg onPloegDeleted={handlePloegDeleted} ploegen={ploegen} />
                 </section>
+                <section className={styles.formcontainer}>
+                    <h3>Update een ploeg</h3>
+                    <UpdatePloeg onPloegUpdated={handlePloegUpdated} ploegen={ploegen} />
+                </section>
+               
             </main>
         </>
     );

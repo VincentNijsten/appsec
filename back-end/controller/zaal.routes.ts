@@ -127,4 +127,82 @@ zaalRouter.post('/', (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /zalen/{naam}:
+ *   put:
+ *     summary: Update een zaal
+ *     tags: [Zalen]
+ *     parameters:
+ *       - in: path
+ *         name: naam
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: De naam van de zaal die bijgewerkt moet worden
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ZaalInput'
+ *     responses:
+ *       200:
+ *         description: Zaal succesvol bijgewerkt
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Zaal'
+ *       400:
+ *         description: Fout bij het bijwerken van de zaal
+ *       500:
+ *         description: Fout bij het bijwerken van de zaal
+ */
+zaalRouter.put('/:naam', async (req, res) => {
+    const { naam } = req.params;
+    const zaalData = <Partial<ZaalInput>>req.body;
+    try {
+        const updatedZaal = await zaalService.updateZaal(naam, zaalData);
+        res.status(200).json(updatedZaal);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: 'Error updating room' });
+    }
+});
+
+
+/**
+ * @swagger
+ * /zalen/{naam}:
+ *   delete:
+ *     summary: Verwijder een zaal
+ *     tags: [Zalen]
+ *     parameters:
+ *       - in: path
+ *         name: naam
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: De naam van de zaal die verwijderd moet worden
+ *     responses:
+ *       200:
+ *         description: Zaal succesvol verwijderd
+ *       400:
+ *         description: Fout bij het verwijderen van de zaal
+ *       500:
+ *         description: Fout bij het verwijderen van de zaal
+ */
+zaalRouter.delete('/:naam', async (req, res) => {
+    const { naam } = req.params;
+    try {
+        await zaalService.deleteZaal(naam);
+        res.status(200).json({ message: 'Zaal succesvol verwijderd' });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: 'Error deleting room' });
+    }
+});
+
+
 export { zaalRouter };

@@ -34,9 +34,32 @@ const addZaal = async ({ naam, address, beschikbaarheid }: ZaalInput): Promise<s
     return `Zaal: ${naam} succesvol toegevoegd op adres: ${address}`;
 }
 
-// Exporteer de functies
+
+// Functie om een zaal bij te werken
+const updateZaal = async (naam: string, zaalData: Partial<Zaal>): Promise<Zaal> => {
+    const exist = await zaalDb.getZaalByNaam(naam);
+    if (!exist) {
+        throw new Error(`De zaal met naam ${naam} bestaat niet`);
+    }
+
+    return await zaalDb.updateZaal(naam, zaalData);
+}
+
+// Functie om een zaal te verwijderen
+const deleteZaal = async (naam: string): Promise<void> => {
+    const exist = await zaalDb.getZaalByNaam(naam);
+    if (!exist) {
+        throw new Error(`De zaal met naam ${naam} bestaat niet`);
+    }
+
+    await zaalDb.deleteZaal(naam);
+}
+
+
 export default {
     getAllZalen,
     getZaalByNaam,
-    addZaal
+    addZaal,
+    updateZaal,
+    deleteZaal
 }

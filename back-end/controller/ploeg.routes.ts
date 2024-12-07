@@ -179,99 +179,8 @@ ploegRouter.post('/', (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /ploegen/{ploegnaam}/{spelerslicentie}:
- *   put:
- *     summary: Voeg een speler toe aan een ploeg op basis van spelerslicentie
- *     tags: [Ploegen]
- *     parameters:
- *       - in: path
- *         name: ploegnaam
- *         required: true
- *         description: De naam van de ploeg waaraan je een speler wilt toevoegen
- *         schema:
- *           type: string
- *       - in: path
- *         name: spelerslicentie
- *         required: true
- *         description: De spelerslicentie van de speler die je wilt toevoegen
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Speler succesvol toegevoegd aan de ploeg
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Ploeg'
- *       404:
- *         description: Ploeg of speler niet gevonden
- *       500:
- *         description: Fout bij het toevoegen van de speler aan de ploeg
- */
-ploegRouter.put('/:ploegnaam/:spelerslicentie', (req, res) => {
-    const ploegnaam = req.params.ploegnaam;
-    const spelerslicentie = req.params.spelerslicentie; 
-
-    console.log(`Zoeken naar ploeg: ${ploegnaam}`);
-    console.log(`Zoeken naar speler met licentie: ${spelerslicentie}`);
-
-    try {
-        const updatedPloeg = ploegService.addSpelerToPloeg(ploegnaam, spelerslicentie);
-        res.json(updatedPloeg);
-    } catch (error) {
-        console.error(error);
-  
-    }
-});
-
-/**
- * @swagger
- * /ploegen/add-coach/{coachLicentie}/{ploegnaam}:
- *   put:
- *     summary: Add a coach to a team
- *     description: Adds a coach to a specified team using the coach's license and team name.
- *     tags: [Ploegen]
- *     parameters:
- *       - name: coachLicentie
- *         in: path
- *         required: true
- *         description: The license of the coach to be added.
- *         schema:
- *           type: string
- *       - name: ploegnaam
- *         in: path
- *         required: true
- *         description: The name of the team to which the coach will be added.
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Coach successfully added to the team.
- *         content:
- *           application/json:
- *             schema:
- *               type: string
- *       400:
- *         description: Bad request, either the team or coach was not found.
- *         content:
- *           application/json:
- *             schema:
- *               type: string
- */
 
 
-ploegRouter.put('/add-coach/:coachLicentie/:ploegnaam', (req, res) => {
-    const { coachLicentie, ploegnaam } = req.params;
-
-    try {
-        const result = ploegService.addCoach(coachLicentie, ploegnaam);
-        res.status(200).send(result);
-    } catch (error) {
-        res.status(400).send(error);
-    }
-});
 
 
 
@@ -305,4 +214,53 @@ ploegRouter.delete('/:ploegnaam', async (req, res) => {
         res.status(400).json({ message: 'Error deleting team' });
     }
 });
+
+
+/**
+ * @swagger
+ * /ploegen/{ploegnaam}:
+ *   put:
+ *     summary: Update een ploeg
+ *     tags: [Ploegen]
+ *     parameters:
+ *       - in: path
+ *         name: ploegnaam
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: De naam van de ploeg die bijgewerkt moet worden
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PloegInput'
+ *     responses:
+ *       200:
+ *         description: Ploeg succesvol bijgewerkt
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ploeg'
+ *       400:
+ *         description: Fout bij het bijwerken van de ploeg
+ *       500:
+ *         description: Fout bij het bijwerken van de ploeg
+ */
+ploegRouter.put('/:ploegnaam', async (req, res) => {
+    const { ploegnaam } = req.params;
+    const ploegData = <Partial<PloegInput>>req.body;
+    try {
+        const updatedPloeg = await ploegService.updatePloeg(ploegnaam, ploegData);
+        res.status(200).json(updatedPloeg);
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating team' });
+    }
+});
+
+
+
+
+
+
 export { ploegRouter };
