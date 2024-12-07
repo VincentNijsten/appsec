@@ -50,9 +50,29 @@ const addCoach = async ({ naam, coachLicentie }: CoachInput): Promise<string> =>
     return 'Succes';
 };
 
+// Functie om een coach bij te werken
+const updateCoach = async (coachLicentie: string, coachData: Partial<Coach>): Promise<string> => {
+    try {
+        // Zoek de coach op basis van de coachlicentie
+        const coach = await coachDb.getCoachByCoachLicentie(coachLicentie);
+
+        // Controleer of de coach bestaat
+        if (coach) {
+            await coachDb.updateCoach(coachLicentie, coachData); 
+            return "Coach succesvol bijgewerkt"; 
+        } else {
+            throw new Error('Coach niet gevonden');
+        }
+        
+    } catch (error) {
+        throw new Error('Coach bijwerken mislukt');
+    }
+}
+
 export default {
     getAllCoaches,
     getCoachByNaam,
     removeCoach,
-    addCoach
+    addCoach,
+    updateCoach,
 };

@@ -273,4 +273,36 @@ ploegRouter.put('/add-coach/:coachLicentie/:ploegnaam', (req, res) => {
     }
 });
 
+
+
+/**
+ * @swagger
+ * /ploegen/{ploegnaam}:
+ *   delete:
+ *     summary: Verwijder een ploeg
+ *     tags: [Ploegen]
+ *     parameters:
+ *       - in: path
+ *         name: ploegnaam
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: De naam van de ploeg die verwijderd moet worden
+ *     responses:
+ *       200:
+ *         description: Ploeg succesvol verwijderd
+ *       400:
+ *         description: Fout bij het verwijderen van de ploeg
+ *       500:
+ *         description: Fout bij het verwijderen van de ploeg
+ */
+ploegRouter.delete('/:ploegnaam', async (req, res) => {
+    const { ploegnaam } = req.params;
+    try {
+        await ploegService.verwijderPloeg(ploegnaam);
+        res.status(200).json({ message: 'Ploeg succesvol verwijderd' });
+    } catch (error) {
+        res.status(400).json({ message: 'Error deleting team' });
+    }
+});
 export { ploegRouter };

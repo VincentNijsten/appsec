@@ -160,4 +160,86 @@ spelersRouter.post('/', (req, res) => {
     }
 });
 
+
+
+/**
+* @swagger
+* /spelers/{spelerLicentie}:
+*   delete:
+*     summary: Verwijder een speler
+*     tags: [Spelers]
+*     parameters:
+*       - in: path
+*         name: spelerLicentie
+*         schema:
+*           type: string
+*         required: true
+*         description: De licentie van de speler die verwijderd moet worden
+*     responses:
+*       200:
+*         description: Speler succesvol verwijderd
+*       400:
+*         description: Fout bij het verwijderen van de speler
+*       500:
+*         description: Fout bij het verwijderen van de speler
+*/
+spelersRouter.delete('/:spelerLicentie', async (req, res) => {
+   const { spelerLicentie } = req.params;
+   try {
+       await spelerService.removeSpeler(spelerLicentie);
+       res.status(200).json({ message: 'Speler succesvol verwijderd' });
+   } catch (error) {
+       console.error(error);
+       res.status(400).json({ message: 'Error deleting player' });
+   }
+});
+
+
+
+
+/**
+ * @swagger
+ * /spelers/{spelerLicentie}:
+ *   put:
+ *     summary: Update een speler
+ *     tags: [Spelers]
+ *     parameters:
+ *       - in: path
+ *         name: spelerLicentie
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: De licentie van de speler die bijgewerkt moet worden
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SpelerInput'
+ *     responses:
+ *       200:
+ *         description: Speler succesvol bijgewerkt
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Speler'
+ *        400:
+ *         description: Fout bij het bijwerken van de speler
+ *       500:
+ *         description: Fout bij het bijwerken van de speler
+ */
+
+spelersRouter.put('/:spelerLicentie', async (req, res) => {
+    const { spelerLicentie } = req.params;
+    const spelerData = <Partial<SpelerInput>>req.body;
+    try {
+        const updatedSpeler = await spelerService.updateSpeler(spelerLicentie, spelerData);
+        res.status(200).json(updatedSpeler);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: 'Error updating player' });
+    }
+});
+  
+  
 export { spelersRouter };

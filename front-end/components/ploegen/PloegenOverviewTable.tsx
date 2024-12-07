@@ -1,15 +1,17 @@
 import React from "react";
-import { Ploeg, Speler, Coach } from "@/types"; // Zorg ervoor dat je ook het Speler type importeert
-
+import { Ploeg, Speler, Coach } from "@/types";
 
 type Props = {
     ploegen: Array<Ploeg>;
-    spelers?: Array<Speler>; 
+    spelers?: Array<Speler>;
     coaches?: Array<Coach>;
     selectPloeg: (ploeg: Ploeg) => void;
 };
 
-const PloegenOverviewTable: React.FC<Props> = ({ ploegen, spelers,coaches, selectPloeg }: Props) => {
+const PloegenOverviewTable: React.FC<Props> = ({ ploegen, spelers = [], coaches = [], selectPloeg }: Props) => {
+    console.log("Ploegen:", ploegen);
+    console.log("Spelers:", spelers);
+    console.log("Coaches:", coaches);
     return (
         <>
             {ploegen && (
@@ -30,20 +32,21 @@ const PloegenOverviewTable: React.FC<Props> = ({ ploegen, spelers,coaches, selec
                                 <td>
                                     <ul>
                                         {spelers
-                                            ?.filter(speler => speler.ploegNaam === ploeg.ploegnaam) 
+                                            .filter(speler => speler.ploegNaam === ploeg.ploegnaam)
                                             .map(speler => (
                                                 <li key={speler.spelerLicentie}>{speler.naam}</li>
                                             ))}
                                     </ul>
                                 </td>
-                                <td>  <ul>
+                                <td>
+                                    <ul>
                                         {coaches
-                                            ?.filter(coach => coach.coachLicentie === ploeg.coachLicentie) 
+                                            .filter(coach => coach.coachLicentie === ploeg.coachLicentie)
                                             .map(coach => (
                                                 <li key={coach.coachLicentie}>{coach.naam}</li>
                                             ))}
                                     </ul>
-                                    </td>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

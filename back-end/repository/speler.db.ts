@@ -52,7 +52,7 @@ const addSpeler = async (speler: Speler): Promise<Speler> => {
                 naam: speler.naam,
                 spelerLicentie: speler.spelerLicentie,
                 leeftijd: speler.leeftijd,
-                ploegNaam: speler.ploegNaam, // Voeg ploegnaam toe
+                ploegNaam: speler.ploegNaam, 
             },
         });
         return Speler.from(newSpelerPrisma);
@@ -82,10 +82,26 @@ const updateSpeler = async (licentie: string, spelerData: Partial<Speler>): Prom
     }
 };
 
+// Functie om een speler te verwijderen
+const deleteSpeler = async (licentie: string): Promise<void> => {
+    try {
+        await prisma.speler.delete({
+            where: {
+                spelerLicentie: licentie,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
+};
+
+
 export default {
     getSpelerByLicentie,
     getAllSpelers,
     getSpelerByNaam,
     addSpeler,
-    updateSpeler, // Voeg de update functie toe aan de export
+    updateSpeler, 
+    deleteSpeler,
 };

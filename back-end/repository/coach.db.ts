@@ -70,10 +70,31 @@ const removeCoach = async (coachlicentie: string): Promise<void> => {
     }
 };
 
+// Functie om een coach bij te werken
+const updateCoach = async (coachLicentie: string, coachData: Partial<Coach>): Promise<Coach> => {
+    try {
+        const updatedCoachPrisma = await database.coach.update({
+            where: {
+                coachLicentie: coachLicentie,
+            },
+            data: {
+                naam: coachData.naam,
+            },
+        });
+        return Coach.from(updatedCoachPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+
+
 export default {
     getCoachByNaam,
     getAllCoaches,
     addCoach,
     getCoachByCoachLicentie,
     removeCoach,
+    updateCoach,
 };

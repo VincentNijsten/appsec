@@ -138,6 +138,17 @@ const getAllPloegen = async (): Promise<Ploeg[]> => {
         throw new Error('Database error. See server log for details.');
     }
 };
+const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
+    try {
+        await prisma.ploeg.delete({
+            where: { ploegnaam: ploegnaam },
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 
 export default {
     getCoachByNaam,
@@ -148,4 +159,5 @@ export default {
     addSpelerToPloeg,
     getPloegByNaam,
     getAllPloegen,
+    verwijderPloeg,
 };

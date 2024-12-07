@@ -79,7 +79,14 @@ const addCoach = async (coachLicentie: string, ploegnaam: string): Promise<strin
     await ploegDb.addCoach(coachLicentie, ploegnaam);
     return `Coach: ${coach.naam} is succesvol toegevoegd aan ploeg: ${ploegnaam}`;
 };
-
+// Functie om een ploeg te verwijderen
+const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
+    const exists = await ploegDb.getPloegByNaam(ploegnaam);
+    if (!exists) {
+        throw new Error(`De ploeg met naam ${ploegnaam} bestaat niet`);
+    }
+    await ploegDb.verwijderPloeg(ploegnaam);
+}
 
 
 // Exporteer de functies
@@ -89,5 +96,5 @@ export default {
     addPloeg,
     addSpelerToPloeg,
     addCoach,
-   
+    verwijderPloeg,
 };
