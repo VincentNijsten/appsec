@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Coach } from "@/types";
 import CoachService from "@/services/CoachService";
+import { useRouter } from "next/router";
 
 type Props = {
     onCoachUpdated: (coach: Coach) => void;
@@ -11,6 +12,7 @@ const UpdateCoach: React.FC<Props> = ({ onCoachUpdated, coaches }: Props) => {
     const [selectedCoach, setSelectedCoach] = useState<string>("");
     const [coachData, setCoachData] = useState<Partial<Coach>>({});
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (selectedCoach) {
@@ -41,11 +43,12 @@ const UpdateCoach: React.FC<Props> = ({ onCoachUpdated, coaches }: Props) => {
         }
 
         try {
-            await CoachService.updateCoach(selectedCoach, coachData);
-            onCoachUpdated({ ...coachData, coachLicentie: selectedCoach } as Coach);
+            const updatedCoach = await CoachService.updateCoach(selectedCoach, coachData);
+            onCoachUpdated({ ...updatedCoach } as Coach);
             setSelectedCoach("");
             setCoachData({});
             setError(null);
+            router.push("/coaches/overview");
         } catch (error) {
             setError("Er is een fout opgetreden bij het bijwerken van de coach.");
         }

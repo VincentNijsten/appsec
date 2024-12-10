@@ -1,5 +1,5 @@
-import Link from "next/link";
-import styles from "@/styles/Home.module.css"
+import Link from 'next/link';
+import styles from '@/styles/Header.module.css';
 
 const Header: React.FC = () => {
     return (
@@ -12,15 +12,34 @@ const Header: React.FC = () => {
                     <Link href="/" className={`nav-link px-4 fs-5 ${styles.navLink}`}>
                         Home
                     </Link>
-                    <Link href="/spelers" className={`nav-link px-4 fs-5 ${styles.navLink}`}>
-                        Spelers
-                    </Link>
-                    <Link href="/coaches" className={`nav-link px-4 fs-5 ${styles.navLink}`}>
-                        Coaches
-                    </Link>
-                    <Link href="/ploegen" className={`nav-link px-4 fs-5 ${styles.navLink}`}>
-                        Ploegen
-                    </Link>
+                 
+                     <div className={`nav-link px-4 fs-5 ${styles.navLink} ${styles.dropdown}`}>
+                        <a href="#" className={styles.dropdownToggle}>Spelers</a>
+                        <div className={styles.dropdownMenu}>
+                            <Link href="/spelers/overview" className="dropdown-item">Overview</Link>
+                            <Link href="/spelers/add" className="dropdown-item">Add</Link>
+                            <Link href="/spelers/update" className="dropdown-item">Update</Link>
+                            <Link href="/spelers/delete" className="dropdown-item">Delete</Link>
+                        </div>
+                    </div>
+                    <div className={`nav-link px-4 fs-5 ${styles.navLink} ${styles.dropdown}`}>
+                        <a href="#" className={styles.dropdownToggle}>Coaches</a>
+                        <div className={styles.dropdownMenu}>
+                            <Link href="/coaches/overview" className="dropdown-item">Overview</Link>
+                            <Link href="/coaches/add" className="dropdown-item">Add</Link>
+                            <Link href="/coaches/update" className="dropdown-item">Update</Link>
+                            <Link href="/coaches/delete" className="dropdown-item">Delete</Link>
+                        </div>
+                    </div>
+                    <div className={`nav-link px-4 fs-5 ${styles.navLink} ${styles.dropdown}`}>
+                        <a href="#" className={styles.dropdownToggle}>Ploegen</a>
+                        <div className={styles.dropdownMenu}>
+                            <Link href="/ploegen/overview" className="dropdown-item">Overview</Link>
+                            <Link href="/ploegen/add" className="dropdown-item">Add</Link>
+                            <Link href="/ploegen/update" className="dropdown-item">Update</Link>
+                            <Link href="/ploegen/delete" className="dropdown-item">Delete</Link>
+                        </div>
+                    </div>
                     <Link href="/zalen" className={`nav-link px-4 fs-5 ${styles.navLink}`}>
                         Zalen
                     </Link>
@@ -30,7 +49,7 @@ const Header: React.FC = () => {
                 </nav>
             </div>
         </header>
-    );  
+    );
 };
 
 export default Header;

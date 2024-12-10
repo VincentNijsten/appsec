@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Coach } from "@/types";
 import CoachService from "@/services/CoachService";
+import { useRouter } from "next/router";
 
 type Props = {
     onCoachAdded: (coach: Coach) => void;
@@ -9,6 +10,7 @@ type Props = {
 const AddCoach: React.FC<Props> = ({ onCoachAdded }: Props) => {
     const [newCoach, setNewCoach] = useState<Coach>({ naam: "", coachLicentie: "" });
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -26,10 +28,11 @@ const AddCoach: React.FC<Props> = ({ onCoachAdded }: Props) => {
         }
 
         try {
-            await CoachService.addCoach(newCoach);
-            onCoachAdded(newCoach);
+            const addedCoach = await CoachService.addCoach(newCoach);
+            onCoachAdded(addedCoach);
             setNewCoach({ naam: "", coachLicentie: "" });
             setError(null);
+            router.push("/coaches/overview");
         } catch (error) {
             setError("Er is een fout opgetreden bij het toevoegen van de coach.");
         }

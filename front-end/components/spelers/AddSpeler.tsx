@@ -1,20 +1,25 @@
 import React, { useState } from "react";
-import { Speler } from "@/types";
+import { Ploeg, Speler } from "@/types";
 import SpelerService from "@/services/SpelerService";
+import { useRouter } from "next/router";
 
 type Props = {
     onSpelerAdded: (speler: Speler) => void;
+    ploegen : Array<Ploeg>;
 };
 
-const AddSpeler: React.FC<Props> = ({ onSpelerAdded }: Props) => {
+const AddSpeler: React.FC<Props> = ({ onSpelerAdded,ploegen }: Props) => {
     const [newSpeler, setNewSpeler] = useState<Speler>({ naam: "", spelerLicentie: "", leeftijd: 0, ploegNaam: ""});
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        console.log(`Name: ${name}, Value: ${value}`); // Voeg deze regel toe
+
         setNewSpeler(prevState => ({
             ...prevState,
-            [name]: name === "leeftijd" ? Number(value) : value
+            [name]: name === "leeftijd" ? parseInt(value) : value 
         }));
     };
 
@@ -26,10 +31,11 @@ const AddSpeler: React.FC<Props> = ({ onSpelerAdded }: Props) => {
         }
 
         try {
-            await SpelerService.addSpeler(newSpeler);
-            onSpelerAdded(newSpeler);
+            const addedSpeler = await SpelerService.addSpeler(newSpeler);
+            onSpelerAdded(addedSpeler);
             setNewSpeler({ naam: "", spelerLicentie: "", leeftijd: 0, ploegNaam: "" });
             setError(null);
+            router.push("/spelers/overview");
         } catch (error) {
             setError("Er is een fout opgetreden bij het toevoegen van de speler.");
         }
@@ -71,15 +77,26 @@ const AddSpeler: React.FC<Props> = ({ onSpelerAdded }: Props) => {
                     required
                 />
             </div>
+ 
             <div>
-                <label htmlFor="ploegNaam">Ploeg Naam:</label>
-                <input
-                    type="text"
-                    id="ploegNaam"
-                    name="ploegNaam"
-                    value={newSpeler.ploegNaam}
-                    onChange={handleChange}
-                />
+                <label htmlFor="ploegnaam">Ploeg:</label>
+                <select
+                    id="ploegnaam"
+                    name="ploegnaam"
+                    value={newSpeler.ploegNaam || ""}
+                    onChange={(e) => setNewSpeler(prevState => ({
+                        ...prevState,
+                        ploegNaam: e.target.value
+                    }))}
+                    required
+                >
+                    <option value="">Selecteer een ploeg</option>
+                    {ploegen.map(ploeg => (
+                        <option key={ploeg.ploegnaam} value={ploeg.ploegnaam}>
+                            {ploeg.ploegnaam}
+                        </option>
+                    ))}
+                </select>
             </div>
             <button type="submit">Voeg Speler Toe</button>
         </form>

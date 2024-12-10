@@ -66,7 +66,7 @@ const Spelers: React.FC = () => {
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Update een speler</h3>
-                    <UpdateSpeler onSpelerUpdated={handleSpelerUpdated} spelers={spelers} />
+                    <UpdateSpeler onSpelerUpdated={handleSpelerUpdated} spelers={spelers} ploegen={[]} />
                 </section>
              
             </main>

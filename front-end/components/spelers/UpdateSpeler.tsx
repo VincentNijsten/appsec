@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Speler } from "@/types";
+import { Ploeg, Speler } from "@/types";
 import SpelerService from "@/services/SpelerService";
+import { useRouter } from "next/router";
 
 type Props = {
     onSpelerUpdated: (speler: Speler) => void;
     spelers: Array<Speler>;
+    ploegen : Array<Ploeg>;
 };
 
-const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers }: Props) => {
+const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Props) => {
     const [selectedSpeler, setSelectedSpeler] = useState<string>("");
     const [spelerData, setSpelerData] = useState<Partial<Speler>>({});
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (selectedSpeler) {
@@ -41,11 +44,12 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers }: Props) => {
         }
 
         try {
-            await SpelerService.updateSpeler(selectedSpeler, spelerData);
-            onSpelerUpdated({ ...spelerData, spelerLicentie: selectedSpeler } as Speler);
+           const updatedSpeler =  await SpelerService.updateSpeler(selectedSpeler, spelerData);
+            onSpelerUpdated({ ...updatedSpeler } as Speler);
             setSelectedSpeler("");
             setSpelerData({});
             setError(null);
+            router.push("/spelers/overview");
         } catch (error) {
             setError("Er is een fout opgetreden bij het bijwerken van de speler.");
         }
@@ -107,14 +111,24 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers }: Props) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="ploegNaam">Ploeg Naam:</label>
-                        <input
-                            type="text"
+                        <label htmlFor="ploegNaam">Ploeg:</label>
+                        <select
                             id="ploegNaam"
                             name="ploegNaam"
                             value={spelerData.ploegNaam || ""}
-                            onChange={handleChange}
-                        />
+                            onChange={(e) => setSpelerData(prevState => ({
+                                ...prevState,
+                                ploegNaam: e.target.value
+                            }))}
+                            required
+                        >
+                            <option value="">Selecteer een ploeg</option>
+                            {ploegen.map(ploeg => (
+                                <option key={ploeg.ploegnaam} value={ploeg.ploegnaam}>
+                                    {ploeg.ploegnaam}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <button type="submit">Update Speler</button>
                 </>

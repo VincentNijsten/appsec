@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import TrainingSessionService from "@/services/TrainingSessionService";
-import { TrainingSession } from "@/types";
+import { TrainingSession, Ploeg, Zaal } from "@/types";
 
 type Props = {
     onTrainingSessionAdded: (trainingSession: TrainingSession) => void;
+    ploegen: Array<Ploeg>;
+    zalen: Array<Zaal>;
 };
 
-const AddTrainingSession: React.FC<Props> = ({ onTrainingSessionAdded }: Props) => {
+const AddTrainingSession: React.FC<Props> = ({ onTrainingSessionAdded, ploegen,zalen }: Props) => {
     const [newTrainingSession, setNewTrainingSession] = useState<{ datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegnaam: string }>({
         datum: "",
         startTijd: "",
@@ -77,27 +79,40 @@ const AddTrainingSession: React.FC<Props> = ({ onTrainingSessionAdded }: Props) 
                     required
                 />
             </div>
+            
             <div>
                 <label htmlFor="zaalnaam">Zaal:</label>
-                <input
-                    type="text"
+                <select
                     id="zaalnaam"
                     name="zaalnaam"
                     value={newTrainingSession.zaalnaam}
                     onChange={handleChange}
                     required
-                />
+                >
+                    <option value="">Selecteer een Zaal</option>
+                    {zalen.map(zaal => (
+                        <option key={zaal.naam} value={zaal.naam}>
+                            {zaal.naam}
+                        </option>
+                    ))}
+                </select>
             </div>
             <div>
                 <label htmlFor="ploegnaam">Ploeg:</label>
-                <input
-                    type="text"
+                <select
                     id="ploegnaam"
                     name="ploegnaam"
                     value={newTrainingSession.ploegnaam}
                     onChange={handleChange}
                     required
-                />
+                >
+                    <option value="">Selecteer een ploeg</option>
+                    {ploegen.map(ploeg => (
+                        <option key={ploeg.ploegnaam} value={ploeg.ploegnaam}>
+                            {ploeg.ploegnaam}
+                        </option>
+                    ))}
+                </select>
             </div>
             <button type="submit">Voeg Trainingssessie Toe</button>
         </form>

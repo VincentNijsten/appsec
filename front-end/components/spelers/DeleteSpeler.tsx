@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Speler } from "@/types";
 import SpelerService from "@/services/SpelerService";
+import { useRouter } from "next/router";
 
 type Props = {
     onSpelerDeleted: (spelerLicentie: string) => void;
@@ -10,6 +11,7 @@ type Props = {
 const DeleteSpeler: React.FC<Props> = ({ onSpelerDeleted, spelers }: Props) => {
     const [selectedSpeler, setSelectedSpeler] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedSpeler(e.target.value);
@@ -23,10 +25,11 @@ const DeleteSpeler: React.FC<Props> = ({ onSpelerDeleted, spelers }: Props) => {
         }
 
         try {
-            await SpelerService.deleteSpeler(selectedSpeler);
-            onSpelerDeleted(selectedSpeler);
+            const deletedSpeler = await SpelerService.deleteSpeler(selectedSpeler);
+            onSpelerDeleted(deletedSpeler);
             setSelectedSpeler("");
             setError(null);
+            router.push("/spelers/overview");
         } catch (error) {
             setError("Er is een fout opgetreden bij het verwijderen van de speler.");
         }

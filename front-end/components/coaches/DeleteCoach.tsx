@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Coach } from "@/types";
 import CoachService from "@/services/CoachService";
+import { useRouter } from "next/router";
 
 type Props = {
     onCoachDeleted: (coachLicentie: string) => void;
@@ -10,6 +11,7 @@ type Props = {
 const DeleteCoach: React.FC<Props> = ({ onCoachDeleted, coaches }: Props) => {
     const [coachLicentie, setCoachLicentie] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setCoachLicentie(e.target.value);
@@ -23,10 +25,12 @@ const DeleteCoach: React.FC<Props> = ({ onCoachDeleted, coaches }: Props) => {
         }
 
         try {
-            await CoachService.deleteCoach(coachLicentie);
-            onCoachDeleted(coachLicentie);
+            const response = await CoachService.deleteCoach(coachLicentie);
+            const deletedCoach = await response.json();
+            onCoachDeleted(deletedCoach.coachLicentie);
             setCoachLicentie("");
             setError(null);
+            router.push("/coaches/overview");
         } catch (error) {
             setError("Er is een fout opgetreden bij het verwijderen van de coach.");
         }

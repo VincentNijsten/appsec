@@ -24,9 +24,19 @@ const addTrainingSession = async (trainingSession: { datum: string; startTijd: s
     return response.json();
 };
 
+const getTrainingSessionsByPloeg = async (ploegnaam: string) => {
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/training-sessions/${ploegnaam}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+    });
+};
+
 const TrainingSessionService = {
     getAllTrainingSessions,
-    addTrainingSession
+    addTrainingSession,
+    getTrainingSessionsByPloeg
 }
 
 export default TrainingSessionService;
