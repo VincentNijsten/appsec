@@ -24,7 +24,6 @@ const Spelers: React.FC = () => {
             return;
         }
 
-
         await SpelerService.addSpeler(newSpeler);
         setError(null);
         getSpelers();
