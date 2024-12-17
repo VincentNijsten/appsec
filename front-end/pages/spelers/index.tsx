@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Speler } from "@/types";
+import { Speler, Coach } from "@/types";
 import Header from "@/components/header";
 import SpelersOvervieuwTable from "@/components/spelers/SpelersOverviewTable";
 import SpelerService from "@/services/SpelerService";
+import CoachService from "@/services/CoachService";
+import AddSpeler from "@/components/spelers/AddSpeler";
+import AddCoach from "@/components/coaches/AddCoach";
+import DeleteSpeler from "@/components/spelers/DeleteSpeler";
+import UpdateSpeler from "@/components/spelers/UpdateSpeler";
 import styles from "@/styles/Home.module.css";
 import Head from "next/head";
 
 const Spelers: React.FC = () => {
     const [spelers, setSpelers] = useState<Array<Speler>>([]);
-    const [newSpeler, setNewSpeler] = useState<Speler>({ naam: "", spelerlicentie: "", leeftijd: 0 });
     const [error, setError] = useState<string | null>(null);
 
     const getSpelers = async () => {
@@ -24,62 +28,46 @@ const Spelers: React.FC = () => {
             return;
         }
 
+
         await SpelerService.addSpeler(newSpeler);
         setError(null);
         getSpelers();
     };
 
-
+ 
 
     useEffect(() => {
         getSpelers();
+        
     }, []);
 
     return (
         <>
             <Head>
-                <title>Spelers</title>
+                <title>Spelers en Coaches</title>
             </Head>
             <Header />
             
-            {error && <p className={styles.error}>{error}</p>} { }
+            {error && <p className={styles.error}>{error}</p>}
 
-            <main className="d-flex flex-column justify-content-cneter align-items-center">
+            <main className="d-flex flex-column justify-content-center align-items-center">
                 <h1 className={styles.tabletitle}>Spelers</h1>
                 <section className={styles.tables}>
                     {spelers && <SpelersOvervieuwTable spelers={spelers} />}
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Voeg een nieuwe speler toe</h3>
-                    <form onSubmit={handleAddSpeler}>
-                        <div className={styles.formGroup}>
-                            <label>Naam:</label>
-                            <input
-                                type="text"
-                                value={newSpeler.naam}
-                                onChange={(e) => setNewSpeler({ ...newSpeler, naam: e.target.value })}
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label>Spelerlicentie:</label>
-                            <input
-                                type="text"
-                                value={newSpeler.spelerlicentie}
-                                onChange={(e) => setNewSpeler({ ...newSpeler, spelerlicentie: e.target.value })}
-                            />
-                        </div>
-
-                        <div className={styles.formGroup}>
-                            <label>Leeftijd:</label>
-                            <input
-                                type="number"
-                                value={newSpeler.leeftijd}
-                                onChange={(e) => setNewSpeler({ ...newSpeler, leeftijd: parseInt(e.target.value) })}
-                            />
-                        </div>
-                        <button type="submit">Voeg Speler Toe</button>
-                    </form>
+                    <AddSpeler onSpelerAdded={handleSpelerAdded} />
                 </section>
+                <section className={styles.formcontainer}>
+                    <h3>Verwijder een speler</h3>
+                    <DeleteSpeler onSpelerDeleted={handleSpelerDeleted} spelers={spelers} />
+                </section>
+                <section className={styles.formcontainer}>
+                    <h3>Update een speler</h3>
+                    <UpdateSpeler onSpelerUpdated={handleSpelerUpdated} spelers={spelers} ploegen={[]} />
+                </section>
+             
             </main>
         </>
     );

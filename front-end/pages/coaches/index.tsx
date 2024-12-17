@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Coach } from "@/types";
-import CoachService from "@/services/CoachService";
-import Head from "next/head";
 import Header from "@/components/header";
 import CoachOverviewTable from "@/components/coaches/CoachOverviewTable";
-import styles from "@/styles/Home.module.css"
+import CoachService from "@/services/CoachService";
+import AddCoach from "@/components/coaches/AddCoach";
+import DeleteCoach from "@/components/coaches/DeleteCoach";
+import UpdateCoach from "@/components/coaches/UpdateCoach";
+import styles from "@/styles/Home.module.css";
+import Head from "next/head";
 
 const Coaches: React.FC = () => {
-    const [coaches, setCoaches] = useState<Array<Coach>>();
-    const [newCoach, setNewCoach] = useState<Coach>({ naam: "", coachlicentie: "" })
-    const [coachlicentieToDelete, setCoachlicentieToDelete] = useState<string>("");
+    const [coaches, setCoaches] = useState<Array<Coach>>([]);
     const [error, setError] = useState<string | null>(null);
-
 
     const getCoaches = async () => {
         const response = await CoachService.getAllCoaches();
@@ -19,35 +19,21 @@ const Coaches: React.FC = () => {
         setCoaches(coachess);
     };
 
-    const handleAddCoach = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newCoach.coachlicentie || !newCoach.naam) {
-            setError("Vul alstublieft alle velden in.");
-            return
-        }
-        await CoachService.addCoach(newCoach);
-        setError(null);
-        getCoaches();
+    const handleCoachAdded = (coach: Coach) => {
+        setCoaches(prevCoaches => [...prevCoaches, coach]);
     };
 
-    const handleDeleteCoach = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleCoachDeleted = (coachLicentie: string) => {
+        setCoaches(prevCoaches => prevCoaches.filter(coach => coach.coachLicentie !== coachLicentie));
+    };
 
-        if (!coachlicentieToDelete) {
-            setError("Vul alstublieft alle velden in.");
-            return
-        }
-
-        await CoachService.deleteCoach(coachlicentieToDelete);
-        setError(null);
-        getCoaches();
+    const handleCoachUpdated = (updatedCoach: Coach) => {
+        setCoaches(prevCoaches => prevCoaches.map(coach => coach.coachLicentie === updatedCoach.coachLicentie ? updatedCoach : coach));
     };
 
     useEffect(() => {
-        getCoaches()
-    },
-        []
-    )
+        getCoaches();
+    }, []);
 
     return (
         <>
@@ -55,54 +41,29 @@ const Coaches: React.FC = () => {
                 <title>Coaches</title>
             </Head>
             <Header />
+            
+            {error && <p className={styles.error}>{error}</p>}
 
-            {error && <p className={styles.error}>{error}</p>} { }
-
-            <main className="d-flex flex-column justify-content-cneter align-items-center">
+            <main className="d-flex flex-column justify-content-center align-items-center">
                 <h1 className={styles.tabletitle}>Coaches</h1>
-                <section>
-                    { coaches &&
-                        <CoachOverviewTable coaches={coaches}/>
-                    }
+                <section className={styles.tables}>
+                    {coaches && <CoachOverviewTable coaches={coaches} />}
                 </section>
                 <section className={styles.formcontainer}>
-                    <h2>Voeg een nieuwe coach toe</h2>
-                    <form onSubmit={handleAddCoach}>
-                        <div className={styles.formGroup}>
-                            <label>Naam:</label>
-                            <input
-                                type="text"
-                                value={newCoach.naam}
-                                onChange={(e) => setNewCoach({ ...newCoach, naam: e.target.value })}
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label>Coachlicentie:</label>
-                            <input
-                                type="text"
-                                value={newCoach.coachlicentie}
-                                onChange={(e) => setNewCoach({ ...newCoach, coachlicentie: e.target.value })}
-                            />
-                        </div>
-                        <button type="submit">Voeg Coach Toe</button>
-                    </form>
+                    <h3>Voeg een nieuwe coach toe</h3>
+                    <AddCoach onCoachAdded={handleCoachAdded} />
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Verwijder een coach</h3>
-                    <form onSubmit={handleDeleteCoach}>
-                        <div className={styles.formGroup}>
-                            <label>Coachlicentie:</label>
-                            <input
-                                type="text"
-                                value={coachlicentieToDelete}
-                                onChange={(e) => setCoachlicentieToDelete(e.target.value)}
-                            />
-                        </div>
-                        <button type="submit">Verwijder Coach</button>
-                    </form>
+                    <DeleteCoach onCoachDeleted={handleCoachDeleted} coaches={coaches} />
+                </section>
+                <section className={styles.formcontainer}>
+                    <h3>Update een coach</h3>
+                    <UpdateCoach onCoachUpdated={handleCoachUpdated} coaches={coaches} />
                 </section>
             </main>
         </>
     );
 };
+
 export default Coaches;

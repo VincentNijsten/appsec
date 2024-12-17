@@ -148,4 +148,48 @@ coachRouter.delete('/:coachLicentie', async (req : Request, res : Response) => {
 });
 
 
+
+
+/**
+ * @swagger
+ * /coaches/{coachLicentie}:
+ *   put:
+ *     summary: Update een coach
+ *     tags: [Coaches]
+ *     parameters:
+ *       - in: path
+ *         name: coachLicentie
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: De licentie van de coach die bijgewerkt moet worden
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CoachInput'
+ *     responses:
+ *       200:
+ *         description: Coach succesvol bijgewerkt
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Coach'
+ *       400:
+ *         description: Fout bij het bijwerken van de coach
+ *       500:
+ *         description: Fout bij het bijwerken van de coach
+ */
+coachRouter.put('/:coachLicentie', async (req: Request, res: Response, next: NextFunction) => {
+    const { coachLicentie } = req.params;
+    const coachData = <Partial<CoachInput>>req.body;
+    try {
+        const updatedCoach = await coachService.updateCoach(coachLicentie, coachData);
+        res.status(200).json(updatedCoach);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export { coachRouter };

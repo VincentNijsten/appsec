@@ -49,21 +49,7 @@ const Ploegen: React.FC = () => {
         }
     };
 
-    const handlePloegAdded = (ploeg: Ploeg) => {
-        setPloegen(prevPloegen => [...prevPloegen, ploeg]);
-    };
 
-    const handlePloegDeleted = (ploegnaam: string) => {
-        setPloegen(prevPloegen => prevPloegen.filter(ploeg => ploeg.ploegnaam !== ploegnaam));
-    };
-
-    const handlePloegUpdated = (updatedPloeg: Ploeg) => {
-        setPloegen(prevPloegen => prevPloegen.map(ploeg => ploeg.ploegnaam === updatedPloeg.ploegnaam ? updatedPloeg : ploeg));
-    };
-
-    const handleSpelerAddedToPloeg = (ploegnaam: string, spelerLicentie: string) => {
-        // Update the state or perform any necessary actions after adding a player to a team
-    };
 
     const handleSelectedPloeg = (ploeg: Ploeg) => {
         setSelectedPloeg(ploeg);
@@ -97,18 +83,7 @@ const Ploegen: React.FC = () => {
                         </div>
                     )}
                 </section>
-                <section className={styles.formcontainer}>
-                    <h3>Voeg een nieuwe ploeg toe</h3>
-                    <AddPloeg onPloegAdded={handlePloegAdded} />
-                </section>
-                <section className={styles.formcontainer}>
-                    <h3>Verwijder een ploeg</h3>
-                    <DeletePloeg onPloegDeleted={handlePloegDeleted} ploegen={ploegen} />
-                </section>
-                <section className={styles.formcontainer}>
-                    <h3>Update een ploeg</h3>
-                    <UpdatePloeg onPloegUpdated={handlePloegUpdated} ploegen={ploegen} />
-                </section>
+             
                
             </main>
         </>

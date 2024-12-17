@@ -25,6 +25,8 @@ const SpelerOverviewTable: React.FC<Props> = ({spelers}: Props) => {
                                 <td>{speler.leeftijd}</td>
                             </tr>
                         ))}
+
+                        
                     </tbody>
                 </table>
             )}

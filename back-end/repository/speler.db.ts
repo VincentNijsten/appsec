@@ -52,7 +52,7 @@ const addSpeler = async (speler: Speler): Promise<Speler> => {
                 naam: speler.naam,
                 spelerLicentie: speler.spelerLicentie,
                 leeftijd: speler.leeftijd,
-                ploegNaam: speler.ploegNaam, // Voeg ploegnaam toe
+                ploegNaam: speler.ploegNaam, 
             },
         });
         return Speler.from(newSpelerPrisma);
@@ -65,15 +65,19 @@ const addSpeler = async (speler: Speler): Promise<Speler> => {
 // Functie om een speler bij te werken
 const updateSpeler = async (licentie: string, spelerData: Partial<Speler>): Promise<Speler> => {
     try {
+        // Controleer of de ploegNaam geldig is
+        if (spelerData.ploegNaam) {
+            const ploegExist = await prisma.ploeg.findUnique({
+                where: { ploegnaam: spelerData.ploegNaam },
+            });
+            if (!ploegExist) {
+                throw new Error(`Ploeg met naam ${spelerData.ploegNaam} niet gevonden.`);
+            }
+        }
+
         const updatedSpelerPrisma = await prisma.speler.update({
-            where: {
-                spelerLicentie: licentie,
-            },
-            data: {
-                naam: spelerData.naam,
-                leeftijd: spelerData.leeftijd,
-                ploegNaam: spelerData.ploegNaam,
-            },
+            where: { spelerLicentie: licentie },
+            data: spelerData,
         });
         return Speler.from(updatedSpelerPrisma);
     } catch (error) {
@@ -82,10 +86,26 @@ const updateSpeler = async (licentie: string, spelerData: Partial<Speler>): Prom
     }
 };
 
+// Functie om een speler te verwijderen
+const deleteSpeler = async (licentie: string): Promise<void> => {
+    try {
+        await prisma.speler.delete({
+            where: {
+                spelerLicentie: licentie,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. Zie serverlog voor details.');
+    }
+};
+
+
 export default {
     getSpelerByLicentie,
     getAllSpelers,
     getSpelerByNaam,
     addSpeler,
-    updateSpeler, // Voeg de update functie toe aan de export
+    updateSpeler, 
+    deleteSpeler,
 };

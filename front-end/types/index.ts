@@ -2,7 +2,7 @@ export type Speler = {
     naam: string;
     spelerLicentie: string;
     leeftijd: number;
-    ploegNaam: String;
+    ploegNaam: string;
 };
 
 export type Coach = {

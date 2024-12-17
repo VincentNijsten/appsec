@@ -38,48 +38,27 @@ const addPloeg = async ({ ploegnaam, niveau, coachLicentie }: PloegInput): Promi
     return `${ploegnaam} is succesvol toegevoegd`;
 }
 
-// Functie om een speler aan een ploeg toe te voegen
-const addSpelerToPloeg = async (ploegnaam: string, spelerslicentie: string): Promise<string> => {
-    const ploeg = await ploegDb.getPloegByNaam(ploegnaam);
-    const speler = await spelerService.getSpelerByLicentie(spelerslicentie);
 
-    if (!ploeg) {
-        throw new Error('Ploeg niet gevonden');
+
+
+// Functie om een ploeg te verwijderen
+const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
+    const exists = await ploegDb.getPloegByNaam(ploegnaam);
+    if (!exists) {
+        throw new Error(`De ploeg met naam ${ploegnaam} bestaat niet`);
     }
-    if (!speler) {
-        throw new Error('Speler niet gevonden');
+    await ploegDb.verwijderPloeg(ploegnaam);
+}
+
+
+// Functie om een ploeg bij te werken
+const updatePloeg = async (ploegnaam: string, ploegData: Partial<Ploeg>): Promise<Ploeg> => {
+    const exists = await ploegDb.getPloegByNaam(ploegnaam);
+    if (!exists) {
+        throw new Error(`De ploeg met naam ${ploegnaam} bestaat niet`);
     }
-
-    // Controleer of de speler al in een andere ploeg speelt
-    if (speler.ploegNaam && speler.ploegNaam !== ploegnaam) {
-        throw new Error(`De speler ${speler.naam} speelt al in de ploeg ${speler.ploegNaam}`);
-    }
-
-    // Update de ploegnaam van de speler
-    speler.ploegNaam = ploegnaam;
-
-    // Update de speler in de database
-    await spelerDb.updateSpeler(speler.spelerLicentie, speler); 
-
-    return `Speler ${speler.naam} is succesvol toegevoegd aan ploeg ${ploegnaam}`;
-};
-
-// Functie om een coach aan een ploeg toe te voegen
-const addCoach = async (coachLicentie: string, ploegnaam: string): Promise<string> => {
-    const ploeg = await ploegDb.getPloegByNaam(ploegnaam);
-    const coach = await coachDb.getCoachByCoachLicentie(coachLicentie);
-    
-    if (!ploeg) {
-        throw new Error('Ploeg niet gevonden');
-    }
-    if (!coach) {
-        throw new Error('Coach niet gevonden');
-    }
-    
-    await ploegDb.addCoach(coachLicentie, ploegnaam);
-    return `Coach: ${coach.naam} is succesvol toegevoegd aan ploeg: ${ploegnaam}`;
-};
-
+    return await ploegDb.updatePloeg(ploegnaam, ploegData);
+}
 
 
 // Exporteer de functies
@@ -87,7 +66,6 @@ export default {
     getAllPloegen,
     getPloegByNaam,
     addPloeg,
-    addSpelerToPloeg,
-    addCoach,
-   
+    verwijderPloeg,
+    updatePloeg,
 };

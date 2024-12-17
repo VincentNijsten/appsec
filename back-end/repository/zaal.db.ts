@@ -45,8 +45,44 @@ const addZaal = async (zaal: Zaal): Promise<Zaal> => {
     }
 };
 
+
+
+// Functie om een zaal bij te werken
+const updateZaal = async (naam: string, zaalData: Partial<Zaal>): Promise<Zaal> => {
+    try {
+        const updatedZaal = await prisma.zaal.update({
+            where: { naam: naam },
+            data: {
+                address: zaalData.address,
+                beschikbaarheid: zaalData.beschikbaarheid,
+            },
+        });
+        console.log(`Zaal ${updatedZaal.naam} bijgewerkt.`);
+        return Zaal.from(updatedZaal);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+// Functie om een zaal te verwijderen
+const deleteZaal = async (naam: string): Promise<void> => {
+    try {
+        await prisma.zaal.delete({
+            where: { naam: naam },
+        });
+        console.log(`Zaal ${naam} verwijderd.`);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+
 export default {
     getZaalByNaam,
     getAllZalen,
     addZaal,
+    updateZaal,
+    deleteZaal
 };

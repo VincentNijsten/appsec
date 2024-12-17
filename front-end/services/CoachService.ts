@@ -35,10 +35,29 @@ const deleteCoach = async (coachlicentie: string) => {
     });
 };
 
+const updateCoach = async (coachLicentie: string, coachData: Partial<Coach>) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coaches/${coachLicentie}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(coachData),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+    }
+
+    return response.json();
+};
+
+
 const CoachService = {
     getAllCoaches,
     addCoach,
     deleteCoach,
+    updateCoach
 };
 
 export default CoachService;
