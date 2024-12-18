@@ -3,7 +3,7 @@ import { Speler } from './speler';
 import { Coach } from './coach';
 
 export class Ploeg {
-   
+    
     public niveau!: string;
     public ploegnaam!: string;
     // public spelers: Speler[];

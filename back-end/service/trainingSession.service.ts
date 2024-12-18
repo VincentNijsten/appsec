@@ -1,8 +1,6 @@
-import trainingSessionsDb from "../repository/trainingSession.db"; 
-import { TrainingSession } from "../model/trainingSession"; 
+import trainingSessionsDb from "../repository/trainingSession.db";
+import { TrainingSession } from "../model/trainingSession";
 import { Ploeg } from "../model/ploeg";
-import { Zaal } from "../model/zaal";
-import ploegDb from "../repository/ploeg.db";
 import zaalDb from "../repository/zaal.db";
 
 // Functie om alle trainingssessies op te halen
@@ -28,18 +26,15 @@ const getTrainingSessionByPloegNaam = async (ploegnaam: string): Promise<Trainin
 // Functie om een trainingssessie toe te voegen
 const addTrainingSession = async (trainingSessionData: {
     id: string,
-    ploegnaam: string;
     zaalnaam: string;
     datum: Date;
     startTijd: string;
     eindTijd: string;
+    ploegen: Ploeg[];
 }) => {
-    const ploeg = await ploegDb.getAllPloegen().then(ploegen => ploegen.find(p => p.getPloegnaam() === trainingSessionData.ploegnaam));
     const zaal = await zaalDb.getAllZalen().then(zalen => zalen.find(z => z.getNaam() === trainingSessionData.zaalnaam));
 
-    if (!ploeg) {
-        throw new Error(`Ploeg met naam ${trainingSessionData.ploegnaam} niet gevonden.`);
-    }
+  
 
     if (!zaal) {
         throw new Error(`Zaal met naam ${trainingSessionData.zaalnaam} niet gevonden.`);
@@ -63,14 +58,19 @@ const addTrainingSession = async (trainingSessionData: {
         }
     }
 
+    const ploegen = trainingSessionData.ploegen;
+    if(ploegen.length === 0 || !ploegen) {
+        throw new Error('Er moet minstens 1 ploeg aan de trainingssessie worden toegevoegd');
+    }
+
     // Maak een nieuwe instantie van TrainingSession
     const newSession = new TrainingSession({
         id: trainingSessionData.id,
-        ploegNaam: ploeg.getPloegnaam(),
         zaalNaam: zaal.getNaam(),
         datum: trainingSessionData.datum,
         startTijd: trainingSessionData.startTijd,
-        eindTijd: trainingSessionData.eindTijd
+        eindTijd: trainingSessionData.eindTijd,
+        ploegen: ploegen
     });
 
     // Voeg de nieuwe sessie toe aan de database
@@ -89,10 +89,21 @@ const removeTrainingSession = async (id: string): Promise<string> => {
     }
 }
 
+
+const removePloegFromTrainingSession = async (ploegnaam: string): Promise<string> => {
+    const success = await trainingSessionsDb.removePloegFromTrainingSession(ploegnaam);
+    if (success) {
+        return "Ploeg succesvol verwijderd";
+    } else {
+        throw new Error('Kon de ploeg niet verwijderen');
+    }
+}
+
 // Exporteer de functies
 export default {
     getAllTrainingSessions,
     getTrainingSessionByPloegNaam,
     addTrainingSession,
-    removeTrainingSession
+    removeTrainingSession,
+    removePloegFromTrainingSession
 }

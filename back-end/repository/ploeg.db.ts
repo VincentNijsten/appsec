@@ -81,10 +81,7 @@ const getAllPloegen = async (): Promise<Ploeg[]> => {
 };
 const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
     try {
-        // Verwijder alle gerelateerde trainingssessies
-        await prisma.trainingSession.deleteMany({
-            where: { ploegNaam: ploegnaam },
-        });
+       
 
         // Verwijder de ploeg
         await prisma.ploeg.delete({

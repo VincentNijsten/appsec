@@ -28,18 +28,18 @@ model Ploeg {
   spelers            Speler[]
   coach              Coach?            @relation("PloegCoach", fields: [coachLicentie], references: [coachLicentie])
   coachLicentie      String?
-  TrainingSession    TrainingSession[]
+  TrainingSession    TrainingSession[] @relation("TrainingSessionPloegen")
 }
 
 model TrainingSession {
   id             String   @id @unique @default(cuid())
-  ploeg          Ploeg    @relation(fields: [ploegNaam], references: [ploegnaam])
+  ploegen        Ploeg[]  @relation("TrainingSessionPloegen")
   zaal           Zaal     @relation(fields: [zaalNaam], references: [naam])
   datum          DateTime
   startTijd      String
   eindTijd       String
-  ploegNaam      String
   zaalNaam       String
+  
 }
 
 model Zaal {
@@ -47,4 +47,5 @@ model Zaal {
   address         String
   beschikbaarheid Boolean           @default(true)
   TrainingSession TrainingSession[]
+  velden          String[]
 }

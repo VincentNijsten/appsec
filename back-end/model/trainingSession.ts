@@ -5,31 +5,29 @@ import { Coach as CoachPrisma, Speler as SpelerPrisma, Ploeg as PloegPrisma, Tra
 
 export class TrainingSession {
     public id?: string;
-    public ploegNaam!: string;
     public zaalNaam!: string;
     public datum!: Date;
     public startTijd!: string;
     public eindTijd!: string;
+    public ploegen!: Ploeg[];
 
     constructor(trainingSession: {
         id: string;
-        ploegNaam: string;
         zaalNaam: string;
         datum: Date;
         startTijd: string;
         eindTijd: string;
+        ploegen?: Ploeg[];
     }) {
-        this.setPloegNaam(trainingSession.ploegNaam);
         this.setZaal(trainingSession.zaalNaam);
         this.setDatum(trainingSession.datum);
         this.setTijden(trainingSession.startTijd, trainingSession.eindTijd);
         this.id = trainingSession.id;
+        this.setPloegen(trainingSession.ploegen || []);
     }
 
     // Getters
-    public getPloegNaam(): string {
-        return this.ploegNaam;
-    }
+   
 
     public getZaalNaam(): string {
         return this.zaalNaam;
@@ -52,6 +50,18 @@ export class TrainingSession {
         this.datum = datum;
     }
 
+    public getPloegen(): Ploeg[] {
+        return this.ploegen;
+    }
+
+    public setPloegen(ploegen: Ploeg[]) {
+        this.ploegen = ploegen;
+    }
+
+    public addPloeg(ploeg: Ploeg) {
+        this.ploegen.push(ploeg);
+    }
+
 
 
     public setTijden(startTijd: string, eindTijd: string) {
@@ -62,10 +72,7 @@ export class TrainingSession {
         this.eindTijd = eindTijd;
     }
 
-    public setPloegNaam(ploegNaam: string) {
-     
-        this.ploegNaam = ploegNaam;
-    }
+  
 
     public setZaal(zaalNaam: string) {
     
@@ -74,9 +81,22 @@ export class TrainingSession {
 
 
 
-    static from({ id, ploegNaam, zaalNaam, datum, startTijd,eindTijd}: TrainingSessionPrisma) {
+    static from({
+        id,
+        zaalNaam, 
+        datum, 
+        startTijd,
+        eindTijd,
+        ploegen
+    
+    }: TrainingSessionPrisma &{ploegen : PloegPrisma[]}) {
         return new TrainingSession({
-            id, ploegNaam, zaalNaam, datum, startTijd,eindTijd
+            id, 
+            zaalNaam, 
+            datum, 
+            startTijd,
+            eindTijd, 
+            ploegen: ploegen.map((ploeg) => Ploeg.from(ploeg))
         });
     }
 

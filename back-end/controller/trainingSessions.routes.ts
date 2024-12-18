@@ -125,23 +125,24 @@ trainingSessionRouter.get('/:ploegnaam', async (req: Request, res: Response, nex
  *         description: Internal server error
  */
 trainingSessionRouter.post('/', (req, res) => {
-    const { id,ploegnaam, zaalnaam, datum, startTijd, eindTijd } = req.body;
+    const { id, zaalnaam, datum, startTijd, eindTijd,ploegen } = req.body;
 
     // Log de ontvangen waarden om te controleren of ze correct zijn
-    console.log('Ontvangen ploegnaam:', ploegnaam);
     console.log('Ontvangen zaalnaam:', zaalnaam);
     console.log('Ontvangen datum:', datum);
     console.log('Ontvangen startTijd:', startTijd);
     console.log('Ontvangen eindTijd:', eindTijd);
+    console.log('Ontvangen ploegen:', ploegen);
 
     try {
         const message = trainingSessionService.addTrainingSession({
             id,
-            ploegnaam,
+            
             zaalnaam,
             datum: new Date(datum),
             startTijd,
-            eindTijd
+            eindTijd,
+            ploegen
         });
         res.status(201).json({ message });
     } catch (error) {

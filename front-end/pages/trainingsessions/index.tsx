@@ -69,12 +69,12 @@ const TrainingSessions: React.FC = () => {
                 <h1 className={styles.tabletitle}>Sessions</h1>
                 <section className={styles.tables}>
                     { trainingSessions &&
-                        <TrainingSessionsOverviewTable trainingsessions={trainingSessions}/>
+                        <TrainingSessionsOverviewTable trainingsessions={trainingSessions} ploegen={ploegen}/>
                     }
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Voeg een nieuwe trainingssessie toe</h3>
-                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegen={ploegen} zalen={zalen} />
+                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegenLijst={ploegen} zalenLijst={zalen} />
                 </section>
             </main>
         </>

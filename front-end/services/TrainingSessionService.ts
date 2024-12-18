@@ -1,3 +1,5 @@
+import { Ploeg } from "@/types";
+
 const getAllTrainingSessions = async () => {
     return fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "GET",
@@ -7,7 +9,7 @@ const getAllTrainingSessions = async () => {
     });
 };
 
-const addTrainingSession = async (trainingSession: { datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegnaam: string }) => {
+const addTrainingSession = async (trainingSession: { datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegen: Ploeg[] }) => {
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "POST",
         headers: {

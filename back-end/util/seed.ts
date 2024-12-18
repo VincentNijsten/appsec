@@ -241,103 +241,54 @@ const main = async () => {
     // Voeg trainingssessies toe
     const training1 = await prisma.trainingSession.create({
         data: {
-            ploegNaam: ploeg1.ploegnaam,
+            
             zaalNaam: zaal1.naam,
             datum: new Date('2024-12-15'),
             startTijd: '10:00',
             eindTijd: '12:00',
+            ploegen: {
+                connect: [{ ploegnaam: ploeg1.ploegnaam }, { ploegnaam: ploeg2.ploegnaam }],
+            }
         },
     });
 
     const training2 = await prisma.trainingSession.create({
         data: {
-            ploegNaam: ploeg2.ploegnaam,
             zaalNaam: zaal2.naam,
             datum: new Date('2024-12-16'),
             startTijd: '14:00',
             eindTijd: '16:00',
+            ploegen: {
+                connect: [{ ploegnaam: ploeg4.ploegnaam }, { ploegnaam: ploeg5.ploegnaam }],
+            }
         },
     });
 
     const training3 = await prisma.trainingSession.create({
         data: {
-            ploegNaam: ploeg3.ploegnaam,
             zaalNaam: zaal3.naam,
             datum: new Date('2024-12-17'),
             startTijd: '18:00',
             eindTijd: '20:00',
+            ploegen :{
+                connect: [{ ploegnaam: ploeg3.ploegnaam }]
+            }
         },
     });
 
     const training4 = await prisma.trainingSession.create({
         data: {
-            ploegNaam: ploeg4.ploegnaam,
             zaalNaam: zaal4.naam,
             datum: new Date('2024-12-18'),
             startTijd: '09:00',
             eindTijd: '11:00',
+            ploegen: {
+                connect: [{ ploegnaam: ploeg1.ploegnaam }]
+            }
         },
     });
 
-    const training5 = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: ploeg5.ploegnaam,
-            zaalNaam: zaal5.naam,
-            datum: new Date('2024-12-19'),
-            startTijd: '13:00',
-            eindTijd: '15:00',
-        },
-    });
-
-    const training6 = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: ploeg1.ploegnaam,
-            zaalNaam: zaal3.naam,
-            datum: new Date('2024-12-20'),
-            startTijd: '10:00',
-            eindTijd: '12:00',
-        },
-    });
-
-    const training7 = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: ploeg2.ploegnaam,
-            zaalNaam: zaal4.naam,
-            datum: new Date('2024-12-21'),
-            startTijd: '14:00',
-            eindTijd: '16:00',
-        },
-    });
-
-    const training8 = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: ploeg3.ploegnaam,
-            zaalNaam: zaal5.naam,
-            datum: new Date('2024-12-22'),
-            startTijd: '18:00',
-            eindTijd: '20:00',
-        },
-    });
-
-    const training9 = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: ploeg4.ploegnaam,
-            zaalNaam: zaal1.naam,
-            datum: new Date('2024-12-23'),
-            startTijd: '09:00',
-            eindTijd: '11:00',
-        },
-    });
-
-    const training10 = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: ploeg5.ploegnaam,
-            zaalNaam: zaal2.naam,
-            datum: new Date('2024-12-24'),
-            startTijd: '13:00',
-            eindTijd: '15:00',
-        },
-    });
+   
 };
 
 (async () => {

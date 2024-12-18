@@ -1,20 +1,15 @@
-import React, { useState } from "react";
-import TrainingSessionService from "@/services/TrainingSessionService";
-import { TrainingSession, Ploeg, Zaal } from "@/types";
+import React, { useState } from 'react';
+import styles from '@/styles/addTraining.module.css';
+import TrainingSessionService from '@/services/TrainingSessionService';
+import { Ploeg, Zaal } from '@/types';
 
-type Props = {
-    onTrainingSessionAdded: (trainingSession: TrainingSession) => void;
-    ploegen: Array<Ploeg>;
-    zalen: Array<Zaal>;
-};
-
-const AddTrainingSession: React.FC<Props> = ({ onTrainingSessionAdded, ploegen,zalen }: Props) => {
-    const [newTrainingSession, setNewTrainingSession] = useState<{ datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegnaam: string }>({
+const AddTrainingSession = ({ onTrainingSessionAdded, ploegenLijst, zalenLijst }: { onTrainingSessionAdded: (session: any) => void, ploegenLijst: Ploeg[], zalenLijst: Zaal[] }) => {
+    const [newTrainingSession, setNewTrainingSession] = useState({
         datum: "",
         startTijd: "",
         eindTijd: "",
         zaalnaam: "",
-        ploegnaam: "",
+        ploegen: [] as string[],
     });
     const [error, setError] = useState<string | null>(null);
 
@@ -26,17 +21,28 @@ const AddTrainingSession: React.FC<Props> = ({ onTrainingSessionAdded, ploegen,z
         }));
     };
 
+    const handlePloegenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setNewTrainingSession(prevState => ({
+            ...prevState,
+            ploegen: selectedOptions
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newTrainingSession.datum || !newTrainingSession.startTijd || !newTrainingSession.eindTijd || !newTrainingSession.zaalnaam || !newTrainingSession.ploegnaam) {
+        if (!newTrainingSession.datum || !newTrainingSession.startTijd || !newTrainingSession.eindTijd || !newTrainingSession.zaalnaam || newTrainingSession.ploegen.length === 0) {
             setError("Vul alstublieft alle velden in.");
             return;
         }
 
         try {
-            const addedTrainingSession = await TrainingSessionService.addTrainingSession(newTrainingSession);
+            const addedTrainingSession = await TrainingSessionService.addTrainingSession({
+                ...newTrainingSession,
+                ploegen: newTrainingSession.ploegen.map(ploegnaam => ploegenLijst.find(ploeg => ploeg.ploegnaam === ploegnaam)!)
+            });
             onTrainingSessionAdded(addedTrainingSession);
-            setNewTrainingSession({ datum: "", startTijd: "", eindTijd: "", zaalnaam: "", ploegnaam: "" });
+            setNewTrainingSession({ datum: "", startTijd: "", eindTijd: "", zaalnaam: "", ploegen: [] });
             setError(null);
         } catch (error) {
             setError("Er is een fout opgetreden bij het toevoegen van de trainingssessie.");
@@ -44,77 +50,28 @@ const AddTrainingSession: React.FC<Props> = ({ onTrainingSessionAdded, ploegen,z
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="datum">Datum:</label>
-                <input
-                    type="date"
-                    id="datum"
-                    name="datum"
-                    value={newTrainingSession.datum}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div>
-                <label htmlFor="startTijd">Start Tijd:</label>
-                <input
-                    type="time"
-                    id="startTijd"
-                    name="startTijd"
-                    value={newTrainingSession.startTijd}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div>
-                <label htmlFor="eindTijd">Eind Tijd:</label>
-                <input
-                    type="time"
-                    id="eindTijd"
-                    name="eindTijd"
-                    value={newTrainingSession.eindTijd}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            
-            <div>
-                <label htmlFor="zaalnaam">Zaal:</label>
-                <select
-                    id="zaalnaam"
-                    name="zaalnaam"
-                    value={newTrainingSession.zaalnaam}
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="">Selecteer een Zaal</option>
-                    {zalen.map(zaal => (
-                        <option key={zaal.naam} value={zaal.naam}>
-                            {zaal.naam}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div>
-                <label htmlFor="ploegnaam">Ploeg:</label>
-                <select
-                    id="ploegnaam"
-                    name="ploegnaam"
-                    value={newTrainingSession.ploegnaam}
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="">Selecteer een ploeg</option>
-                    {ploegen.map(ploeg => (
-                        <option key={ploeg.ploegnaam} value={ploeg.ploegnaam}>
-                            {ploeg.ploegnaam}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <button type="submit">Voeg Trainingssessie Toe</button>
+        <form onSubmit={handleSubmit} className={styles.form}>
+            <label htmlFor="newTrainingSession.datum">Datum</label>
+            <input type="date" name="datum" value={newTrainingSession.datum} onChange={handleChange} className={styles.input} />
+            <label htmlFor="newTrainingSession.StartUur">Start</label>
+            <input type="time" name="startTijd" value={newTrainingSession.startTijd} onChange={handleChange} className={styles.input}/>
+            <label htmlFor="newTrainingSession.endUur">Eind</label>
+            <input type="time" name="eindTijd" value={newTrainingSession.eindTijd} onChange={handleChange} className={styles.input}/>
+            <label htmlFor="newTrainingSession.zaalnaam">Zaal</label>
+            <select name="zaalnaam" value={newTrainingSession.zaalnaam} onChange={handleChange} className={styles.select}>
+                <option value="">Selecteer een zaal</option>
+                {zalenLijst.map(zaal => (
+                    <option key={zaal.naam} value={zaal.naam}>{zaal.naam}</option>
+                ))}
+            </select>
+            <label htmlFor="newTrainingSession.ploegen">Ploegen</label>
+            <select multiple name="ploegen" value={newTrainingSession.ploegen} onChange={handlePloegenChange} className={styles.select}>
+                {ploegenLijst.map(ploeg => (
+                    <option key={ploeg.ploegnaam} value={ploeg.ploegnaam}>{ploeg.ploegnaam}</option>
+                ))}
+            </select>
+            {error && <p className={styles.error}>{error}</p>}
+            <button type="submit" className={styles.button}>Voeg Trainingssessie Toe</button>
         </form>
     );
 };
