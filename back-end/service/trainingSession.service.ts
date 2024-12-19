@@ -26,18 +26,18 @@ const getTrainingSessionByPloegNaam = async (ploegnaam: string): Promise<Trainin
 // Functie om een trainingssessie toe te voegen
 const addTrainingSession = async (trainingSessionData: {
     id: string,
-    zaalnaam: string;
+    zaalNaam: string;
     datum: Date;
     startTijd: string;
     eindTijd: string;
     ploegen: Ploeg[];
 }) => {
-    const zaal = await zaalDb.getAllZalen().then(zalen => zalen.find(z => z.getNaam() === trainingSessionData.zaalnaam));
+    const zaal = await zaalDb.getAllZalen().then(zalen => zalen.find(z => z.getNaam() === trainingSessionData.zaalNaam));
 
   
 
     if (!zaal) {
-        throw new Error(`Zaal met naam ${trainingSessionData.zaalnaam} niet gevonden.`);
+        throw new Error(`Zaal met naam ${trainingSessionData.zaalNaam} niet gevonden.`);
     }
 
     // Zet de start- en eindtijden om naar Date objecten

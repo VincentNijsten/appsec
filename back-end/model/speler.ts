@@ -46,7 +46,7 @@ export class Speler {
         const licentieRegex = /^[0-9]{7}$/; // Reguliere expressie voor zeven cijfers
 
         if (!spelerLicentie.match(licentieRegex)) {
-            throw new Error('Coachlicentie moet uit zeven cijfers bestaan.');
+            throw new Error('SpelerLicentie moet uit zeven cijfers bestaan.');
         }
         this.spelerLicentie = spelerLicentie;
     }

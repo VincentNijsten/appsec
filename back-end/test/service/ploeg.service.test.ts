@@ -1,162 +1,158 @@
-import { Ploeg } from '../../model/ploeg';
-import { Speler } from '../../model/speler';
-import { Coach } from '../../model/coach';
-import ploegDb from '../../repository/ploeg.db';
-import spelerDb from '../../repository/speler.db';
-import spelerService from '../../service/speler.service';
 import ploegService from '../../service/ploeg.service';
-import { PloegInput, SpelerInput, CoachInput } from '../../types';
-
-const spelerInput: SpelerInput = {
-    naam: 'Speler 1',
-    spelerlicentie: '2562726',
-    leeftijd: 22,
-};
-
-
-const spelerinput2: SpelerInput = {
-    naam: 'Speler 2',
-    spelerlicentie: '1234567',
-    leeftijd: 25
-}
-
-
-const coachInput: CoachInput = {
-    naam: 'Coach 1',
-    coachlicentie: '8910112',
-};
-
-
-const speler = new Speler({...spelerInput,});
-const speler2 = new Speler(spelerinput2);
-const coach = new Coach(coachInput);
+import ploegDb from '../../repository/ploeg.db';
+import { Ploeg } from '../../model/ploeg';
+import { PloegInput } from '../../types';
+import trainingSessionService from '../../service/trainingSession.service';
 
 const ploegInput: PloegInput = {
-    niveau: 'Liga A',
     ploegnaam: 'Heren A',
-    spelers: [spelerInput], 
-    coach: coachInput,
+    niveau: 'Professioneel',
+    coachLicentie: '1234567',
 };
 
-// Converteer SpelerInput naar Speler objecten
-const ploeg = new Ploeg({
-    niveau: ploegInput.niveau,
-    ploegnaam: ploegInput.ploegnaam,
-    spelers: [], 
-    coach: undefined, 
-});
+const ploeg = new Ploeg(ploegInput);
 
 let mockGetAllPloegen: jest.Mock;
 let mockGetPloegByNaam: jest.Mock;
 let mockAddPloeg: jest.Mock;
-let mockGetSpelersInPloeg: jest.Mock;
-let mockAddSpelerToPloeg: jest.Mock;
+let mockVerwijderPloeg: jest.Mock;
+let mockUpdatePloeg: jest.Mock;
+let mockGetPloegByNaamExists: jest.Mock;
+let mockGetTrainingSessionByPloegNaam: jest.Mock;
+let mockRemovePloegFromTrainingSession: jest.Mock;
 
 beforeEach(() => {
     mockGetAllPloegen = jest.fn();
     mockGetPloegByNaam = jest.fn();
     mockAddPloeg = jest.fn();
-    mockGetSpelersInPloeg = jest.fn();
-    mockAddSpelerToPloeg = jest.fn();
+    mockVerwijderPloeg = jest.fn();
+    mockUpdatePloeg = jest.fn();
+    mockGetPloegByNaamExists = jest.fn();
+    mockGetTrainingSessionByPloegNaam = jest.fn();
+    mockRemovePloegFromTrainingSession = jest.fn();
 
     ploegDb.getAllPloegen = mockGetAllPloegen;
     ploegDb.getPloegByNaam = mockGetPloegByNaam;
     ploegDb.addPloeg = mockAddPloeg;
-    ploegDb.getSpelersInPloeg = mockGetSpelersInPloeg;
+    ploegDb.verwijderPloeg = mockVerwijderPloeg;
+    ploegDb.updatePloeg = mockUpdatePloeg;
+    trainingSessionService.getTrainingSessionByPloegNaam = mockGetTrainingSessionByPloegNaam;
+    trainingSessionService.removePloegFromTrainingSession = mockRemovePloegFromTrainingSession;
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-test('given a valid ploeg, when adding a ploeg, then the ploeg is added successfully', () => {
+test('given a valid ploeg, when addPloeg is called, then the ploeg is added successfully', async () => {
     // given
-    mockAddPloeg.mockReturnValue(undefined); 
+    mockGetPloegByNaam.mockResolvedValue(null); // Ploeg bestaat nog niet
+    mockAddPloeg.mockResolvedValue(undefined); // Simuleer succesvolle toevoeging
 
     // when
-    const result = ploegService.addPloeg(ploeg);
+    const result = await ploegService.addPloeg(ploegInput);
 
     // then
-    expect(result).toEqual(`${ploeg.getPloegnaam()} is succesvol toegevoegd`);
-    expect(mockAddPloeg).toHaveBeenCalledWith(ploeg);
+    expect(mockGetPloegByNaam).toHaveBeenCalledWith(ploegInput.ploegnaam);
+    expect(mockAddPloeg).toHaveBeenCalledWith(expect.any(Ploeg));
+    expect(result).toBe(`${ploegInput.ploegnaam} is succesvol toegevoegd`);
 });
 
-test('given a ploegnaam that exists, when getting a ploeg by naam, then the ploeg is returned', () => {
+test('given an existing ploeg, when addPloeg is called, then an error is thrown', async () => {
     // given
-    mockGetPloegByNaam.mockReturnValue(ploeg);
+    mockGetPloegByNaam.mockResolvedValue(ploeg); // Ploeg bestaat al
 
     // when
-    const result = ploegService.getPloegByNaam('Heren A');
+    const addExistingPloeg = async () => await ploegService.addPloeg(ploegInput);
 
     // then
+    expect(addExistingPloeg).rejects.toThrow(`De ploeg met naam ${ploegInput.ploegnaam} bestaat al`);
+});
+
+test('given a valid ploeg name, when getPloegByNaam is called, then the ploeg is returned', async () => {
+    // given
+    mockGetPloegByNaam.mockResolvedValue(ploeg); // Ploeg wordt gevonden
+
+    // when
+    const result = await ploegService.getPloegByNaam(ploegInput.ploegnaam);
+
+    // then
+    expect(mockGetPloegByNaam).toHaveBeenCalledWith(ploegInput.ploegnaam);
     expect(result).toEqual(ploeg);
-    expect(mockGetPloegByNaam).toHaveBeenCalledWith({ ploegnaam: 'Heren A' });
 });
 
-test('given a ploegnaam that does not exist, when getting a ploeg by naam, then an error is thrown', () => {
+test('given a non-existing ploeg name, when getPloegByNaam is called, then an error is thrown', async () => {
     // given
-    mockGetPloegByNaam.mockReturnValue(null);
+    mockGetPloegByNaam.mockResolvedValue(null); // Ploeg niet gevonden
 
     // when
-    const getPloeg = () => ploegService.getPloegByNaam('Onbekend');
+    const getNonExistingPloeg = async () => await ploegService.getPloegByNaam(ploegInput.ploegnaam);
 
     // then
-    expect(getPloeg).toThrow('Deze ploeg kan niet gevonden worden');
+    expect(getNonExistingPloeg).rejects.toThrow('Deze ploeg kan niet gevonden worden');
 });
 
-test('given a ploegnaam and spelerlicentie, when adding a speler to a ploeg, then the speler is added successfully', () => {
+test('given a valid ploeg name, when verwijderPloeg is called , then the ploeg is removed successfully', async () => {
     // given
-    mockGetPloegByNaam.mockReturnValue(ploeg);
-    jest.spyOn(spelerService, 'getSpelerByLicentie').mockReturnValue(speler);
-    mockGetAllPloegen.mockReturnValue([ploeg]);
+    mockGetPloegByNaam.mockResolvedValue(ploeg); // Ploeg bestaat
+    mockGetTrainingSessionByPloegNaam.mockResolvedValue(null); // Geen training sessie gevonden
 
     // when
-    const result = ploegService.addSpelerToPloeg('Heren A', '1234567');
+    await ploegService.verwijderPloeg(ploegInput.ploegnaam);
 
     // then
-    expect(result).toEqual(ploeg);
-    expect(ploeg.spelers).toContain(speler);
+    expect(mockGetPloegByNaam).toHaveBeenCalledWith(ploegInput.ploegnaam);
+    expect(mockVerwijderPloeg).toHaveBeenCalledWith(ploegInput.ploegnaam);
 });
 
-test('given a ploegnaam and spelerlicentie, when adding a speler that already exists in the ploeg, then an error is thrown', () => {
+test('given a ploeg with existing training sessions, when verwijderPloeg is called, then the ploeg is removed and training sessions are updated', async () => {
     // given
-    ploeg.spelers.push(speler);
-    mockGetPloegByNaam.mockReturnValue(ploeg);
-    jest.spyOn(spelerService, 'getSpelerByLicentie').mockReturnValue(speler);
+    mockGetPloegByNaam.mockResolvedValue(ploeg); // Ploeg bestaat
+    mockGetTrainingSessionByPloegNaam.mockResolvedValue(true); // Training sessie gevonden
 
     // when
-    const addSpeler = () => ploegService.addSpelerToPloeg('Heren A', '2562726');
+    await ploegService.verwijderPloeg(ploegInput.ploegnaam);
 
     // then
-    expect(addSpeler).toThrow('Speler is al toegevoegd aan deze ploeg');
+    expect(mockGetPloegByNaam).toHaveBeenCalledWith(ploegInput.ploegnaam);
+    expect(mockRemovePloegFromTrainingSession).toHaveBeenCalledWith(ploegInput.ploegnaam);
+    expect(mockVerwijderPloeg).toHaveBeenCalledWith(ploegInput.ploegnaam);
 });
 
-test('given a ploegnaam and spelerlicentie, when adding a speler that already exists in another ploeg, then an error is thrown ', () => {
+test('given a non-existing ploeg name, when verwijderPloeg is called, then an error is thrown', async () => {
     // given
-    const anderePloeg = new Ploeg({
-        niveau: 'Liga B',
-        ploegnaam: 'Heren B',
-        spelers: [speler2],
-        coach: coach,
-    });
-    mockGetPloegByNaam.mockReturnValue(ploeg);
-    jest.spyOn(spelerService, 'getSpelerByLicentie').mockReturnValue(speler);
-    mockGetAllPloegen.mockReturnValue([ploeg, anderePloeg]);
+    mockGetPloegByNaam.mockResolvedValue(null); // Ploeg niet gevonden
 
     // when
-    const addSpeler = () => ploegService.addSpelerToPloeg('Heren A', '1234567');
+    const removeNonExistingPloeg = async () => await ploegService.verwijderPloeg(ploegInput.ploegnaam);
 
     // then
-    expect(addSpeler).toThrow(`De speler ${speler.naam} speelt al in de ploeg ${anderePloeg.getPloegnaam()}`);
+    expect(removeNonExistingPloeg).rejects.toThrow(`De ploeg met naam ${ploegInput.ploegnaam} bestaat niet`);
 });
 
-test('given a ploeg that already exists, when adding a ploeg, then an error is thrown', () => {
+test('given a valid ploeg name and data, when updatePloeg is called, then the ploeg is updated successfully', async () => {
     // given
-    mockGetPloegByNaam.mockReturnValue(ploeg); 
-    
+    const updatedData = { niveau: 'Amateur' };
+    const updatedPloeg = new Ploeg({ ...ploegInput, ...updatedData }); // Maak een bijgewerkte ploeg aan
+    mockGetPloegByNaam.mockResolvedValue(ploeg); // Ploeg bestaat
+    mockUpdatePloeg.mockResolvedValue(updatedPloeg); // Simuleer succesvolle update
+
     // when
-    const addPloeg = () => ploegService.addPloeg(ploeg);
-    
+    const result = await ploegService.updatePloeg(ploegInput.ploegnaam, updatedData);
+
     // then
-    expect(addPloeg).toThrow(`de ploeg met naam ${ploeg.getPloegnaam()} bestaat al`);
+    expect(mockGetPloegByNaam).toHaveBeenCalledWith(ploegInput.ploegnaam);
+    expect(mockUpdatePloeg).toHaveBeenCalledWith(ploegInput.ploegnaam, updatedData);
+    expect(result).toEqual(updatedPloeg); // Controleer of het resultaat de bijgewerkte ploeg is
+});
+
+test('given a non-existing ploeg name, when updatePloeg is called, then an error is thrown', async () => {
+    // given
+    mockGetPloegByNaam.mockResolvedValue(null); // Ploeg niet gevonden
+
+    // when
+    const updateNonExistingPloeg = async () => await ploegService.updatePloeg(ploegInput.ploegnaam, { niveau: 'Nieuw Niveau' });
+
+    // then
+    expect(updateNonExistingPloeg).rejects.toThrow(`De ploeg met naam ${ploegInput.ploegnaam} bestaat niet`);
 });
