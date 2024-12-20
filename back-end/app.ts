@@ -40,6 +40,15 @@ const swaggerOpts = {
 const swaggerSpec = swaggerJSDoc(swaggerOpts);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// jwt
+app.use(
+    expressjwt({
+        secret: process.env.JWT_SECRET || 'default_secret',
+        algorithms: ['HS256'],
+    }).unless({
+        path: ['/api-docs', /^\/api-docs\/.*/, '/users/login', '/users/signup' ,'/status']
+    })
+)
 
 app.use('/users', userRouter);
 app.use('/coaches', coachRouter)
@@ -51,16 +60,6 @@ app.use('/training-sessions', trainingSessionRouter)
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
 });
-
-// jwt
-app.use(
-    expressjwt({
-        secret: process.env.JWT_SECRET || 'default_secret',
-        algorithms: ['HS256'],
-    }).unless({
-        path: ['/api-docs', /^\/api-docs\/.*/, '/users/login', '/users/signup' ,'/status']
-    })
-)
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error(err); // Log the error for debugging 
