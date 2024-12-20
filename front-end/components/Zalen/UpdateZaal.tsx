@@ -7,10 +7,11 @@ type Props = {
     zalen: Array<Zaal>;
 };
 
-const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
+const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen = []}: Props) => {
     const [selectedZaal, setSelectedZaal] = useState<string>("");
     const [zaalData, setZaalData] = useState<Partial<Zaal>>({});
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (selectedZaal) {
@@ -41,20 +42,30 @@ const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
             return;
         }
 
+        setLoading(true); // Start loading state
+        setError(null); // Reset error state
+
         try {
             const updatedZaal = await ZaalService.updateZaal(selectedZaal, zaalData);
-            onZaalUpdated(updatedZaal);
+            const updated = await updatedZaal.json();
+            onZaalUpdated(updated);
             setSelectedZaal("");
             setZaalData({});
-            setError(null);
         } catch (error) {
-            setError("Er is een fout opgetreden bij het bijwerken van de zaal.");
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("An unknown error occurred");
+            }
+        } finally {
+            setLoading(false); // End loading state
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
             {error && <p className="text-red-500 mb-4">{error}</p>}
+            {loading && <p className="text-blue-500 mb-4">Updating...</p>}
             <div className="mb-4">
                 <label htmlFor="zaal" className="block text-gray-700">Zaal:</label>
                 <select
@@ -83,7 +94,7 @@ const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
                             name="address"
                             value={zaalData.address || ""}
                             onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus :outline-none focus:ring-2 focus:ring-indigo-500"
                             required
                         />
                     </div>
@@ -98,8 +109,8 @@ const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
                             className="mt-1"
                         />
                     </div>
-                    <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-indigo-600">
-                        Update Zaal
+                    <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-indigo-600" disabled={loading}>
+                        {loading ? "Updating..." : "Update Zaal"}
                     </button>
                 </>
             )}
@@ -107,4 +118,4 @@ const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
     );
 };
 
-export default UpdateZaal;
+export default UpdateZaal; 

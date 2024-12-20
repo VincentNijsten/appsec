@@ -30,14 +30,14 @@ const getAllSpelers = async (): Promise<Speler[]> => {
 };
 
 // Functie om een speler op basis van naam op te halen
-const getSpelerByNaam = async (naam: string): Promise<Speler | undefined> => {
+const getSpelerByNaam = async (naam: string): Promise<Speler | null> => {
     try {
         const spelerPrisma = await prisma.speler.findFirst({
             where: {
                 naam: naam,
             },
         });
-        return spelerPrisma ? Speler.from(spelerPrisma) : undefined;
+        return spelerPrisma ? Speler.from(spelerPrisma) : null;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. Zie serverlog voor details.');
@@ -99,6 +99,9 @@ const deleteSpeler = async (licentie: string): Promise<void> => {
         throw new Error('Database error. Zie serverlog voor details.');
     }
 };
+
+
+
 
 
 export default {

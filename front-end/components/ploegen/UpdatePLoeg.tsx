@@ -113,7 +113,7 @@ const UpdatePloeg: React.FC<Props> = ({ onPloegUpdated, ploegen, coaches }: Prop
                         >
                             <option value="">Selecteer een coach</option>
                             {coaches.map(coache => (
-                                <option key={coache.coachLicentie} value={coache.naam}>
+                                <option key={coache.coachLicentie} value={coache.coachLicentie}>
                                     {coache.naam}
                                 </option>
                             ))}

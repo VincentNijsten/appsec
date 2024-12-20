@@ -37,9 +37,7 @@ const getAllTrainingSessions = async (): Promise<TrainingSession[]> => {
 
 // Functie om een trainingssessie toe te voegen
 const addTrainingSession = async ({ zaalNaam, datum, startTijd, eindTijd, ploegen }: TrainingSession): Promise<TrainingSession> => {
-    if (!zaalNaam || !datum || !startTijd || !eindTijd) {
-        throw new Error('Alle velden zijn verplicht.');
-    }
+  
 
     try {
         const newSession = await prisma.trainingSession.create({

@@ -1,4 +1,5 @@
 import { Ploeg } from "@/types";
+import { get } from "http";
 
 const getAllPloegen = async () => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
@@ -44,7 +45,7 @@ const addPloeg = async (ploeg: { ploegnaam: string; niveau: string; coachLicenti
         throw new Error(errorData.error || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
 const deletePloeg = async (ploegnaam: string) => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
@@ -60,10 +61,10 @@ const deletePloeg = async (ploegnaam: string) => {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+        throw new Error(errorData || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
 
 const updatePloeg = async (ploegnaam: string, ploegData: Partial<Ploeg>) => {
@@ -81,11 +82,52 @@ const updatePloeg = async (ploegnaam: string, ploegData: Partial<Ploeg>) => {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+        throw new Error(errorData || 'Er is een fout opgetreden.');
     }
 
     return response.json();
 };
+
+const getPloegByNaam = async (ploegnaam: string) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
+    const response =  await fetch(process.env.NEXT_PUBLIC_API_URL + `/ploegen/${ploegnaam}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+    });
+    console.log("response ServiceWorker",response);
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData || 'Er is een fout opgetreden.');
+    }
+
+    return response;
+}
+
+const getPloegByCoachLicenties = async (coachLicentie: string) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+    const response =  await fetch(process.env.NEXT_PUBLIC_API_URL + `/ploegen/coach/${coachLicentie}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+    });
+    console.log("response ServiceWorker",response);
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData || 'Er is een fout opgetreden.');
+    }
+
+    return response;
+}
 
 
 const PloegenService = {
@@ -93,7 +135,9 @@ const PloegenService = {
     getSpelersInPloeg,
     addPloeg,
     deletePloeg,
-    updatePloeg
+    updatePloeg,
+    getPloegByNaam,
+    getPloegByCoachLicenties
 };
 
 export default PloegenService;

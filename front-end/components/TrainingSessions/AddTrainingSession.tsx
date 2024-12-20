@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 import TrainingSessionService from "@/services/TrainingSessionService";
-import { TrainingSession, Ploeg, Zaal } from "@/types";
+import {  Ploeg, Zaal } from "@/types";
 
-type Props = {
-    onTrainingSessionAdded: (trainingSession: TrainingSession) => void;
-    ploegen: Array<Ploeg>;
-    zalen: Array<Zaal>;
-};
+
 
 const AddTrainingSession = ({ onTrainingSessionAdded, ploegenLijst, zalenLijst }: { onTrainingSessionAdded: (session: any) => void, ploegenLijst: Ploeg[], zalenLijst: Zaal[] }) => {
     const [newTrainingSession, setNewTrainingSession] = useState({
         datum: "",
         startTijd: "",
         eindTijd: "",
-        zaalnaam: "",
+        zaalNaam: "",
         ploegen: [] as string[],
     });
     
@@ -37,98 +33,143 @@ const AddTrainingSession = ({ onTrainingSessionAdded, ploegenLijst, zalenLijst }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newTrainingSession.datum || !newTrainingSession.startTijd || !newTrainingSession.eindTijd || !newTrainingSession.zaalnaam || newTrainingSession.ploegen.length === 0) {
+        if (!newTrainingSession.datum || !newTrainingSession.startTijd || !newTrainingSession.eindTijd || !newTrainingSession.zaalNaam || newTrainingSession.ploegen.length === 0) {
             setError("Vul alstublieft alle velden in.");
             return;
         }
 
         try {
-            const addedTrainingSession = await TrainingSessionService.addTrainingSession({
+            const response = await TrainingSessionService.addTrainingSession({
                 ...newTrainingSession,
                 ploegen: newTrainingSession.ploegen.map(ploegnaam => ploegenLijst.find(ploeg => ploeg.ploegnaam === ploegnaam)!)
             });
+            const addedTrainingSession = await response.json();
             onTrainingSessionAdded(addedTrainingSession);
-            setNewTrainingSession({ datum: "", startTijd: "", eindTijd: "", zaalnaam: "", ploegen: [] });
+            setNewTrainingSession({ datum: "", startTijd: "", eindTijd: "", zaalNaam: "", ploegen: [] });
             setError(null);
         } catch (error) {
-            setError("Er is een fout opgetreden bij het toevoegen van de trainingssessie.");
+            if(error instanceof Error){
+                setError(error.message);
+            }
+            else{
+                setError("An unknown error occurred");
+            }
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="max-w-lg mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">Voeg een nieuwe Training toe</h2>
+        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+            {/* input voor datum */}
             <div>
-                <label htmlFor="datum">Datum:</label>
-                <input
-                    type="date"
-                    id="datum"
-                    name="datum"
-                    value={newTrainingSession.datum}
-                    onChange={handleChange}
-                    required
-                />
+            <label htmlFor="newTrainingSession.datum" className="block text-sm font-medium text-gray-700">
+                Datum
+            </label>
+            <input
+             type="date"
+             name="datum" 
+             value={newTrainingSession.datum} 
+             onChange={handleChange}
+             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+             required
+             />
             </div>
+
+            {/* input voor startUur */}
             <div>
-                <label htmlFor="startTijd">Start Tijd:</label>
-                <input
-                    type="time"
-                    id="startTijd"
-                    name="startTijd"
-                    value={newTrainingSession.startTijd}
-                    onChange={handleChange}
-                    required
-                />
+
+            <label htmlFor="newTrainingSession.StartUur" className="block text-sm font-medium text-gray-700">
+                Start
+            </label>
+            <input
+             type="time" 
+             name="startTijd" 
+             value={newTrainingSession.startTijd} 
+             onChange={handleChange} 
+             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+             required
+             />
             </div>
+
+            {/* input voor eindUur */}
             <div>
-                <label htmlFor="eindTijd">Eind Tijd:</label>
-                <input
-                    type="time"
-                    id="eindTijd"
-                    name="eindTijd"
-                    value={newTrainingSession.eindTijd}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
+
             
-            <div>
-                <label htmlFor="zaalnaam">Zaal:</label>
-                <select
-                    id="zaalnaam"
-                    name="zaalnaam"
-                    value={newTrainingSession.zaalnaam}
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="">Selecteer een Zaal</option>
-                    {zalen.map(zaal => (
-                        <option key={zaal.naam} value={zaal.naam}>
-                            {zaal.naam}
-                        </option>
-                    ))}
-                </select>
+            <label htmlFor="newTrainingSession.endUur" className="block text-sm font-medium text-gray-700">
+                Eind
+            </label>
+            <input
+             type="time" 
+             name="eindTijd" 
+             value={newTrainingSession.eindTijd} 
+             onChange={handleChange} 
+             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+             required
+             />
             </div>
+            {/* input voor zaal */}
             <div>
-                <label htmlFor="ploegnaam">Ploeg:</label>
-                <select
-                    id="ploegnaam"
-                    name="ploegnaam"
-                    value={newTrainingSession.ploegnaam}
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="">Selecteer een ploeg</option>
-                    {ploegen.map(ploeg => (
-                        <option key={ploeg.ploegnaam} value={ploeg.ploegnaam}>
-                            {ploeg.ploegnaam}
-                        </option>
-                    ))}
-                </select>
+            <label htmlFor="newTrainingSession.zaalnaam" className="block text-sm font-medium text-gray-700">
+                Zaal
+            </label>
+            <select
+             name="zaalNaam" 
+             value={newTrainingSession.zaalNaam} 
+             onChange={handleChange} 
+             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+             required
+             >
+                <option
+                 value="">Selecteer een zaal
+                </option>
+                {zalenLijst.map(zaal => (
+                    <option
+                     key={zaal.naam} 
+                     value={zaal.naam}
+                     >{zaal.naam}
+                    </option>
+                ))}
+            
+            </select>
             </div>
-            <button type="submit">Voeg Trainingssessie Toe</button>
+
+            {/* input voor ploegen */}
+            <div>
+            <label htmlFor="newTrainingSession.ploegen" className="block text-sm font-medium text-gray-700">
+                Ploegen
+            </label>
+            <select
+             multiple name="ploegen" 
+             value={newTrainingSession.ploegen} 
+             onChange={handlePloegenChange} 
+             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+             required
+             >
+                {ploegenLijst.map(ploeg => (
+                    <option
+                     key={ploeg.ploegnaam} 
+                     value={ploeg.ploegnaam}
+                     >{ploeg.ploegnaam}
+                    </option>
+                ))}
+            </select>
+            </div>
+
+            {/* submit button */}
+            <button
+             type="submit" 
+             className="w-full bg-black text-white font-medium py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+
+             >
+                Voeg Trainingssessie Toe
+            </button>
         </form>
+    </div>
     );
 };
+
 
 export default AddTrainingSession;

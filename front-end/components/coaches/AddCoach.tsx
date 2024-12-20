@@ -29,12 +29,23 @@ const AddCoach: React.FC<Props> = ({ onCoachAdded }: Props) => {
 
         try {
             const addedCoach = await CoachService.addCoach(newCoach);
-            onCoachAdded(addedCoach);
+            const added = await addedCoach.json();
+            console.log("message" ,added.message);
+            onCoachAdded(added);
+            if(added.message){
+                throw new Error(added.message);
+
+            }
             setNewCoach({ naam: "", coachLicentie: "" });
             setError(null);
             router.push("/coaches/overview");
         } catch (error) {
-            setError("Er is een fout opgetreden bij het toevoegen van de coach.");
+            if(error instanceof Error){
+                setError(error.message);
+            }
+            else{
+                setError("An unknown error occurred");
+            }  
         }
     };
 

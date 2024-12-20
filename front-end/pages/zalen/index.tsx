@@ -2,7 +2,7 @@ import Header from "@/components/header";
 import ZaalService from "@/services/ZaalService";
 import { Zaal } from "@/types";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ZaalOverviewTable from "@/components/Zalen/ZaalOverviewTable";
 import AddZaal from "@/components/Zalen/AddZaal";
 import DeleteZaal from "@/components/Zalen/DeleteZaal";
@@ -16,14 +16,20 @@ const Zalen: React.FC = () => {
     const [zalen, setZalen] = useState<Array<Zaal>>([]);
 
     const getZalen = async () => {
-        const response = await ZaalService.getAllZalen();
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch zalen.")
-        }
-
-        const zalen = await response.json();
-        return { zalen }
+       try {
+         const response = await ZaalService.getAllZalen();
+ 
+         if (!response.ok) {
+             throw new Error("Failed to fetch zalen.")
+         }
+ 
+         const zalen = await response.json();
+         setZalen(zalen);
+         return { zalen }
+       } catch (error) {
+        throw new Error("Failed to fetch zalen.")
+        
+       }
         
     };
     
@@ -39,11 +45,15 @@ const Zalen: React.FC = () => {
         setZalen(prevZalen => prevZalen.filter(zaal => zaal.naam !== naam));
     };
 
-    const {data, isLoading, error} = useSWR("zalen", getZalen);
+    const { data: dataZalen, isLoading: isLoadingZalen, error: errorZalen } = useSWR("zalen", getZalen);
    
     useInterval(() => {
         mutate("zalen", getZalen())
     }, 5000)
+
+    useEffect(() => {
+        getZalen();
+    }, []);
 
     return (
         <>
@@ -54,11 +64,9 @@ const Zalen: React.FC = () => {
             <main className="d-flex flex-column justify-content-cneter align-items-center">
                 <h1 className="text-4xl font-bold text-center text-gray-800 mt-8 mb-4">Zalen</h1>
                 <section>
-                    {error && <div className="text-red-800">{error}</div>}
-                    {isLoading && <p>Loading...</p>}
-                    {data &&
-                        <ZaalOverviewTable zalen={data.zalen} />
-                    }
+                   {errorZalen&& <p>{errorZalen}</p>}
+                   {isLoadingZalen && <p>Loading...</p>}
+                    <ZaalOverviewTable zalen={dataZalen?.zalen} />
                 </section>
 
                 <section className="pt-10">
@@ -68,11 +76,11 @@ const Zalen: React.FC = () => {
 
                 <section className="pt-10">
                     <h3 className="text-3xl font-bold text-center text-gray-800 mt-8 mb-4">Update een zaal</h3>
-                    <UpdateZaal onZaalUpdated={handleZaalUpdated} zalen={data?.zalen} />
+                    <UpdateZaal onZaalUpdated={handleZaalUpdated} zalen={dataZalen?.zalen} />
                 </section>
                 <section className="pt-10">
                     <h3 className="text-3xl font-bold text-center text-gray-800 mt-8 mb-4">Verwijder een zaal</h3>
-                    <DeleteZaal onZaalDeleted={handleZaalDeleted} zalen={data?.zalen} />
+                    <DeleteZaal onZaalDeleted={handleZaalDeleted} zalen={dataZalen?.zalen} />
                 </section>
             </main>
         </>

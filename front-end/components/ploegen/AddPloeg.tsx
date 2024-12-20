@@ -34,13 +34,22 @@ const AddPloeg: React.FC<Props> = ({ onPloegAdded, coaches }: Props) => {
 
         try {
             const addedPloeg = await PloegService.addPloeg(newPloeg);
-            onPloegAdded(addedPloeg);
+            const added =   await addedPloeg.json();
+            if(added.message){
+                throw new Error(added.message);
+
+            }
+            onPloegAdded(added);
             setNewPloeg({ ploegnaam: "", niveau: "", coachLicentie: null });
             setError(null);
             router.push("/ploegen/overview");
         } catch (error) {
-            setError("Er is een fout opgetreden bij het toevoegen van de ploeg.");
-        }
+            if(error instanceof Error){
+                setError(error.message);
+            }
+            else{
+                setError("An unknown error occurred");
+            }         }
     };
 
     return (

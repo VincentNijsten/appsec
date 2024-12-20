@@ -4,16 +4,21 @@ const getAllZalen = async () => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
     const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
 
-    return fetch(process.env.NEXT_PUBLIC_API_URL + "/zalen", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/zalen", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
         },
     });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+    }
+    return response;
 };
 
-console.log(getAllZalen());
 
 const addZaal = async (zaal: { naam: string; address: string; beschikbaarheid: boolean }) => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
@@ -33,7 +38,7 @@ const addZaal = async (zaal: { naam: string; address: string; beschikbaarheid: b
         throw new Error(errorData.error || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
 
 const updateZaal = async (naam: string, zaalData: Partial<Zaal>) => {
@@ -54,7 +59,7 @@ const updateZaal = async (naam: string, zaalData: Partial<Zaal>) => {
         throw new Error(errorData.error || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
 
 const deleteZaal = async (naam: string) => {
@@ -74,7 +79,7 @@ const deleteZaal = async (naam: string) => {
         throw new Error(errorData.error || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
 
 

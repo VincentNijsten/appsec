@@ -7,7 +7,7 @@ type Props = {
     zalen: Array<Zaal>;
 };
 
-const DeleteZaal: React.FC<Props> = ({ onZaalDeleted, zalen }: Props) => {
+const DeleteZaal: React.FC<Props> = ({ onZaalDeleted, zalen = [] }: Props) => {
     const [selectedZaal, setSelectedZaal] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
 

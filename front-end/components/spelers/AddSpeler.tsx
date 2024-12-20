@@ -31,13 +31,23 @@ const AddSpeler: React.FC<Props> = ({ onSpelerAdded, ploegen }: Props) => {
 
         try {
             const addedSpeler = await SpelerService.addSpeler(newSpeler);
-            onSpelerAdded(addedSpeler);
+            const added = await addedSpeler.json();
+            console.log(added.message);
+            if(added.message){
+                throw new Error(added.message);
+
+            }
+            onSpelerAdded(added);
             setNewSpeler({ naam: "", spelerLicentie: "", leeftijd: 0, ploegNaam: "" });
             setError(null);
             router.push("/spelers/overview");
         } catch (error) {
-            setError("Er is een fout opgetreden bij het toevoegen van de speler.");
-        }
+            if(error instanceof Error){
+                setError(error.message);
+            }
+            else{
+                setError("An unknown error occurred");
+            }        }
     };
 
     return (

@@ -4,13 +4,20 @@ const getUserByEmail = async (email: string) => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
     const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
 
-    return fetch(process.env.NEXT_PUBLIC_API_URL + `/users/email?email=${encodeURIComponent(email)}`, {
+    const response =  await fetch(process.env.NEXT_PUBLIC_API_URL + `/users/email?email=${encodeURIComponent(email)}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
         }
     });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+    }
+
+    return response;
 }
 
 const loginUser = (user: User) => {

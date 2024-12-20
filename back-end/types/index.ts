@@ -42,8 +42,9 @@ type ZaalInput = {
 };
 
 type TrainingSessionInput = {
-    ploeg: PloegInput;
-    zaal: ZaalInput;
+    id?: string;
+    ploegen: [PloegInput];
+    zaalNaam: string;
     datum: Date;
     startTijd: string;
     eindTijd: string;

@@ -12,41 +12,50 @@ import useInterval from "use-interval";
 import useSWR, { mutate } from "swr";
 
 const TrainingSessions: React.FC = () => {
-    const [trainingSession, setTrainingSessions] = useState<Array<TrainingSession>>([])
+    const [trainingSessions, setTrainingSessions] = useState<Array<TrainingSession>>([])
+    const [ploegen, setPloegen] = useState<Array<Ploeg>>([])
+    const [zalen, setZalen] = useState<Array<Zaal>>([])
 
     // alle training sessies
     const getTrainingSessions = async () => {
-        const response = await TrainingSessionService.getAllTrainingSessions();
-
-        if (!response.ok) {
+        try {
+            const response = await TrainingSessionService.getAllTrainingSessions();
+            if (!response.ok) {
+                throw new Error("Failed to fetch training sessions");
+            }
+    
+          
+            const trainingSessions = await response.json()
+            setTrainingSessions(trainingSessions)
+            return { trainingSessions }
+        } catch (error) {
             throw new Error("Failed to fetch training sessions")
+            
         }
-
-        const trainingSession = await response.json()
-        return { trainingSession }
     };
 
     const getPloegen = async () => {
-        const response = await PloegService.getAllPloegen();
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch teams")
+        try {
+         const response = await PloegService.getAllPloegen();
+         const ploegen = await response.json();
+         setPloegen(ploegen);
+         
+        } catch (error) {
+            throw new Error("Failed to fetch ploegen")
+    
         }
-            
-        const ploegen = await response.json();
-        return { ploegen }
 
     };
 
     const getZalen = async () => {
-        const response = await ZaalService.getAllZalen();
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch training sessions")
+        try {
+            const response = await ZaalService.getAllZalen();
+            const zalen = await response.json();
+            setZalen(zalen);
+        } catch (error) {
+            throw new Error("Failed to fetch zalen")
+            
         }
-
-        const zalen = await response.json();
-        return { zalen }
     };
 
     const { data: dataTrainingSessions, isLoading: isLoadingTrainingSessions, error: errorTrainingSessions } = useSWR("trainingSession", getTrainingSessions);
@@ -64,6 +73,13 @@ const TrainingSessions: React.FC = () => {
         mutate("zalen", getZalen())
     }, 5000)
 
+    useEffect(() => {
+        getTrainingSessions();
+        getPloegen();
+        getZalen();
+      
+    }, [])
+
     return (
         <>
             <Head>
@@ -71,15 +87,19 @@ const TrainingSessions: React.FC = () => {
             </Head>
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
-                <h1 className={styles.tabletitle}>Sessions</h1>
-                <section className={styles.tables}>
-                    { trainingSessions &&
-                        <TrainingSessionsOverviewTable trainingsessions={trainingSessions}/>
+            <h1 className="text-4xl font-bold text-center text-gray-800 mt-8 mb-4">Sessions</h1>
+                <section>
+                    {errorTrainingSessions && <p>{errorTrainingSessions}</p>}
+                    {isLoadingTrainingSessions && <p>Loading...</p>}
+                    {
+                        dataTrainingSessions && <TrainingSessionsOverviewTable
+                            trainingsessions={dataTrainingSessions?.trainingSessions}/>
                     }
+                    
                 </section>
-                <section className={styles.formcontainer}>
-                    <h3>Voeg een nieuwe trainingssessie toe</h3>
-                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegen={ploegen} zalen={zalen} />
+                <section >
+                    <h3 className="text-4xl font-bold text-center text-gray-800 mt-8">Voeg een nieuwe trainingssessie toe</h3>
+                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegenLijst={ploegen} zalenLijst={zalen} />
                 </section>
             </main>
         </>

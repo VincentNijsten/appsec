@@ -45,7 +45,7 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
 
         try {
             const updatedSpeler = await SpelerService.updateSpeler(selectedSpeler, spelerData);
-            onSpelerUpdated({ ...updatedSpeler } as Speler);
+            onSpelerUpdated({ ...updatedSpeler } as unknown as Speler);
             setSelectedSpeler("");
             setSpelerData({});
             setError(null);

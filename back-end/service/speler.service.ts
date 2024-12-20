@@ -9,14 +9,20 @@ const getAllSpelers = async (): Promise<Speler[]> => {
 }
 
 // Functie om een speler op naam op te halen
-const getSpelerByNaam = async (naam: string): Promise<Speler> => {
-    const speler = await spelersDb.getSpelerByNaam(naam);
+const getSpelerByNaam = async (naam: string): Promise<{speler?:Speler; message?:string}> => {
+   try {
+     const speler = await spelersDb.getSpelerByNaam(naam);
+ 
+     if (!speler) {
+         return {message:`Speler met naam: ${naam} kan niet gevonden worden`}
+     } else {
+         return {speler};
+     }
+   } catch (error) {
+    return { message: error instanceof Error ? error.message : 'An unknown error occurred' };
 
-    if (speler === undefined) {
-        throw new Error('Deze speler kan niet gevonden worden');
-    } else {
-        return speler;
-    }
+    
+   }
 }
 
 // Functie om een speler op basis van licentie op te halen
@@ -25,24 +31,29 @@ const getSpelerByLicentie = async (licentie: string): Promise<Speler | null> => 
 }
 
 // Functie om een speler toe te voegen
-const addSpeler = async ({ naam, spelerLicentie, leeftijd, ploegNaam}: SpelerInput): Promise<string> => {
-    const exists = await spelersDb.getSpelerByLicentie(spelerLicentie);
-    if (exists) {
-        throw new Error(`De speler met de licentie: ${spelerLicentie} bestaat al, ${exists.getNaam()}`);
-    }
-
-    const ploegExists = await ploegDb.getPloegByNaam(ploegNaam);
-    if (!ploegExists) {
-        throw new Error(`De ploeg met de naam: ${ploegNaam} bestaat niet`);
-    }
-
-    if (leeftijd < 0 || leeftijd > 100) {
-        throw new Error('De leeftijd van de speler moet tussen 0 en 100 zijn');
-    }
-
-    const newSpeler = new Speler({ naam, spelerLicentie, leeftijd, ploegNaam });
-    await spelersDb.addSpeler(newSpeler); 
-    return "Speler succesvol toegevoegd";
+const addSpeler = async ({ naam, spelerLicentie, leeftijd, ploegNaam}: SpelerInput): Promise<{speler?:Speler;message?:string}> => {
+try {
+        const exists = await spelersDb.getSpelerByLicentie(spelerLicentie);
+        if (exists) {
+            return { message:`De speler met de licentie: ${spelerLicentie} bestaat al, ${exists.getNaam()}`};
+        }
+    
+        const ploegExists = await ploegDb.getPloegByNaam(ploegNaam);
+        if (!ploegExists) {
+            return { message:`De ploeg met de naam: ${ploegNaam} bestaat niet`};
+        }
+    
+        if (leeftijd < 0 || leeftijd > 100) {
+            return { message:'De leeftijd van de speler moet tussen 0 en 100 zijn'};
+        }
+    
+        const newSpeler = new Speler({ naam, spelerLicentie, leeftijd, ploegNaam });
+        await spelersDb.addSpeler(newSpeler); 
+        return {speler: newSpeler};
+} catch (error) {
+    return { message: error instanceof Error ? error.message : 'An unknown error occurred' };
+    
+}
 }
 
 const removeSpeler = async (spelerLicentie: string): Promise<string> => {
@@ -64,12 +75,17 @@ const removeSpeler = async (spelerLicentie: string): Promise<string> => {
 };
 
 // Functie om een speler bij te werken
-const updateSpeler = async (licentie: string, spelerData: Partial<Speler>): Promise<Speler> => {
-    const exists = await spelersDb.getSpelerByLicentie(licentie);
-    if (!exists) {
-        throw new Error(`De speler met licentie ${licentie} bestaat niet`);
+const updateSpeler = async (licentie: string, spelerData: Partial<Speler>): Promise<{speler?:Speler;message?:string}> => {
+    try {
+      const exists = await spelersDb.getSpelerByLicentie(licentie);
+            if (!exists) {
+              return { message:`De speler met licentie ${licentie} bestaat niet`};
+          }
+         const updatedPlayer= await spelersDb.updateSpeler(licentie, spelerData);
+         return {speler: updatedPlayer};
+    } catch (error) {
+        return { message: error instanceof Error ? error.message : 'An unknown error occurred' };
     }
-    return await spelersDb.updateSpeler(licentie, spelerData);
 }
 
 

@@ -4,16 +4,26 @@ const getAllTrainingSessions = async () => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
     const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
 
-    return fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
         },
     });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+    }
+
+    return response
 };
 
-const addTrainingSession = async (trainingSession: { datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegnaam: string }) => {
+const addTrainingSession = async (trainingSession: { datum: string; startTijd: string; eindTijd: string; zaalNaam: string; ploegen: Ploeg[] }) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "POST",
         headers: {
@@ -25,23 +35,30 @@ const addTrainingSession = async (trainingSession: { datum: string; startTijd: s
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+        console.log(errorData);
+        throw new Error(errorData || 'Er is een onbekende fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
 
 const getTrainingSessionsByPloeg = async (ploegnaam: string) => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
     const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
 
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/training-sessions/${ploegnaam}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/training-sessions/${ploegnaam}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
         },
     });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Er is een fout opgetreden.');
+    }
+    return response
 };
 
 const TrainingSessionService = {

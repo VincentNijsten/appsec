@@ -56,17 +56,11 @@ const addPloeg = async (ploeg: { ploegnaam: string; niveau: string; coachLicenti
 
 // Functie om een ploeg op naam op te halen
 const getPloegByNaam = async (ploegnaam: string): Promise<Ploeg | null> => {
-    try {
-        const ploegPrisma = await prisma.ploeg.findUnique({
-            where: {
-                ploegnaam: ploegnaam,
-            },
+    const ploeg = await prisma.ploeg.findUnique({
+            where: {ploegnaam}
         });
-        return ploegPrisma ? Ploeg.from(ploegPrisma) : null;
-    } catch (error) {
-        console.error(error);
-        throw new Error('Database error. See server log for details.');
-    }
+        return ploeg ? Ploeg.from(ploeg) : null;
+ 
 };
 
 // Functie om alle ploegen op te halen
@@ -79,15 +73,14 @@ const getAllPloegen = async (): Promise<Ploeg[]> => {
         throw new Error('Database error. See server log for details.');
     }
 };
-const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
+const verwijderPloeg = async (ploegnaam: string): Promise<Ploeg | null> => {
     try {
-       
-
         // Verwijder de ploeg
-        await prisma.ploeg.delete({
+        const ploeg = await prisma.ploeg.delete({
             where: { ploegnaam: ploegnaam },
         });
         console.log(`Ploeg ${ploegnaam} verwijderd.`);
+        return ploeg? new Ploeg(ploeg): null;
     } catch (error) {
         console.error(error);
         throw new Error('Database error. Zie serverlog voor details.');
@@ -97,6 +90,17 @@ const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
 // Functie om een ploeg bij te werken
 const updatePloeg = async (ploegnaam: string, ploegData: Partial<Ploeg>): Promise<Ploeg> => {
     try {
+
+        if(ploegData.coachLicentie) {
+            const coachExists = await prisma.coach.findUnique({
+                where: { coachLicentie: ploegData.coachLicentie },
+            });
+            if (!coachExists) {
+                throw new Error(`Coach with licentie ${ploegData.coachLicentie} does not exist`);
+            }
+        }
+
+
         const updatedPloegPrisma = await prisma.ploeg.update({
             where: { ploegnaam: ploegnaam },
             data: {
@@ -111,6 +115,19 @@ const updatePloeg = async (ploegnaam: string, ploegData: Partial<Ploeg>): Promis
     }
 };
 
+const getPloegByCoachLicentie = async (coachLicentie: string): Promise<Ploeg | null> => {
+   try {
+     const ploeg = await prisma.ploeg.findFirst({
+         where: { coachLicentie },
+     });
+     return ploeg ? Ploeg.from(ploeg) : null;
+   } catch (error) {
+        throw new Error('Database error. See server log for details.');
+
+    
+   }
+}
+
 
 export default {
     getCoachByNaam,
@@ -120,4 +137,5 @@ export default {
     getPloegByNaam,
     getAllPloegen,
     verwijderPloeg,
+    getPloegByCoachLicentie
 };

@@ -32,12 +32,17 @@ const AddZaal: React.FC<Props> = ({ onZaalAdded }: Props) => {
 
         try {
             const addedZaal = await ZaalService.addZaal(newZaal);
-            onZaalAdded(addedZaal);
+            const added = await addedZaal.json();
+            onZaalAdded(added);
             setNewZaal({ naam: "", address: "", beschikbaarheid: false });
             setError(null);
         } catch (error) {
-            setError("Er is een fout opgetreden bij het toevoegen van de zaal.");
-        }
+            if(error instanceof Error){
+                setError(error.message);
+            }
+            else{
+                setError("An unknown error occurred");
+            }         }
     };
 
     return (

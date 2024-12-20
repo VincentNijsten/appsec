@@ -91,18 +91,18 @@ ploegRouter.get('/', async (req: Request, res: Response, next: NextFunction) => 
  *       500:
  *         description: Fout bij het ophalen van de ploeg
  */
-ploegRouter.get('/:ploegnaam', (req, res) => {
-    const ploegnaam = req.params.ploegnaam;
+ploegRouter.get('/:ploegnaam', async (req: Request, res: Response, next: NextFunction)=> {
     try {
-        const ploeg = ploegService.getPloegByNaam(ploegnaam );
+        const ploegnaam = req.params.ploegnaam;
+        const ploeg = await ploegService.getPloegByNaam(ploegnaam);
+        console.log(ploeg);
         if (ploeg) {
-            res.json(ploeg);
+            res.status(200).json(ploeg);
         } else {
             res.status(404).json({ message: 'Team not found' });
         }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving team' });
+        next(error);    
     }
 });
 
@@ -168,11 +168,11 @@ ploegRouter.get('/:ploegnaam', (req, res) => {
  *       500:
  *         description: Fout bij het toevoegen van de ploeg
  */
-ploegRouter.post('/', (req, res) => {
+ploegRouter.post('/', async (req, res) => {
     const newPloeg = <PloegInput>req.body;
     try {
-        const result = ploegService.addPloeg(newPloeg);
-        res.status(201).json(result);
+        const result = await ploegService.addPloeg(newPloeg);
+        res.status(201).json({ message: result.message });
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: 'Error adding team' });
@@ -205,13 +205,19 @@ ploegRouter.post('/', (req, res) => {
  *       500:
  *         description: Fout bij het verwijderen van de ploeg
  */
-ploegRouter.delete('/:ploegnaam', async (req, res) => {
+ploegRouter.delete('/:ploegnaam', async (req: Request, res: Response, next: NextFunction) => {
     const { ploegnaam } = req.params;
     try {
-        await ploegService.verwijderPloeg(ploegnaam);
-        res.status(200).json({ message: 'Ploeg succesvol verwijderd' });
+        const ploeg = await ploegService.verwijderPloeg(ploegnaam);
+        if (!ploeg) {
+            res.status(400).json({ message: 'Team not found' });
+        } else{
+            res.status(200).json({ message: 'Ploeg succesvol verwijderd' });
+
+        }
+
     } catch (error) {
-        res.status(400).json({ message: 'Error deleting team' });
+        next(error)
     }
 });
 
@@ -255,6 +261,21 @@ ploegRouter.put('/:ploegnaam', async (req, res) => {
         res.status(200).json(updatedPloeg);
     } catch (error) {
         res.status(400).json({ message: 'Error updating team' });
+    }
+});
+
+
+ploegRouter.get('/coach/:coachLicentie', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const coachLicentie = req.params.coachLicentie;
+        const ploeg = await ploegService.getPloegByCoachLicentie(coachLicentie);
+        if (ploeg) {
+            res.status(200).json(ploeg);
+        } else {
+            res.status(404).json({ message: 'Team not found' });
+        }
+    } catch (error) {
+        next(error);
     }
 });
 

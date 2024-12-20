@@ -42,9 +42,7 @@ const Header: React.FC = () => {
                     {/* role = player*/}
                     {loggedInUser?.role === 'player' && (
                         <>
-                            <Link href="/spelers/overview" className="hover:text-gray-400 transition duration-300">
-                                {t("header.spelers.spelers")}
-                            </Link>
+                           
                             <Link href="/ploegen/overview" className="hover:text-gray-400 transition duration-300">
                                 {t("header.ploegen.ploegen")}
                             </Link>

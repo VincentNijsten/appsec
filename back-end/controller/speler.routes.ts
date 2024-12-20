@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import spelerService from '../service/speler.service'; // Zorg ervoor dat je het juiste pad naar de speler service gebruikt
 import { SpelerInput } from '../types';
+import { el } from 'date-fns/locale';
 
 const spelersRouter = express.Router();
 
@@ -75,13 +76,18 @@ spelersRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
  *       500:
  *         description: Fout bij het ophalen van de speler
  */
-spelersRouter.get('/:naam', (req, res) => {
+spelersRouter.get('/:naam', async(req: Request, res: Response, next: NextFunction) => {
     const naam = req.params.naam;
     try {
-        const speler = spelerService.getSpelerByNaam(naam);
-        res.json(speler);
+        const speler = await spelerService.getSpelerByNaam(naam);
+        if(speler){
+            res.status(200).json(speler);
+        }else{
+            res.status(404).json({ message: 'Speler niet gevonden' });
+        }
+        
     } catch (error) {
-        console.error(error);
+        next(error);
     }
 });
 
@@ -149,11 +155,11 @@ spelersRouter.get('/licentie/:licentie', (req, res) => {
  *       500:
  *         description: Fout bij het toevoegen van de speler
  */
-spelersRouter.post('/', (req, res) => {
+spelersRouter.post('/', async(req, res) => {
     const newSpeler = <SpelerInput>req.body;
     try {
-        spelerService.addSpeler(newSpeler);
-        res.status(201).json({ message: 'Speler succesvol toegevoegd' });
+        const speler = await spelerService.addSpeler(newSpeler);
+        res.status(201).json({ message: speler.message });
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: 'Error adding player' });
@@ -186,8 +192,8 @@ spelersRouter.post('/', (req, res) => {
 spelersRouter.delete('/:spelerLicentie', async (req, res) => {
    const { spelerLicentie } = req.params;
    try {
-       await spelerService.removeSpeler(spelerLicentie);
-       res.status(200).json({ message: 'Speler succesvol verwijderd' });
+       const deleted= await spelerService.removeSpeler(spelerLicentie);
+       res.status(200).json({ message: deleted });
    } catch (error) {
        console.error(error);
        res.status(400).json({ message: 'Error deleting player' });

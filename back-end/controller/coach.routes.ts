@@ -102,13 +102,17 @@ coachRouter.get('/:naam', async (req: Request, res: Response, next: NextFunction
  *         description: Invalid input
  */
 coachRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
-     
+             const newCoach = <CoachInput>req.body;
+
     try {
-        const newCoach = <CoachInput>req.body;
-        const result =  coachService.addCoach(newCoach);
-        res.status(201).json({ message: result }); 
-    } catch (error) {
-        next(error); 
+        const result =  await coachService.addCoach(newCoach);
+        
+            res.status(201).json({ message: result.message }); 
+        
+        }
+     catch (error) {
+            res.status(400).json({ message: "unknown error for adding coach" });
+
     }
 });
 

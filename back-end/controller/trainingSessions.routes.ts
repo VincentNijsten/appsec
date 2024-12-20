@@ -65,7 +65,8 @@ trainingSessionRouter.get('/', async (req: Request, res: Response, next: NextFun
         const sessions = await trainingSessionService.getAllTrainingSessions();
         res.status(200).json(sessions);
     } catch (error) {
-        next(error);
+        res.status(400).json({ message: 'An unknown error occurred' });
+
     }
 });
 
@@ -98,9 +99,13 @@ trainingSessionRouter.get('/:ploegnaam', async (req: Request, res: Response, nex
     const ploegnaam = req.params.ploegnaam; // Get the team name from the request parameters
     try {
         const session = await trainingSessionService.getTrainingSessionByPloegNaam(ploegnaam);
-        res.status(200).json(session); // Send the training session if found
+        if(session){
+            res.status(200).json(session);
+        }else{
+            res.status(404).json({ message: 'Training session not found' });
+        }
     } catch (error) {
-        res.status(404).json({ status: "error", message: "Could not find training session" });
+        next(error);
     }
 });
 
@@ -124,7 +129,7 @@ trainingSessionRouter.get('/:ploegnaam', async (req: Request, res: Response, nex
  *       500:
  *         description: Internal server error
  */
-trainingSessionRouter.post('/', (req, res) => {
+trainingSessionRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const { id, zaalNaam, datum, startTijd, eindTijd,ploegen } = req.body;
 
     // Log de ontvangen waarden om te controleren of ze correct zijn
@@ -135,18 +140,23 @@ trainingSessionRouter.post('/', (req, res) => {
     console.log('Ontvangen ploegen:', ploegen);
 
     try {
-        const message = trainingSessionService.addTrainingSession({
-            id,
-            
+        const result = await trainingSessionService.addTrainingSession({
+            id, 
             zaalNaam,
             datum: new Date(datum),
             startTijd,
             eindTijd,
             ploegen
         });
-        res.status(201).json({ message });
+        if(result.trainingSession){
+            res.status(201).json(result);
+        }
+        else{
+            res.status(400).json( result.message);
+        }
+            
     } catch (error) {
-        console.error(error);
+        next(error);
         
     }
 });

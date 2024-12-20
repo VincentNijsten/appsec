@@ -6,12 +6,18 @@ import { generateJwtToken } from '../util/jwt';
 
 
 // get user by email
-const getUserByEmail = async (email: string): Promise<User | null> => {
-    const user = await userDb.getUserByEmail( email );
-    if (!user) {
-        throw new Error(`User with email: ${email} does not exist.`)
+const getUserByEmail = async (email: string): Promise<{user?:User;message?:string}> => {
+    try {
+        const user = await userDb.getUserByEmail( email );
+        if (!user) {
+            throw new Error(`User with email: ${email} does not exist.`)
+        }
+        return {user};
+    
+    } catch (error) {
+        return { message: error instanceof Error ? error.message : 'An unknown error occurred' };
+        
     }
-    return user;
 }
 
 // authenticatie

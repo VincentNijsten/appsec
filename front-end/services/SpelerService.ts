@@ -31,7 +31,7 @@ const addSpeler = async (speler: Speler) => {
         throw new Error(errorData.error || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 
 
 };
@@ -76,14 +76,37 @@ const updateSpeler = async (spelerLicentie: string, spelerData: Partial<Speler>)
         throw new Error(errorData.error || 'Er is een fout opgetreden.');
     }
 
-    return response.json();
+    return response;
 };
+
+const getSpelerByName = async (spelerNaam: string) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + `/spelers/${spelerNaam}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData || 'Er is een fout opgetreden.');
+    }
+
+    return response;
+}
+
+
 
 const SpelerService = {
     getAllSpelers,
     addSpeler,
     deleteSpeler,
     updateSpeler,
+    getSpelerByName
 };
 
 export default SpelerService;
