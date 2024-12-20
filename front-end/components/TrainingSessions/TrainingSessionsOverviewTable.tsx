@@ -22,7 +22,7 @@ const TrainingSessionsOverviewTable: React.FC<Props> = ({ trainingsessions }: Pr
                     <tbody>
                         {trainingsessions.map((trainingsession, index) => (
                             <tr key={index}>
-                                <td>{trainingsession.ploegNaam}</td>
+                                <td>{trainingsession.ploegen}</td>
                                 <td>{trainingsession.zaalNaam}</td>
                                 {/* <td>{trainingsession.datum.getDate()}</td> */}
                                 <td>{trainingsession.startTijd}</td>
