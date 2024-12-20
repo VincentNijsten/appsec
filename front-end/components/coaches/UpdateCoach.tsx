@@ -55,15 +55,18 @@ const UpdateCoach: React.FC<Props> = ({ onCoachUpdated, coaches }: Props) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="coach">Coach:</label>
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="coach" className="block text-gray-700 font-medium mb-2">
+                    Coach:
+                </label>
                 <select
                     id="coach"
                     name="coach"
                     value={selectedCoach}
                     onChange={handleSelectChange}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                     required
                 >
                     <option value="">Selecteer een coach</option>
@@ -76,29 +79,40 @@ const UpdateCoach: React.FC<Props> = ({ onCoachUpdated, coaches }: Props) => {
             </div>
             {selectedCoach && (
                 <>
-                    <div>
-                        <label htmlFor="naam">Naam:</label>
+                    <div className="mb-4">
+                        <label htmlFor="naam" className="block text-gray-700 font-medium mb-2">
+                            Naam:
+                        </label>
                         <input
                             type="text"
                             id="naam"
                             name="naam"
                             value={coachData.naam || ""}
                             onChange={handleChange}
+                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                             required
                         />
                     </div>
-                    <div>
-                        <label htmlFor="coachLicentie">Coach Licentie:</label>
+                    <div className="mb-4">
+                        <label htmlFor="coachLicentie" className="block text-gray-700 font-medium mb-2">
+                            Coach Licentie:
+                        </label>
                         <input
                             type="text"
                             id="coachLicentie"
                             name="coachLicentie"
                             value={coachData.coachLicentie || ""}
                             onChange={handleChange}
+                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                             required
                         />
                     </div>
-                    <button type="submit">Update Coach</button>
+                    <button
+                        type="submit"
+                        className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                    >
+                        Update Coach
+                    </button>
                 </>
             )}
         </form>

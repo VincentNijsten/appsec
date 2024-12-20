@@ -41,41 +41,46 @@ const AddZaal: React.FC<Props> = ({ onZaalAdded }: Props) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="naam">Naam:</label>
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            {error && <p className="text-red-500">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="naam" className="block text-gray-700">Naam:</label>
                 <input
                     type="text"
                     id="naam"
                     name="naam"
                     value={newZaal.naam}
                     onChange={handleChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                 />
             </div>
-            <div>
-                <label htmlFor="address">Adres:</label>
+            <div className="mb-4">
+                <label htmlFor="address" className="block text-gray-700">Adres:</label>
                 <input
                     type="text"
                     id="address"
                     name="address"
                     value={newZaal.address}
                     onChange={handleChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                 />
             </div>
-            <div>
-                <label htmlFor="beschikbaarheid">Beschikbaarheid:</label>
+            <div className="mb-4">
+                <label htmlFor="beschikbaarheid" className="block text-gray-700">Beschikbaarheid:</label>
                 <input
                     type="checkbox"
                     id="beschikbaarheid"
                     name="beschikbaarheid"
                     checked={newZaal.beschikbaarheid}
                     onChange={handleChange}
+                    className="mt-2"
                 />
             </div>
-            <button type="submit">Voeg Zaal Toe</button>
+            <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-indigo-600">
+                Voeg Zaal Toe
+            </button>
         </form>
     );
 };

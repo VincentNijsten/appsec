@@ -9,50 +9,51 @@ type Props = {
 };
 
 const PloegenOverviewTable: React.FC<Props> = ({ ploegen, spelers = [], coaches = [], selectPloeg }: Props) => {
-    console.log("Ploegen:", ploegen);
-    console.log("Spelers:", spelers);
-    console.log("Coaches:", coaches);
     return (
-        <>
-            {ploegen && (
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Niveau</th>
-                            <th scope="col">Ploegnaam</th>
-                            <th scope="col">Spelers</th>
-                            <th scope="col">Coach</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {ploegen.map((ploeg, index) => (
-                            <tr key={index} onClick={() => selectPloeg(ploeg)} role="button">
-                                <td>{ploeg.niveau}</td>
-                                <td>{ploeg.ploegnaam}</td>
-                                <td>
-                                    <ul>
-                                        {spelers
-                                            .filter(speler => speler.ploegNaam === ploeg.ploegnaam)
-                                            .map(speler => (
-                                                <li key={speler.spelerLicentie}>{speler.naam}</li>
-                                            ))}
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        {coaches
-                                            .filter(coach => coach.coachLicentie === ploeg.coachLicentie)
-                                            .map(coach => (
-                                                <li key={coach.coachLicentie}>{coach.naam}</li>
-                                            ))}
-                                    </ul>
-                                </td>
+        <div className="container mx-auto">
+            {ploegen.length > 0 ? (
+                <div className="overflow-x-auto max-w-4xl mx-auto">
+                    <table className="w-full border-collapse border border-gray-300 bg-white rounded-lg shadow-md">
+                        <thead className="bg-black text-white">
+                            <tr>
+                                <th className="py-2 px-4 text-left font-medium uppercase">Niveau</th>
+                                <th className="py-2 px-4 text-left font-medium uppercase">Ploegnaam</th>
+                                <th className="py-2 px-4 text-left font-medium uppercase">Spelers</th>
+                                <th className="py-2 px-4 text-left font-medium uppercase">Coach</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {ploegen.map((ploeg, index) => (
+                                <tr key={index} onClick={() => selectPloeg(ploeg)} className="hover:bg-gray-100 cursor-pointer">
+                                    <td className="py-2 px-4">{ploeg.niveau}</td>
+                                    <td className="py-2 px-4">{ploeg.ploegnaam}</td>
+                                    <td className="py-2 px-4">
+                                        <ul className="list-disc pl-5">
+                                            {spelers
+                                                .filter(speler => speler.ploegNaam === ploeg.ploegnaam)
+                                                .map(speler => (
+                                                    <li key={speler.spelerLicentie}>{speler.naam}</li>
+                                                ))}
+                                        </ul>
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        <ul className="list-disc pl-5">
+                                            {coaches
+                                                .filter(coach => coach.coachLicentie === ploeg.coachLicentie)
+                                                .map(coach => (
+                                                    <li key={coach.coachLicentie}>{coach.naam}</li>
+                                                ))}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                <p className="text-center text-gray-600">Geen ploegen beschikbaar.</p>
             )}
-        </>
+        </div>
     );
 };
 

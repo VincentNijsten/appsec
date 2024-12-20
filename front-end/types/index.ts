@@ -1,3 +1,14 @@
+export type Role = 'admin' | 'player' | 'coach';
+
+export type User = {
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+    role?: Role;
+}
+
 export type Speler = {
     naam: string;
     spelerLicentie: string;
@@ -28,4 +39,16 @@ export type TrainingSession = {
     datum: Date;
     startTijd: string;
     eindTijd: string;
+};
+
+export interface UserType {
+    token: string;
+    fullname: string;
+    username: string; 
+    role: string;
+}
+
+export type StatusMessage = {
+    message: string;
+    type: "error" | "success";
 };

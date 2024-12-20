@@ -53,15 +53,16 @@ const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="zaal">Zaal:</label>
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="zaal" className="block text-gray-700">Zaal:</label>
                 <select
                     id="zaal"
                     name="zaal"
                     value={selectedZaal}
                     onChange={handleSelectChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                 >
                     <option value="">Selecteer een zaal</option>
@@ -74,28 +75,32 @@ const UpdateZaal: React.FC<Props> = ({ onZaalUpdated, zalen }: Props) => {
             </div>
             {selectedZaal && (
                 <>
-                    <div>
-                        <label htmlFor="address">Adres:</label>
+                    <div className="mb-4">
+                        <label htmlFor="address" className="block text-gray-700">Adres:</label>
                         <input
                             type="text"
                             id="address"
                             name="address"
                             value={zaalData.address || ""}
                             onChange={handleChange}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             required
                         />
                     </div>
-                    <div>
-                        <label htmlFor="beschikbaarheid">Beschikbaarheid:</label>
+                    <div className="mb-4">
+                        <label htmlFor="beschikbaarheid" className="block text-gray-700">Beschikbaarheid:</label>
                         <input
                             type="checkbox"
                             id="beschikbaarheid"
                             name="beschikbaarheid"
                             checked={zaalData.beschikbaarheid || false}
                             onChange={handleChange}
+                            className="mt-1"
                         />
                     </div>
-                    <button type="submit">Update Zaal</button>
+                    <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-indigo-600">
+                        Update Zaal
+                    </button>
                 </>
             )}
         </form>

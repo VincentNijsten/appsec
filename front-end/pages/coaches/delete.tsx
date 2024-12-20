@@ -3,8 +3,8 @@ import { Coach } from "@/types";
 import Header from "@/components/header";
 import CoachService from "@/services/CoachService";
 import DeleteCoach from "@/components/coaches/DeleteCoach";
-import styles from "@/styles/Home.module.css";
 import Head from "next/head";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Delete: React.FC = () => {
     const [coaches, setCoaches] = useState<Array<Coach>>([]);
@@ -35,16 +35,26 @@ const Delete: React.FC = () => {
             </Head>
             <Header />
             
-            {error && <p className={styles.error}>{error}</p>}
+            {error && <p>{error}</p>}
 
             <main className="d-flex flex-column justify-content-center align-items-center">
-                <h1 className={styles.tabletitle}>Delete Coach</h1>
-                <section className={styles.formcontainer}>
+                <h1 className="text-4xl font-bold text-center text-gray-800 mt-8">Delete Coach</h1>
+                <section>
                     <DeleteCoach onCoachDeleted={handleCoachDeleted} coaches={coaches} />
                 </section>
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default Delete;

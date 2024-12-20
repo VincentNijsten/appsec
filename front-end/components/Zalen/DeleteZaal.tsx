@@ -33,15 +33,16 @@ const DeleteZaal: React.FC<Props> = ({ onZaalDeleted, zalen }: Props) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="zaal">Zaal:</label>
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            {error && <p className="text-red-500">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="zaal" className="block text-gray-700">Zaal:</label>
                 <select
                     id="zaal"
                     name="zaal"
                     value={selectedZaal}
                     onChange={handleSelectChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                 >
                     <option value="">Selecteer een zaal</option>
@@ -52,7 +53,9 @@ const DeleteZaal: React.FC<Props> = ({ onZaalDeleted, zalen }: Props) => {
                     ))}
                 </select>
             </div>
-            <button type="submit">Verwijder Zaal</button>
+            <button type="submit" className="w-full bg-red-600 text-white p-2 rounded-md hover:bg-indigo-600">
+                Verwijder Zaal
+            </button>
         </form>
     );
 };

@@ -3,61 +3,66 @@ import TrainingSessionService from "@/services/TrainingSessionService";
 import { Ploeg, TrainingSession, Zaal } from "@/types";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import styles from "@/styles/Home.module.css";
 import TrainingSessionsOverviewTable from "@/components/TrainingSessions/TrainingSessionsOverviewTable";
 import AddTrainingSession from "@/components/TrainingSessions/AddTrainingSession";
 import PloegService from "@/services/PloegService";
 import ZaalService from "@/services/ZaalService";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import useInterval from "use-interval";
+import useSWR, { mutate } from "swr";
 
 const TrainingSessions: React.FC = () => {
-    const [trainingSessions, setTrainingSessions] = useState<Array<TrainingSession>>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [ploegen, setPloegen] = useState<Array<Ploeg>>([]);
-    const [zalen, setZaal] = useState<Array<Zaal>>([]);
+    const [trainingSession, setTrainingSessions] = useState<Array<TrainingSession>>([])
 
-
+    // alle training sessies
     const getTrainingSessions = async () => {
-        try {
-            const response = await TrainingSessionService.getAllTrainingSessions();
-            const trainingSessionss = await response.json();
-            setTrainingSessions(trainingSessionss);
-        } catch (error) {
-            setError("Er is een fout opgetreden bij het ophalen van de trainingssessies.");
+        const response = await TrainingSessionService.getAllTrainingSessions();
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch training sessions")
         }
+
+        const trainingSession = await response.json()
+        return { trainingSession }
     };
 
     const getPloegen = async () => {
-        try {
-            const response = await PloegService.getAllPloegen();
-            const ploegen = await response.json();
-            setPloegen(ploegen);
-        } catch (error) {
-            setError("Er is een fout opgetreden bij het ophalen van de ploegen.");
+        const response = await PloegService.getAllPloegen();
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch teams")
         }
+            
+        const ploegen = await response.json();
+        return { ploegen }
+
     };
 
     const getZalen = async () => {
-        try {
-            const response = await ZaalService.getAllZalen();
-            const zalen = await response.json();
-            setZaal(zalen);
-        } catch (error) {
-            setError("Er is een fout opgetreden bij het ophalen van de zalen.");
+        const response = await ZaalService.getAllZalen();
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch training sessions")
         }
+
+        const zalen = await response.json();
+        return { zalen }
     };
+
+    const { data: dataTrainingSessions, isLoading: isLoadingTrainingSessions, error: errorTrainingSessions } = useSWR("trainingSession", getTrainingSessions);
+    const { data: dataPloegen, isLoading: isLoadingPloegen, error: errorPloegen } = useSWR("ploegen", getPloegen);
+    const { data: dataZalen, isLoading: isLoadingZalen, error: errorZalen } = useSWR("zalen", getZalen);
 
 
     const handleTrainingSessionAdded = (trainingSession: TrainingSession) => {
         setTrainingSessions(prevTrainingSessions => [...prevTrainingSessions, trainingSession]);
     };
     
-    useEffect(() => {
-        getTrainingSessions(),
-        getPloegen(),
-        getZalen()
-        },
-        []
-    )
+    useInterval(() => {
+        mutate("trainingSession", getTrainingSessions())
+        mutate("ploegen", getPloegen())
+        mutate("zalen", getZalen())
+    }, 5000)
 
     return (
         <>
@@ -66,19 +71,33 @@ const TrainingSessions: React.FC = () => {
             </Head>
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
-                <h1 className={styles.tabletitle}>Sessions</h1>
-                <section className={styles.tables}>
-                    { trainingSessions &&
-                        <TrainingSessionsOverviewTable trainingsessions={trainingSessions}/>
+                <h1 className="text-4xl font-bold text-center text-gray-800 mt-8 mb-4">Sessions</h1>
+                <section>
+                    {errorTrainingSessions && <div className="text-red-800">{errorTrainingSessions}</div>}
+                    {isLoadingTrainingSessions && <p>Loading...</p>}
+                    {dataTrainingSessions &&
+                        <TrainingSessionsOverviewTable 
+                            trainingsessions={dataTrainingSessions?.trainingSession}
+                        />
                     }
                 </section>
-                <section className={styles.formcontainer}>
-                    <h3>Voeg een nieuwe trainingssessie toe</h3>
-                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegen={ploegen} zalen={zalen} />
+                <section>
+                    <h3 className="text-3xl font-bold text-center text-gray-800 mt-8 mb-4">Voeg een nieuwe trainingssessie toe</h3>
+                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegen={dataPloegen?.ploegen} zalen={dataZalen?.zalen} />
                 </section>
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default TrainingSessions;

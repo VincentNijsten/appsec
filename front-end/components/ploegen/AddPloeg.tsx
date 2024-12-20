@@ -44,26 +44,32 @@ const AddPloeg: React.FC<Props> = ({ onPloegAdded, coaches }: Props) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="ploegnaam">Ploegnaam:</label>
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="ploegnaam" className="block text-gray-700 font-medium mb-2">
+                    Ploegnaam:
+                </label>
                 <input
                     type="text"
                     id="ploegnaam"
                     name="ploegnaam"
                     value={newPloeg.ploegnaam}
                     onChange={handleChange}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                     required
                 />
             </div>
-            <div>
-                <label htmlFor="niveau">Niveau:</label>
+            <div className="mb-4">
+                <label htmlFor="niveau" className="block text-gray-700 font-medium mb-2">
+                    Niveau:
+                </label>
                 <select
                     id="niveau"
                     name="niveau"
                     value={newPloeg.niveau}
                     onChange={handleChange}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                     required
                 >
                     <option value="">Selecteer Niveau</option>
@@ -77,14 +83,16 @@ const AddPloeg: React.FC<Props> = ({ onPloegAdded, coaches }: Props) => {
                     <option value="Promo 4">Promo 4</option>
                 </select>
             </div>
-         
-            <div>
-                <label htmlFor="coachLicentie">Coach:</label>
+            <div className="mb-4">
+                <label htmlFor="coachLicentie" className="block text-gray-700 font-medium mb-2">
+                    Coach:
+                </label>
                 <select
                     id="coachLicentie"
                     name="coachLicentie"
                     value={newPloeg.coachLicentie || ""}
                     onChange={handleChange}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                     required
                 >
                     <option value="">Selecteer een Coach</option>
@@ -95,7 +103,12 @@ const AddPloeg: React.FC<Props> = ({ onPloegAdded, coaches }: Props) => {
                     ))}
                 </select>
             </div>
-            <button type="submit">Voeg Ploeg Toe</button>
+            <button
+                type="submit"
+                className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+            >
+                Voeg Ploeg Toe
+            </button>
         </form>
     );
 };

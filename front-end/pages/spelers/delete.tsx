@@ -3,8 +3,8 @@ import { Speler } from "@/types";
 import Header from "@/components/header";
 import SpelerService from "@/services/SpelerService";
 import DeleteSpeler from "@/components/spelers/DeleteSpeler";
-import styles from "@/styles/Home.module.css";
 import Head from "next/head";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Delete: React.FC = () => {
     const [spelers, setSpelers] = useState<Array<Speler>>([]);
@@ -35,16 +35,26 @@ const Delete: React.FC = () => {
             </Head>
             <Header />
             
-            {error && <p className={styles.error}>{error}</p>}
+            {error && <p>{error}</p>}
 
             <main className="d-flex flex-column justify-content-center align-items-center">
-                <h1 className={styles.tabletitle}>Delete Speler</h1>
-                <section className={styles.formcontainer}>
+                <h1 className="text-4xl font-bold text-center text-gray-800 mt-8">Delete Speler</h1>
+                <section>
                     <DeleteSpeler onSpelerDeleted={handleSpelerDeleted} spelers={spelers} />
                 </section>
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default Delete;

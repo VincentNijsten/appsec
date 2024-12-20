@@ -1,0 +1,63 @@
+{
+    "app.title": "VHL",
+    "main": {
+        "title": "VHL",
+        "welcome": "Welcome!",
+        "tekst1": "Welkom bij VHL. We zijn een van de grootste jeugdclub in Vlaanderen. Hier is er plaats voor iedereen en willen we je helpen je talent voor volleybal te vinden.",
+        "tekst2": "Naast jeugdploegen hebben we twee ploegen op het hoogste niveau van België. De Dames A en de Heren A. Word jij hun nieuwe grootste supporter? We verwelkomen je graag bij hun matchen.",
+        "users": "Users",
+        "email": "Email",
+        "password": "Password",
+        "role": "Role"
+    },
+    "header": {
+        "title": "VHL",
+        "home": "Home",
+        "spelers": {
+            "spelers": "Spelers",
+            "overview": "Overview",
+            "add": "Add",
+            "update": "Update",
+            "delete": "Delete"   
+        },
+        "coaches": {
+            "coaches": "Coaches",
+            "overview": "Overview",
+            "add": "Add",
+            "update": "Update",
+            "delete": "Delete"
+        },
+        "ploegen": {
+            "ploegen": "Ploegen",
+            "overview": "Overview",
+            "add": "Add",
+            "update": "Update",
+            "delete": "Delete"
+        },
+        "zalen": "Zalen",
+        "training-sessions": "Training-Sessions",
+        "login": "Login",
+        "logout": "Logout"
+    },
+    "language": {
+        "language": "Language:",
+        "english": "English",
+        "zh": "Mandarin Chinese"
+    },
+    "login": {
+        "login": "Login",
+        "email": "Email",
+        "password": "Password",
+        "account": "Don't have an account?",
+        "register": "Register here",
+        "placeholderEmail": "Enter your email",
+        "placeholderPassword": "Enter your password"
+    },
+    "spelers": {
+        "spelers": "Spelers",
+        "loading": "Loading...",
+        "naam": "Naam",
+        "spelerlicentie": "Spelerlicentie",
+        "leeftijd": "Leeftijd"
+    }
+}

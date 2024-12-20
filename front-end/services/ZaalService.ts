@@ -1,18 +1,29 @@
 import { Zaal } from "@/types";
 
 const getAllZalen = async () => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     return fetch(process.env.NEXT_PUBLIC_API_URL + "/zalen", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
     });
 };
+
+console.log(getAllZalen());
+
 const addZaal = async (zaal: { naam: string; address: string; beschikbaarheid: boolean }) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/zalen", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(zaal),
     });
@@ -26,10 +37,14 @@ const addZaal = async (zaal: { naam: string; address: string; beschikbaarheid: b
 };
 
 const updateZaal = async (naam: string, zaalData: Partial<Zaal>) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/zalen/${naam}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(zaalData),
     });
@@ -43,10 +58,14 @@ const updateZaal = async (naam: string, zaalData: Partial<Zaal>) => {
 };
 
 const deleteZaal = async (naam: string) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/zalen/${naam}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
     });
 

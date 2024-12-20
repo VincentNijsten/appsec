@@ -10,7 +10,8 @@ import styles from "@/styles/Home.module.css";
 import Head from "next/head";
 import CoachService from "@/services/CoachService";
 import SpelerService from "@/services/SpelerService";
-import UpdatePloeg from "@/components/ploegen/UpdatePLoeg";
+import UpdatePloeg from "@/components/ploegen/UpdatePloeg";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Ploegen: React.FC = () => {
     const [ploegen, setPloegen] = useState<Array<Ploeg>>([]);
@@ -99,7 +100,7 @@ const Ploegen: React.FC = () => {
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Voeg een nieuwe ploeg toe</h3>
-                    <AddPloeg onPloegAdded={handlePloegAdded} />
+                    <AddPloeg onPloegAdded={handlePloegAdded} coaches={[]} />
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Verwijder een ploeg</h3>
@@ -107,12 +108,22 @@ const Ploegen: React.FC = () => {
                 </section>
                 <section className={styles.formcontainer}>
                     <h3>Update een ploeg</h3>
-                    <UpdatePloeg onPloegUpdated={handlePloegUpdated} ploegen={ploegen} />
+                    <UpdatePloeg onPloegUpdated={handlePloegUpdated} ploegen={ploegen} coaches={[]} />
                 </section>
                
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default Ploegen;

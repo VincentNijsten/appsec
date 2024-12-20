@@ -1,0 +1,63 @@
+{
+    "app.title": "VHL",
+    "main": {
+        "title": "VHL",
+        "welcome": "欢迎！",
+        "tekst1": "欢迎来到 VHL。我们是弗兰德最大的青少年俱乐部之一。在这里，每个人都有自己的位置，我们希望帮助您发掘您的排球天赋。",
+        "tekst2": "除了青年队，我们还有两支比利时最高级别的球队：女子 A 队和男子 A 队。您会成为他们的新超级粉丝吗？我们热烈欢迎您参加他们的比赛。",
+        "users": "用户",
+        "email": "电子邮件",
+        "password": "密码",
+        "role": "角色"
+    },
+    "header": {
+        "title": "VHL",
+        "home": "首页",
+        "spelers": {
+            "spelers": "球员",
+            "overview": "概览",
+            "add": "添加",
+            "update": "更新",
+            "delete": "删除"   
+        },
+        "coaches": {
+            "coaches": "教练",
+            "overview": "概览",
+            "add": "添加",
+            "update": "更新",
+            "delete": "删除"
+        },
+        "ploegen": {
+            "ploegen": "球队",
+            "overview": "概览",
+            "add": "添加",
+            "update": "更新",
+            "delete": "删除"
+        },
+        "zalen": "场馆",
+        "training-sessions": "训练课程",
+        "login": "登录",
+        "logout": "登出"
+    },
+    "language": {
+        "language": "语言：",
+        "english": "英语",
+        "zh": "中文"
+    },
+    "login": {
+        "login": "登录",
+        "email": "邮箱",
+        "password": "密码",
+        "account": "还没有账号？",
+        "register": "点击注册",
+        "placeholderEmail": "输入您的邮箱",
+        "placeholderPassword": "输入您的密码"
+    },
+    "spelers": {
+        "spelers": "球员",
+        "loading": "加载中...",
+        "naam": "姓名",
+        "spelerlicentie": "球员执照",
+        "leeftijd": "年龄"
+    }
+}

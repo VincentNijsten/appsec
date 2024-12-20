@@ -1,17 +1,25 @@
 const getAllTrainingSessions = async () => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     return fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "GET",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
     });
 };
 
 const addTrainingSession = async (trainingSession: { datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegnaam: string }) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(trainingSession),
     });
@@ -25,10 +33,14 @@ const addTrainingSession = async (trainingSession: { datum: string; startTijd: s
 };
 
 const getTrainingSessionsByPloeg = async (ploegnaam: string) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     return fetch(`${process.env.NEXT_PUBLIC_API_URL}/training-sessions/${ploegnaam}`, {
         method: "GET",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
     });
 };

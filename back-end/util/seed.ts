@@ -1,7 +1,6 @@
 // Execute: npx ts-node util/seed.ts
 
-// Execute: npx ts-node util/seed.ts
-
+import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -13,6 +12,47 @@ const main = async () => {
     await prisma.ploeg.deleteMany();
     await prisma.coach.deleteMany();
     await prisma.speler.deleteMany();
+
+    // voeg user toe
+    const vn = await prisma.user.create({
+        data: {
+            password: await bcrypt.hash('vince123', 12),
+            firstName: 'Vincent',
+            lastName: 'Nijsten',
+            email: 'nijstenvincent@gmail.com',
+            role: 'admin',
+        }
+    })
+
+    const user1 = await prisma.user.create({
+        data: {
+            password: await bcrypt.hash('user1', 12),
+            firstName: 'user1',
+            lastName: 'test',
+            email: 'user1@email',
+            role: 'player',
+        }
+    })
+
+    const user2 = await prisma.user.create({
+        data: {
+            password: await bcrypt.hash('user2', 12),
+            firstName: 'user2',
+            lastName: 'test',
+            email: 'user2@email',
+            role: 'coach',
+        }
+    })
+
+    const user3 = await prisma.user.create({
+        data: {
+            password: await bcrypt.hash('user3', 12),
+            firstName: 'user3',
+            lastName: 'test',
+            email: 'user3@email',
+            role: 'admin',
+        }
+    })
 
     // Voeg zalen toe
     const zaal1 = await prisma.zaal.create({

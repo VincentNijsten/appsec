@@ -3,8 +3,8 @@ import { Ploeg } from "@/types";
 import Header from "@/components/header";
 import PloegService from "@/services/PloegService";
 import DeletePloeg from "@/components/ploegen/DeletePloeg";
-import styles from "@/styles/Home.module.css";
 import Head from "next/head";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Delete: React.FC = () => {
     const [ploegen, setPloegen] = useState<Array<Ploeg>>([]);
@@ -35,16 +35,26 @@ const Delete: React.FC = () => {
             </Head>
             <Header />
             
-            {error && <p className={styles.error}>{error}</p>}
+            {error && <p>{error}</p>}
 
             <main className="d-flex flex-column justify-content-center align-items-center">
-                <h1 className={styles.tabletitle}>Delete Ploeg</h1>
-                <section className={styles.formcontainer}>
+                <h1 className="text-4xl font-bold text-center text-gray-800 mt-8">Delete Ploeg</h1>
+                <section>
                     <DeletePloeg onPloegDeleted={handlePloegDeleted} ploegen={ploegen} />
                 </section>
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default Delete;

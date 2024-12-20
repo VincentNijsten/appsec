@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 type Props = {
     onSpelerUpdated: (speler: Speler) => void;
     spelers: Array<Speler>;
-    ploegen : Array<Ploeg>;
+    ploegen: Array<Ploeg>;
 };
 
 const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Props) => {
@@ -28,7 +28,7 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
         setSelectedSpeler(e.target.value);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setSpelerData(prevState => ({
             ...prevState,
@@ -44,7 +44,7 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
         }
 
         try {
-           const updatedSpeler =  await SpelerService.updateSpeler(selectedSpeler, spelerData);
+            const updatedSpeler = await SpelerService.updateSpeler(selectedSpeler, spelerData);
             onSpelerUpdated({ ...updatedSpeler } as Speler);
             setSelectedSpeler("");
             setSpelerData({});
@@ -56,16 +56,21 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="speler">Speler:</label>
+        <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md">
+            {error && (
+                <p className="mb-4 text-sm text-red-600">{error}</p>
+            )}
+            <div className="mb-4">
+                <label htmlFor="speler" className="block text-sm font-medium text-gray-700">
+                    Speler
+                </label>
                 <select
                     id="speler"
                     name="speler"
                     value={selectedSpeler}
                     onChange={handleSelectChange}
                     required
+                    className="w-full mt-1 p-2 border rounded-md shadow-sm focus:ring focus:ring-indigo-200"
                 >
                     <option value="">Selecteer een speler</option>
                     {spelers.map(speler => (
@@ -77,8 +82,10 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
             </div>
             {selectedSpeler && (
                 <>
-                    <div>
-                        <label htmlFor="naam">Naam:</label>
+                    <div className="mb-4">
+                        <label htmlFor="naam" className="block text-sm font-medium text-gray-700">
+                            Naam
+                        </label>
                         <input
                             type="text"
                             id="naam"
@@ -86,10 +93,13 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
                             value={spelerData.naam || ""}
                             onChange={handleChange}
                             required
+                            className="w-full mt-1 p-2 border rounded-md shadow-sm focus:ring focus:ring-indigo-200"
                         />
                     </div>
-                    <div>
-                        <label htmlFor="spelerLicentie">Speler Licentie:</label>
+                    <div className="mb-4">
+                        <label htmlFor="spelerLicentie" className="block text-sm font-medium text-gray-700">
+                            Speler Licentie
+                        </label>
                         <input
                             type="text"
                             id="spelerLicentie"
@@ -97,10 +107,13 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
                             value={spelerData.spelerLicentie || ""}
                             onChange={handleChange}
                             required
+                            className="w-full mt-1 p-2 border rounded-md shadow-sm focus:ring focus:ring-indigo-200"
                         />
                     </div>
-                    <div>
-                        <label htmlFor="leeftijd">Leeftijd:</label>
+                    <div className="mb-4">
+                        <label htmlFor="leeftijd" className="block text-sm font-medium text-gray-700">
+                            Leeftijd
+                        </label>
                         <input
                             type="number"
                             id="leeftijd"
@@ -108,19 +121,20 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
                             value={spelerData.leeftijd || ""}
                             onChange={handleChange}
                             required
+                            className="w-full mt-1 p-2 border rounded-md shadow-sm focus:ring focus:ring-indigo-200"
                         />
                     </div>
-                    <div>
-                        <label htmlFor="ploegNaam">Ploeg:</label>
+                    <div className="mb-4">
+                        <label htmlFor="ploegNaam" className="block text-sm font-medium text-gray-700">
+                            Ploeg
+                        </label>
                         <select
                             id="ploegNaam"
                             name="ploegNaam"
                             value={spelerData.ploegNaam || ""}
-                            onChange={(e) => setSpelerData(prevState => ({
-                                ...prevState,
-                                ploegNaam: e.target.value
-                            }))}
+                            onChange={handleChange}
                             required
+                            className="w-full mt-1 p-2 border rounded-md shadow-sm focus:ring focus:ring-indigo-200"
                         >
                             <option value="">Selecteer een ploeg</option>
                             {ploegen.map(ploeg => (
@@ -130,11 +144,17 @@ const UpdateSpeler: React.FC<Props> = ({ onSpelerUpdated, spelers, ploegen }: Pr
                             ))}
                         </select>
                     </div>
-                    <button type="submit">Update Speler</button>
+                    <button
+                        type="submit"
+                        className="w-full py-2 px-4 bg-black text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:ring focus:ring-indigo-300"
+                    >
+                        Update Speler
+                    </button>
                 </>
             )}
         </form>
     );
 };
+
 
 export default UpdateSpeler;

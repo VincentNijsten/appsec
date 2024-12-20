@@ -25,27 +25,29 @@ const DeleteCoach: React.FC<Props> = ({ onCoachDeleted, coaches }: Props) => {
         }
 
         try {
-            const response = await CoachService.deleteCoach(coachLicentie);
-            const deletedCoach = await response.json();
-            onCoachDeleted(deletedCoach.coachLicentie);
+            await CoachService.deleteCoach(coachLicentie);
+            onCoachDeleted(coachLicentie);
             setCoachLicentie("");
             setError(null);
             router.push("/coaches/overview");
-        } catch (error) {
+        } catch (err) {
             setError("Er is een fout opgetreden bij het verwijderen van de coach.");
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="coachLicentie">Coach:</label>
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="coachLicentie" className="block text-gray-700 font-medium mb-2">
+                    Coach:
+                </label>
                 <select
                     id="coachLicentie"
                     name="coachLicentie"
                     value={coachLicentie}
                     onChange={handleChange}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                     required
                 >
                     <option value="">Selecteer een coach</option>
@@ -56,7 +58,12 @@ const DeleteCoach: React.FC<Props> = ({ onCoachDeleted, coaches }: Props) => {
                     ))}
                 </select>
             </div>
-            <button type="submit">Verwijder Coach</button>
+            <button
+                type="submit"
+                className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+            >
+                Verwijder Coach
+            </button>
         </form>
     );
 };

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Coach, Ploeg } from "@/types";
 import Header from "@/components/header";
 import PloegService from "@/services/PloegService";
-import styles from "@/styles/Home.module.css";
 import Head from "next/head";
-import UpdatePloeg from "@/components/ploegen/UpdatePLoeg";
+import UpdatePloeg from "@/components/ploegen/UpdatePloeg";
 import CoachService from "@/services/CoachService";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Update: React.FC = () => {
     const [ploegen, setPloegen] = useState<Array<Ploeg>>([]);
@@ -49,16 +49,26 @@ const Update: React.FC = () => {
             </Head>
             <Header />
             
-            {error && <p className={styles.error}>{error}</p>}
+            {error && <p>{error}</p>}
 
             <main className="d-flex flex-column justify-content-center align-items-center">
-                <h1 className={styles.tabletitle}>Update Ploeg</h1>
-                <section className={styles.formcontainer}>
+                <h1 className="text-4xl font-bold text-center text-gray-800 mt-8">Update Ploeg</h1>
+                <section>
                     <UpdatePloeg onPloegUpdated={handlePloegUpdated} ploegen={ploegen} coaches={coaches}/>
                 </section>
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default Update;

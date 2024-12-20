@@ -1,19 +1,27 @@
 import { Coach } from "@/types";
 
 const getAllCoaches = async () => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     return fetch(process.env.NEXT_PUBLIC_API_URL + "/coaches", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
     });
 };
 
 const addCoach = async (coach: Coach) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/coaches", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(coach),
     });
@@ -27,19 +35,27 @@ const addCoach = async (coach: Coach) => {
 };
 
 const deleteCoach = async (coachlicentie: string) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     return fetch(process.env.NEXT_PUBLIC_API_URL + `/coaches/${coachlicentie}`, {
         method: "DELETE",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
     });
 };
 
 const updateCoach = async (coachLicentie: string, coachData: Partial<Coach>) => {
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
+    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coaches/${coachLicentie}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(coachData),
     });

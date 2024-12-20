@@ -7,13 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  admin
+  player
+  coach
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  role      Role
+}
 
 model Speler {
   spelerLicentie String  @id @unique
   naam           String
   leeftijd       Int
   Ploeg          Ploeg?  @relation(fields: [ploegNaam], references: [ploegnaam])
-  ploegNaam String?
+  ploegNaam     String?
 }
 
 model Coach {

@@ -1,5 +1,20 @@
-// index.ts
+type Role = 'admin' | 'player' | 'coach';
 
+type UserInput = {
+    id?: number;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: Role;
+};
+
+type AuthenticationResponse = {
+    token: string;
+    email: string;
+    fullname: string;
+    role: Role;
+};
 
 type SpelerInput = {
     naam: string;
@@ -34,6 +49,9 @@ type TrainingSessionInput = {
 };
 
 export {
+    Role,
+    UserInput,
+    AuthenticationResponse,
     SpelerInput,
     CoachInput,
     PloegInput,

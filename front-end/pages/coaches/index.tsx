@@ -8,6 +8,7 @@ import DeleteCoach from "@/components/coaches/DeleteCoach";
 import UpdateCoach from "@/components/coaches/UpdateCoach";
 import styles from "@/styles/Home.module.css";
 import Head from "next/head";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Coaches: React.FC = () => {
     const [coaches, setCoaches] = useState<Array<Coach>>([]);
@@ -64,6 +65,16 @@ const Coaches: React.FC = () => {
             </main>
         </>
     );
+};
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
 };
 
 export default Coaches;

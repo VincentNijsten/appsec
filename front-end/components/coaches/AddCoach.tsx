@@ -39,31 +39,38 @@ const AddCoach: React.FC<Props> = ({ onCoachAdded }: Props) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <div>
-                <label htmlFor="naam">Naam:</label>
+        <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            {error && <p className="text-red-600">{error}</p>}
+            <div className="mb-4">
+                <label htmlFor="naam" className="block text-gray-700">Naam:</label>
                 <input
                     type="text"
                     id="naam"
                     name="naam"
                     value={newCoach.naam}
                     onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                 />
             </div>
-            <div>
-                <label htmlFor="coachLicentie">Coach Licentie:</label>
+            <div className="mb-4">
+                <label htmlFor="coachLicentie" className="block text-gray-700">Coach Licentie:</label>
                 <input
                     type="text"
                     id="coachLicentie"
                     name="coachLicentie"
                     value={newCoach.coachLicentie}
                     onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                 />
             </div>
-            <button type="submit">Voeg Coach Toe</button>
+            <button
+                type="submit"
+                className="w-full px-4 py-2 bg-black text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                Voeg Coach Toe
+            </button>
         </form>
     );
 };

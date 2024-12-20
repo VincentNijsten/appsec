@@ -26,7 +26,6 @@ const DeletePloeg: React.FC<Props> = ({ onPloegDeleted, ploegen }: Props) => {
         try {
             const response = await TrainingSessionService.getTrainingSessionsByPloeg(ploegnaam);
             const sessions = await response.json();
-            console.log(sessions);
             setTrainingSessions(sessions);
         } catch (error) {
             setError("Er is een fout opgetreden bij het ophalen van de trainingssessies.");
@@ -72,15 +71,18 @@ const DeletePloeg: React.FC<Props> = ({ onPloegDeleted, ploegen }: Props) => {
 
     return (
         <>
-            <form onSubmit={handleSubmit}>
-                {error && <p style={{ color: "red" }}>{error}</p>}
-                <div>
-                    <label htmlFor="ploeg">Ploeg:</label>
+            <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                <div className="mb-4">
+                    <label htmlFor="ploeg" className="block text-gray-700 font-medium mb-2">
+                        Ploeg:
+                    </label>
                     <select
                         id="ploeg"
                         name="ploeg"
                         value={selectedPloeg}
                         onChange={handleSelectChange}
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                         required
                     >
                         <option value="">Selecteer een ploeg</option>
@@ -91,14 +93,31 @@ const DeletePloeg: React.FC<Props> = ({ onPloegDeleted, ploegen }: Props) => {
                         ))}
                     </select>
                 </div>
-                <button type="submit">Verwijder Ploeg</button>
+                <button
+                    type="submit"
+                    className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+                >
+                    Verwijder Ploeg
+                </button>
             </form>
 
             {showConfirmation && (
-                <div className="confirmation-dialog">
+                <div className="confirmation-dialog bg-gray-100 p-4 rounded-md shadow-md">
                     <p>Deze ploeg heeft nog geplande trainingssessies. Weet je zeker dat je deze ploeg wilt verwijderen?</p>
-                    <button onClick={() => handleConfirmation(true)}>Ja</button>
-                    <button onClick={() => handleConfirmation(false)}>Nee</button>
+                    <div className="mt-4">
+                        <button
+                            onClick={() => handleConfirmation(true)}
+                            className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition mr-2"
+                        >
+                            Ja
+                        </button>
+                        <button
+                            onClick={() => handleConfirmation(false)}
+                            className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400 transition"
+                        >
+                            Nee
+                        </button>
+                    </div>
                 </div>
             )}
         </>
