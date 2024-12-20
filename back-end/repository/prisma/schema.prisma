@@ -34,6 +34,8 @@ model Coach {
   coachLicentie String  @id @unique
   naam          String
   ploegen       Ploeg[] @relation("PloegCoach")
+  ploegnaam     String?  @unique // Dit maakt het mogelijk om een unieke ploegnaam te hebben
+
 }
 
 model Ploeg {
@@ -41,7 +43,7 @@ model Ploeg {
   niveau             String
   spelers            Speler[]
   coach              Coach?            @relation("PloegCoach", fields: [coachLicentie], references: [coachLicentie])
-  coachLicentie      String?
+  coachLicentie      String?           @unique
   TrainingSession    TrainingSession[] @relation("TrainingSessionPloegen")
 }
 

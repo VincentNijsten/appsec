@@ -12,9 +12,17 @@ import { trainingSessionRouter } from './controller/trainingSessions.routes';
 import { userRouter } from './controller/user.routes';
 import { expressjwt } from 'express-jwt';
 import helmet from 'helmet';
+import { connect } from 'node:http2';
 
 
 const app = express();
+app.use(helmet());
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        connectSrc: ['self', 'https://api.ucll.be'],
+       
+    },
+}));
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
 app.use(helmet());

@@ -36,21 +36,28 @@ const Ploegen: React.FC = () => {
                 console.log("user is ",playerUserData);
                 let playerData;
                 let ploegnaam;
-                if(isPlayer){
-                const player = await SpelerService.getSpelerByName(playerUserData?.user.firstName);
-                playerData = await player.json();
+            if(isPlayer){
+                  const player = await SpelerService.getSpelerByName(playerUserData?.user.firstName);
+                   playerData = await player.json();
+                    if(playerData.message){
+                         return(playerData.message);
+                        }
                 console.log("speler is", playerData);  
                 ploegnaam = playerData.speler.ploegNaam; 
 
                 }
-                if(isCoach){
+            if(isCoach){
                     const coach = await CoachService.getCoachByNaam(playerUserData?.user.firstName);
                     playerData = await coach.json();
+                    if(!playerData){
+                        return {message:"coach niet gevonden"};
+                    }
                     console.log("coach is", playerData);
                     const licentie = playerData.coachLicentie; 
                     console.log("licentie is", licentie, "type:",typeof(licentie));
                     const ploegData = await PloegService.getPloegByCoachLicenties(licentie);
                     const ploegDataJson = await ploegData.json();
+                   
                     console.log("ploeg data is", ploegDataJson);
                     ploegnaam = ploegDataJson.ploeg.ploegnaam;
 
@@ -132,7 +139,11 @@ const Ploegen: React.FC = () => {
             <main className="d-flex flex-column justify-content-center align-items-center">
                 <h1 className="text-4xl font-bold text-center text-gray-800 mt-8 mb-4">Ploegen</h1>
                 <section>
-                    {errorPloegen && <div className="text-red-800">Error loading teams.</div>}
+                    {errorPloegen && (
+                         <div className="text-red-800">
+                                {errorPloegen.message || "Error loading teams."}
+                         </div>
+                     )}  
                     {isLoadingPloegen && <p>Loading...</p>}
                     {dataPloegen &&
                         <PloegenOverviewTable

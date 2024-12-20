@@ -10,8 +10,8 @@ import styles from "@/styles/Home.module.css";
 import Head from "next/head";
 import CoachService from "@/services/CoachService";
 import SpelerService from "@/services/SpelerService";
-import UpdatePloeg from "@/components/ploegen/UpdatePloeg";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import UpdatePloeg from "@/components/ploegen/UpdatePLoeg";
 
 const Ploegen: React.FC = () => {
     const [ploegen, setPloegen] = useState<Array<Ploeg>>([]);

@@ -57,6 +57,14 @@ const addPloeg = async ({ ploegnaam, niveau, coachLicentie }: PloegInput): Promi
      if (exists) {
          return {message:`De ploeg met naam ${ploegnaam} bestaat al`};
      }
+     if (coachLicentie === null) {
+         return { message: 'Coach licentie is null' };
+     }
+     const coach = await ploegDb.getPloegByCoachLicentie(coachLicentie);
+        if (coach) {
+            return {message:`Coach met licentie ${coachLicentie} coacht al een andere ploeg, een coach kan maar 1 ploeg coachen`};
+        }
+     
      const newPloeg = new Ploeg({
          ploegnaam, 
          niveau, 
