@@ -71,19 +71,15 @@ const TrainingSessions: React.FC = () => {
             </Head>
             <Header />
             <main className="d-flex flex-column justify-content-cneter align-items-center">
-                <h1 className="text-4xl font-bold text-center text-gray-800 mt-8 mb-4">Sessions</h1>
-                <section>
-                    {errorTrainingSessions && <div className="text-red-800">{errorTrainingSessions}</div>}
-                    {isLoadingTrainingSessions && <p>Loading...</p>}
-                    {dataTrainingSessions &&
-                        <TrainingSessionsOverviewTable 
-                            trainingsessions={dataTrainingSessions?.trainingSession}
-                        />
+                <h1 className={styles.tabletitle}>Sessions</h1>
+                <section className={styles.tables}>
+                    { trainingSessions &&
+                        <TrainingSessionsOverviewTable trainingsessions={trainingSessions}/>
                     }
                 </section>
-                <section>
-                    <h3 className="text-3xl font-bold text-center text-gray-800 mt-8 mb-4">Voeg een nieuwe trainingssessie toe</h3>
-                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegen={dataPloegen?.ploegen} zalen={dataZalen?.zalen} />
+                <section className={styles.formcontainer}>
+                    <h3>Voeg een nieuwe trainingssessie toe</h3>
+                    <AddTrainingSession onTrainingSessionAdded={handleTrainingSessionAdded} ploegen={ploegen} zalen={zalen} />
                 </section>
             </main>
         </>

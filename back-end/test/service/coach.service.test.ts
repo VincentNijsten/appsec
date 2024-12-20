@@ -1,12 +1,11 @@
-import { Coach } from '../../model/coach';
-import coachDb from '../../repository/coach.db';
-import ploegDb from '../../repository/ploeg.db';
 import coachService from '../../service/coach.service';
+import coachDb from '../../repository/coach.db';
+import { Coach } from '../../model/coach';
 import { CoachInput } from '../../types';
+
 const coachInput: CoachInput = {
-    
-    naam: 'Jan',
-    coachlicentie: '2573826',
+    naam: 'John Doe',
+    coachLicentie: '1234567',
 };
 
 const coach = new Coach(coachInput);
@@ -15,92 +14,124 @@ let mockGetAllCoaches: jest.Mock;
 let mockGetCoachByNaam: jest.Mock;
 let mockRemoveCoach: jest.Mock;
 let mockAddCoach: jest.Mock;
-let mochGetCpachesByCoachlicentie: jest.Mock;
+let mockUpdateCoach: jest.Mock;
+let mockGetCoachByCoachLicentie: jest.Mock;
 
 beforeEach(() => {
     mockGetAllCoaches = jest.fn();
     mockGetCoachByNaam = jest.fn();
     mockRemoveCoach = jest.fn();
     mockAddCoach = jest.fn();
-    mochGetCpachesByCoachlicentie = jest.fn();
+    mockUpdateCoach = jest.fn();
+    mockGetCoachByCoachLicentie = jest.fn();
 
     coachDb.getAllCoaches = mockGetAllCoaches;
     coachDb.getCoachByNaam = mockGetCoachByNaam;
     coachDb.removeCoach = mockRemoveCoach;
     coachDb.addCoach = mockAddCoach;
-    coachDb.getCoachByCoachLicentie = mochGetCpachesByCoachlicentie;
+    coachDb.getCoachByCoachLicentie = mockGetCoachByCoachLicentie;
+    coachDb.updateCoach = mockUpdateCoach;
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-test('given a valid coach, when adding a coach, then the coach is added successfully', () => {
+test('given a valid coach, when addCoach is called, then the coach is added successfully', async () => {
     // given
-    mockAddCoach.mockReturnValue(undefined); 
+    mockGetCoachByCoachLicentie.mockResolvedValue(null); // Coach bestaat nog niet
+    mockAddCoach.mockResolvedValue(undefined); // Simuleer succesvolle toevoeging
 
     // when
-    const result = coachService.addCoach(coach);
+    const result = await coachService.addCoach(coachInput);
 
     // then
-    expect(result).toEqual('succes');
-    expect(mockAddCoach).toHaveBeenCalledWith(coach);
+    expect(mockGetCoachByCoachLicentie).toHaveBeenCalledWith(coachInput.coachLicentie);
+    expect(mockAddCoach).toHaveBeenCalledWith(expect.any(Coach));
+    expect(result).toBe('Succes');
 });
 
-test('given a coach name that exists, when getting a coach by name, then the coach is returned', () => {
+test('given an existing coach, when addCoach is called, then an error is thrown', async () => {
     // given
-    mockGetCoachByNaam.mockReturnValue(coach);
+    mockGetCoachByCoachLicentie.mockResolvedValue(coach); // Coach bestaat al
 
     // when
-    const result = coachService.getCoachByNaam('Jan');
+    const addExistingCoach = async () => await coachService.addCoach(coachInput);
 
     // then
+    expect(addExistingCoach).rejects.toThrow(`De coach met licentie: ${coachInput.coachLicentie}, bestaat al: ${coachInput.naam}`);
+});
+
+test('given a valid coach name, when getCoachByNaam is called, then the coach is returned', async () => {
+    // given
+    mockGetCoachByNaam.mockResolvedValue(coach); // Coach wordt gevonden
+
+    // when
+    const result = await coachService.getCoachByNaam(coachInput.naam);
+
+    // then
+    expect(mockGetCoachByNaam).toHaveBeenCalledWith({ coachnaam: coachInput.naam });
     expect(result).toEqual(coach);
-    expect(mockGetCoachByNaam).toHaveBeenCalledWith({ coachnaam: 'Jan' });
 });
 
-test('given a coach name that does not exist, when getting a coach by name, then an error is thrown', () => {
+test('given a non-existing coach name, when getCoachByNaam is called, then an error is thrown', async () => {
     // given
-    mockGetCoachByNaam.mockReturnValue(null);
+    mockGetCoachByNaam.mockResolvedValue(null); // Coach niet gevonden
 
     // when
-    const getCoach = () => coachService.getCoachByNaam('Onbekend');
+    const getNonExistingCoach = async () => await coachService.getCoachByNaam(coachInput.naam);
 
     // then
-    expect(getCoach).toThrow('deze coach kan niet gevonden worden');
+    expect(getNonExistingCoach).rejects.toThrow('Deze coach kan niet gevonden worden');
 });
 
-test('given a valid coach license, when removing a coach, then the coach is removed successfully', () => {
+test('given a valid coach license, when removeCoach is called, then the coach is removed successfully', async () => {
     // given
-    mockGetAllCoaches.mockReturnValue([coach]);
-    mockRemoveCoach.mockReturnValue(undefined); 
+    mockGetCoachByCoachLicentie.mockResolvedValue(coach); // Coach bestaat
+    mockRemoveCoach.mockResolvedValue(undefined); // Simuleer succesvolle verwijdering
 
     // when
-    const result = coachService.removeCoach('2573826');
+    const result = await coachService.removeCoach(coachInput.coachLicentie);
 
     // then
-    expect(result).toEqual('Coach succesvol verwijderd');
-    expect(mockRemoveCoach).toHaveBeenCalled();
+    expect(mockGetCoachByCoachLicentie).toHaveBeenCalledWith(coachInput.coachLicentie);
+    expect(mockRemoveCoach).toHaveBeenCalledWith(coachInput.coachLicentie);
+    expect(result).toBe('Coach succesvol verwijderd');
 });
 
-test('given a non-existing coach license, when removing a coach, then an error is thrown', () => {
+test('given a non-existing coach license, when removeCoach is called, then an error is thrown', async () => {
     // given
-    mockGetAllCoaches.mockReturnValue([]); // Geen coaches in de database
+    mockGetCoachByCoachLicentie.mockResolvedValue(null); // Coach niet gevonden
 
     // when
-    const removeCoach = () => coachService.removeCoach('XYZ789');
+    const removeNonExistingCoach = async () => await coachService.removeCoach(coachInput.coachLicentie);
 
     // then
-    expect(removeCoach).toThrow('coach verwijderen mislukt');
+    expect(removeNonExistingCoach).rejects.toThrow('Coach verwijderen mislukt');
 });
 
-test('given a coach that already exists, when adding a coach, then an error is thrown', () => {
+test('given a valid coach license and data, when updateCoach is called, then the coach is updated successfully', async () => {
     // given
-    mochGetCpachesByCoachlicentie.mockReturnValue(coach); 
-    
+    const updatedData = { naam: 'Jane Doe' };
+    mockGetCoachByCoachLicentie.mockResolvedValue(coach); // Coach bestaat
+    mockUpdateCoach.mockResolvedValue(undefined); // Simuleer succesvolle update
+
     // when
-    const addCoach = () => coachService.addCoach(coach);
-    
+    const result = await coachService.updateCoach(coachInput.coachLicentie, updatedData);
+
     // then
-    expect(addCoach).toThrow(`de coach met licentie : ${coach.coachlicentie}, bestaal al : ${coach.naam}`);
+    expect(mockGetCoachByCoachLicentie).toHaveBeenCalledWith(coachInput.coachLicentie);
+    expect(mockUpdateCoach).toHaveBeenCalledWith(coachInput.coachLicentie, updatedData);
+    expect(result).toBe('Coach succesvol bijgewerkt');
+});
+
+test('given a non-existing coach license, when updateCoach is called, then an error is thrown', async () => {
+    // given
+    mockGetCoachByCoachLicentie.mockResolvedValue(null); // Coach niet gevonden
+
+    // when
+    const updateNonExistingCoach = async () => await coachService.updateCoach(coachInput.coachLicentie, { naam: 'New Name' });
+
+    // then
+    expect(updateNonExistingCoach).rejects.toThrow('Coach bijwerken mislukt');
 });

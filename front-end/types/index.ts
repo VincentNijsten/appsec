@@ -34,11 +34,11 @@ export type Zaal = {
 };
 
 export type TrainingSession = {
-    ploegNaam: string;
     zaalNaam: string;
     datum: Date;
     startTijd: string;
     eindTijd: string;
+    ploegen: Ploeg[];
 };
 
 export interface UserType {

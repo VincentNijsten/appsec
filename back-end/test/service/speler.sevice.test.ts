@@ -1,66 +1,87 @@
-import { Speler } from '../../model/speler';
-import spelerDb from '../../repository/speler.db';
 import spelerService from '../../service/speler.service';
+import spelersDb from '../../repository/speler.db';
+import ploegDb from '../../repository/ploeg.db';
+import { Speler } from '../../model/speler';
 
-let speler: Speler;
+jest.mock('../../repository/speler.db');
+jest.mock('../../repository/ploeg.db');
 
-let mockGetSpelerBySpelerlicentie : jest.Mock;
+const mockGetSpelerByLicentie = spelersDb.getSpelerByLicentie as jest.Mock;
+const mockGetPloegByNaam = ploegDb.getPloegByNaam as jest.Mock;
+const mockAddSpeler = spelersDb.addSpeler as jest.Mock;
+const mockGetSpelerByNaam = spelersDb.getSpelerByNaam as jest.Mock;
 
-
-beforeEach(() => {
-    mockGetSpelerBySpelerlicentie = jest.fn();
-    spelerDb.getSpelerByLicentie = mockGetSpelerBySpelerlicentie;
+describe('spelerService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     const spelerInput = {
-        naam: 'Speler 1',
-        spelerlicentie: '1234567',
-        leeftijd: 22,
+        naam: 'John Doe',
+        spelerLicentie: '1234567',
+        leeftijd: 25,
+        ploegNaam: 'Team A'
     };
-    speler = new Speler(spelerInput);
-});
 
+    const speler = new Speler(spelerInput);
 
-afterEach(() => {
-    jest.clearAllMocks();
-});
+    test('given an existing speler, when addSpeler is called, then an error is thrown', async () => {
+        // given
+        mockGetSpelerByLicentie.mockResolvedValue(speler);
 
-test('given a valid speler input, when creating a speler, then the speler is created successfully', () => {
-    expect(speler.getNaam()).toEqual('Speler 1');
-    expect(speler.getSpelerlicentie()).toEqual('1234567');
-    expect(speler.getLeeftijd()).toEqual(22);
-});
+        // when & then
+        await expect(spelerService.addSpeler(spelerInput)).rejects.toThrow(`De speler met de licentie: ${spelerInput.spelerLicentie} bestaat al, ${speler.getNaam()}`);
+        expect(mockGetSpelerByLicentie).toHaveBeenCalledWith(spelerInput.spelerLicentie);
+    });
 
-test('given an invalid naam, when setting naam, then an error is thrown', () => {
-    const setNaam = () => speler.setNaam('');
-    expect(setNaam).toThrow('Naam van de speler is verplicht.');
-});
+    test('given a non-existing ploeg, when addSpeler is called, then an error is thrown', async () => {
+        // given
+        mockGetSpelerByLicentie.mockResolvedValue(null); // Speler bestaat nog niet
+        mockGetPloegByNaam.mockResolvedValue(null); // Ploeg bestaat niet
 
-test('given an invalid spelerlicentie, when setting spelerlicentie, then an error is thrown', () => {
-    const setSpelerlicentie = () => speler.setSpelerlicentie('12345'); // Te kort
-    expect(setSpelerlicentie).toThrow('Coachlicentie moet uit zeven cijfers bestaan.');
-});
+        // when
+        const addSpelerWithNonExistingPloeg = spelerService.addSpeler(spelerInput);
 
-test('given an invalid leeftijd, when setting leeftijd, then an error is thrown', () => {
-    const setLeeftijdNegatief = () => speler.setLeeftijd(-1);
-    const setLeeftijdTeHoog = () => speler.setLeeftijd(121);
+        // then
+        await expect(addSpelerWithNonExistingPloeg).rejects.toThrow(`De ploeg met de naam: ${spelerInput.ploegNaam} bestaat niet`);
+        expect(mockGetSpelerByLicentie).toHaveBeenCalledWith(spelerInput.spelerLicentie);
+        expect(mockGetPloegByNaam).toHaveBeenCalledWith(spelerInput.ploegNaam);
+    });
 
-    expect(setLeeftijdNegatief).toThrow('Leeftijd moet een geldig getal zijn tussen 0 en 120.');
-    expect(setLeeftijdTeHoog).toThrow('Leeftijd moet een geldig getal zijn tussen 0 en 120.');
-});
+    test('given a valid speler, when addSpeler is called, then the speler is added successfully', async () => {
+        // given
+        mockGetSpelerByLicentie.mockResolvedValue(null); // Speler bestaat nog niet
+        mockGetPloegByNaam.mockResolvedValue({ naam: spelerInput.ploegNaam }); // Ploeg bestaat
+        mockAddSpeler.mockResolvedValue(speler);
 
-test('given a valid leeftijd, when setting leeftijd, then the leeftijd is set successfully', () => {
-    speler.setLeeftijd(30);
-    expect(speler.getLeeftijd()).toEqual(30);
-});
+        // when
+        const result = await spelerService.addSpeler(spelerInput);
 
+        // then
+        expect(mockGetSpelerByLicentie).toHaveBeenCalledWith(spelerInput.spelerLicentie);
+        expect(mockGetPloegByNaam).toHaveBeenCalledWith(spelerInput.ploegNaam);
+        expect(mockAddSpeler).toHaveBeenCalledWith(expect.any(Speler));
+        expect(result).toBe("Speler succesvol toegevoegd");
+    });
 
-test('given a speler that already exists, when adding a speler, then an error is thrown', () => {
-    // given
-    mockGetSpelerBySpelerlicentie.mockReturnValue(speler); 
-    
-    // when
-    const addSpeler = () => spelerService.addSpeler(speler);
-    
-    // then
-    expect(addSpeler).toThrow(`de speler met de licentie: ${speler.spelerlicentie} bestaal al, ${speler.getNaam()}`);
+    test('given a valid speler name, when getSpelerByNaam is called, then the speler is returned', async () => {
+        // given
+        mockGetSpelerByNaam.mockResolvedValue(speler); // Speler wordt gevonden
+
+        // when
+        const result = await spelerService.getSpelerByNaam(spelerInput.naam);
+
+        // then
+        expect(mockGetSpelerByNaam).toHaveBeenCalledWith(spelerInput.naam);
+        expect(result).toEqual(speler);
+    });
+
+    test('given an invalid speler name, when getSpelerByNaam is called, then an error is thrown', async () => {
+        // given
+        mockGetSpelerByNaam.mockResolvedValue(undefined); // Speler wordt niet gevonden
+
+        // when & then
+        await expect(spelerService.getSpelerByNaam(spelerInput.naam)).rejects.toThrow('Deze speler kan niet gevonden worden');
+        expect(mockGetSpelerByNaam).toHaveBeenCalledWith(spelerInput.naam);
+    });
 });

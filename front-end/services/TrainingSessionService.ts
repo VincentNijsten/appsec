@@ -1,3 +1,5 @@
+import { Ploeg } from "@/types";
+
 const getAllTrainingSessions = async () => {
     const loggedInUser = sessionStorage.getItem("loggedInUser");
     const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
@@ -12,9 +14,6 @@ const getAllTrainingSessions = async () => {
 };
 
 const addTrainingSession = async (trainingSession: { datum: string; startTijd: string; eindTijd: string; zaalnaam: string; ploegnaam: string }) => {
-    const loggedInUser = sessionStorage.getItem("loggedInUser");
-    const token = loggedInUser ? JSON.parse(loggedInUser)?.token : null;
-
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/training-sessions", {
         method: "POST",
         headers: {

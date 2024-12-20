@@ -4,11 +4,14 @@ export class Zaal {
     public address!: string;
     public naam!: string;
     public beschikbaarheid!: boolean;
+    // public velden: string[] = [];
+   
 
-    constructor(zaal: { address: string; naam: string; beschikbaarheid: boolean }) {
+    constructor(zaal: { address: string; naam: string; beschikbaarheid: boolean,  }) {
         this.setAddress(zaal.address);
         this.setNaam(zaal.naam);
         this.setBeschikbaarheid(zaal.beschikbaarheid);
+        // this.setVelden(zaal.velden);
     }
 
     // Getters voor zaal
@@ -23,6 +26,18 @@ export class Zaal {
     public getBeschikbaarheid(): boolean {
         return this.beschikbaarheid;
     }
+
+    // public getVelden(): any {
+    //     return this.velden;
+    // }
+
+    // public setVelden(velden: string[]) {
+    //     this.velden = velden;
+    // }
+
+    // public addVeld(veld: string) {
+    //     this.velden.push(veld);
+    // }
 
     // Setters voor zaal met validaties
 
@@ -51,7 +66,9 @@ export class Zaal {
     static from({
         address,
         naam,
-        beschikbaarheid
+        beschikbaarheid,
+        // velden
+        
  
      }: ZaalPrisma 
          
@@ -59,7 +76,8 @@ export class Zaal {
          return new Zaal({
             address,
             naam,
-            beschikbaarheid
+            beschikbaarheid,
+            // velden
  
          });
      }

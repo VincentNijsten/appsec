@@ -1,79 +1,77 @@
-import { Ploeg } from "../../model/ploeg";
-import { Coach } from "../../model/coach";
-import { Speler } from "../../model/speler"
+import { Ploeg } from '../../model/ploeg';
+
 describe('Ploeg', () => {
-    const coach = new Coach({ naam: 'Jan', coachlicentie: '1234567' });
-    const speler1 = new Speler({ naam: 'Speler 1', spelerlicentie: '1234567', leeftijd: 17 }); 
-    const speler2 = new Speler({ naam: 'Speler 2', spelerlicentie: '4567890', leeftijd: 35 });
-
-    test('given: valid values for team, when: team is created, then: team is created with those values', () => {
+    test('given: valid values for ploeg, when: ploeg is created, then: ploeg is created with those values', () => {
         // given
-        const validTeamData = { niveau: 'Professioneel', ploegnaam: 'Team A', spelers: [speler1, speler2], coach };
+        const validPloegData = {
+            niveau: 'Professioneel',
+            ploegnaam: 'Heren A',
+            coachLicentie: '1234567',
+        };
 
         // when
-        const ploeg = new Ploeg(validTeamData);
+        const ploeg = new Ploeg(validPloegData);
 
         // then
-        expect(ploeg.getNiveau()).toEqual(validTeamData.niveau);
-        expect(ploeg.getPloegnaam()).toEqual(validTeamData.ploegnaam);
-        expect(ploeg.getSpelers()).toEqual(validTeamData.spelers);
-        expect(ploeg.getCoach()).toEqual(coach);
+        expect(ploeg.getNiveau()).toEqual(validPloegData.niveau);
+        expect(ploeg.getPloegnaam()).toEqual(validPloegData.ploegnaam);
+        expect(ploeg.getCoachLicentie()).toEqual(validPloegData.coachLicentie);
     });
 
-    test('given: an existing team, when: changing the team name, then: team name is updated correctly', () => {
+    test('given: an existing ploeg, when: updating the ploegnaam, then: the name is updated', () => {
         // given
-        const ploeg = new Ploeg({ niveau: 'Professioneel', ploegnaam: 'Team A', spelers: [speler1], coach });
+        const ploeg = new Ploeg({
+            niveau: 'Professioneel',
+            ploegnaam: 'Heren A',
+            coachLicentie: '1234567',
+        });
 
         // when
-        ploeg.setPloegnaam('Team B');
+        ploeg.setPloegnaam('Heren B');
 
         // then
-        expect(ploeg.getPloegnaam()).toEqual('Team B');
+        expect(ploeg.getPloegnaam()).toEqual('Heren B');
     });
 
-    test('given: an existing team, when: setting an empty team name, then: an error is thrown', () => {
+    test('given: an invalid ploegnaam, when: setting the ploegnaam, then: an error is thrown', () => {
         // given
-        const ploeg = new Ploeg({ niveau: 'Professioneel', ploegnaam: 'Team A', spelers: [speler1], coach });
+        const ploeg = new Ploeg({
+            niveau: 'Professioneel',
+            ploegnaam: 'Heren A',
+            coachLicentie: '1234567',
+        });
 
         // when
-        const setEmptyTeamName = () => ploeg.setPloegnaam('');
+        const setInvalidName = () => ploeg.setPloegnaam('');
 
         // then
-        expect(setEmptyTeamName).toThrow('Ploegnaam is verplicht.');
+        expect(setInvalidName).toThrow('Ploegnaam is verplicht.');
     });
 
-    test('given: an existing team, when: adding a player to the team, then: player is added correctly', () => {
+    test('given: an invalid niveau, when: setting the niveau, then: an error is thrown', () => {
         // given
-        const ploeg = new Ploeg({ niveau: 'Liga 1', ploegnaam: 'Team A', spelers: [speler1], coach });
+        const ploeg = new Ploeg({
+            niveau: 'Professioneel',
+            ploegnaam: 'Heren A',
+            coachLicentie: '1234567',
+        });
 
         // when
-        ploeg.addSpeler(speler2);
+        const setInvalidNiveau = () => ploeg.setNiveau('');
 
         // then
-        expect(ploeg.getSpelers()).toContain(speler2);
-        expect(ploeg.getSpelers()).toHaveLength(2);
+        expect(setInvalidNiveau).toThrow('Niveau is verplicht.');
     });
 
-    test('given: an existing team, when: removing a player from the team, then: player is removed correctly', () => {
-        // given
-        const ploeg = new Ploeg({ niveau: 'Liga B', ploegnaam: 'Team A', spelers: [speler1, speler2], coach });
-
+    test('given: a ploeg with null coachLicentie, when: creating the ploeg, then: the coachLicentie is null', () => {
         // when
-        ploeg.removeSpeler(speler1);
+        const ploeg = new Ploeg({
+            niveau: 'Professioneel',
+            ploegnaam: 'Heren A',
+            coachLicentie: null,
+        });
 
         // then
-        expect(ploeg.getSpelers()).not.toContain(speler1);
-        expect(ploeg.getSpelers()).toHaveLength(1);
-    });
-
-    test('given: an existing team, when: setting an empty level, then: an error is thrown', () => {
-        // given
-        const ploeg = new Ploeg({ niveau: 'Nationale 2', ploegnaam: 'Team A', spelers: [speler1], coach });
-
-        // when
-        const setEmptyLevel = () => ploeg.setNiveau('');
-
-        // then
-        expect(setEmptyLevel).toThrow('Niveau is verplicht.');
+        expect(ploeg.getCoachLicentie()).toBeNull();
     });
 });

@@ -8,8 +8,15 @@ const getTrainingSessionByPloegNaam = async (ploegnaam: string): Promise<Trainin
     try {
         const session = await prisma.trainingSession.findFirst({
             where: {
-                ploegNaam: ploegnaam
-            }
+                ploegen: {
+                    some: {
+                        ploegnaam: ploegnaam}
+                }
+            },
+            include: {
+                ploegen: true
+            },
+           
         });
         return session ? TrainingSession.from(session) : null;
     } catch (error) {
@@ -20,28 +27,41 @@ const getTrainingSessionByPloegNaam = async (ploegnaam: string): Promise<Trainin
 
 // Functie om alle trainingssessies op te halen
 const getAllTrainingSessions = async (): Promise<TrainingSession[]> => {
-    const sessions = await prisma.trainingSession.findMany();
+    const sessions = await prisma.trainingSession.findMany({
+        include: {
+            ploegen: true
+        }
+    });
     return sessions.map(session => TrainingSession.from(session));
 };
 
 // Functie om een trainingssessie toe te voegen
-const addTrainingSession = async (trainingSession: {
-    ploegNaam: string;
-    zaalNaam: string;
-    datum: Date;
-    startTijd: string;
-    eindTijd: string;
-}) => {
-    const newSession = await prisma.trainingSession.create({
-        data: {
-            ploegNaam: trainingSession.ploegNaam,
-            zaalNaam: trainingSession.zaalNaam,
-            datum: trainingSession.datum,
-            startTijd: trainingSession.startTijd,
-            eindTijd: trainingSession.eindTijd,
-        }
-    });
-    return TrainingSession.from(newSession);
+const addTrainingSession = async ({ zaalNaam, datum, startTijd, eindTijd, ploegen }: TrainingSession): Promise<TrainingSession> => {
+    if (!zaalNaam || !datum || !startTijd || !eindTijd) {
+        throw new Error('Alle velden zijn verplicht.');
+    }
+
+    try {
+        const newSession = await prisma.trainingSession.create({
+            data: {
+                
+                zaalNaam: zaalNaam,
+                datum: datum,
+                startTijd: startTijd,
+                eindTijd: eindTijd,
+                ploegen: {
+                    connect: ploegen.map((ploeg) => ({ ploegnaam: ploeg.ploegnaam }))
+                }
+            },
+            include: {
+                ploegen: true
+            }
+        });
+        return TrainingSession.from(newSession);
+    } catch (error) {
+        console.error('Fout bij het toevoegen van trainingssessie:', error);
+        throw new Error('Kan trainingssessie niet toevoegen. Zie serverlog voor details.');
+    }
 };
 
 // Functie om een trainingssessie te verwijderen op basis van ID
@@ -62,15 +82,56 @@ const getTrainingSessionsByZaal = async (zaalNaam: string): Promise<TrainingSess
     const sessions = await prisma.trainingSession.findMany({
         where: {
             zaalNaam: zaalNaam
-        }
+        },
+        include: {ploegen: true}
     });
     return sessions.map(session => TrainingSession.from(session));
 };
+
+
+const removePloegFromTrainingSession = async (ploegnaam: string): Promise<boolean> => {
+    try {
+        // Zoek alle trainingssessies die de ploeg bevatten
+        const sessions = await prisma.trainingSession.findMany({
+            where: {
+                ploegen: {
+                    some: {
+                        ploegnaam: ploegnaam
+                    }
+                }
+            }
+        });
+
+        // Als er geen sessies zijn gevonden, retourneer false
+        if (sessions.length === 0) {
+            return false;
+        }
+
+        // Verwijder de ploeg uit elke trainingssessie
+        await Promise.all(sessions.map(session => 
+            prisma.trainingSession.update({
+                where: { id: session.id }, // Zorg ervoor dat je de juiste identificatie gebruikt
+                data: {
+                    ploegen: {
+                        disconnect: { ploegnaam: ploegnaam }
+                    }
+                }
+            })
+        ));
+
+        return true; // Succesvol verwijderd
+    } catch (error) {
+        console.error(error);
+        return false; // Fout opgetreden
+    }
+};
+
 
 export default {
     getTrainingSessionByPloegNaam,
     getAllTrainingSessions,
     addTrainingSession,
     removeTrainingSession,
-    getTrainingSessionsByZaal
+    getTrainingSessionsByZaal,
+    removePloegFromTrainingSession
 };

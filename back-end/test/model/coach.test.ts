@@ -1,62 +1,71 @@
-import { Coach } from "../../model/coach";
+import { Coach } from '../../model/coach';
 
 describe('Coach', () => {
     test('given: valid values for coach, when: coach is created, then: coach is created with those values', () => {
         // given
-        const validCoachData = { naam: 'Jan', coachlicentie: '1234567' };
+        const validCoachData = {
+            naam: 'John Doe',
+            coachLicentie: '1234567',
+        };
 
         // when
         const coach = new Coach(validCoachData);
 
         // then
         expect(coach.getNaam()).toEqual(validCoachData.naam);
-        expect(coach.getCoachlicentie()).toEqual(validCoachData.coachlicentie);
+        expect(coach.getCoachlicentie()).toEqual(validCoachData.coachLicentie);
     });
 
-    test('given: an existing coach, when: changing the name, then: name is updated correctly', () => {
+    test('given: an existing coach, when: updating the coach name, then: the name is updated', () => {
         // given
-        const coach = new Coach({ naam: 'Jan', coachlicentie: '1234567' });
+        const coach = new Coach({
+            naam: 'John Doe',
+            coachLicentie: '1234567',
+        });
 
         // when
-        coach.setNaam('Piet');
+        coach.setNaam('Jane Doe');
 
         // then
-        expect(coach.getNaam()).toEqual('Piet');
+        expect(coach.getNaam()).toEqual('Jane Doe');
     });
 
-    test('given: an existing coach, when: setting an empty name, then: an error is thrown', () => {
+    test('given: an invalid coach name, when: setting the name, then: an error is thrown', () => {
         // given
-        const coach = new Coach({ naam: 'Jan', coachlicentie: '1234567' });
+        const coach = new Coach({
+            naam: 'John Doe',
+            coachLicentie: '1234567',
+        });
 
         // when
-        const setEmptyName = () => coach.setNaam('');
+        const setInvalidName = () => coach.setNaam('');
 
         // then
-        expect(setEmptyName).toThrow('Naam van de coach is verplicht.');
+        expect(setInvalidName).toThrow('Naam van de coach is verplicht.');
     });
 
-    test('given: an existing coach, when: setting a coach license that does not match the regex, then: an error is thrown', () => {
+    test('given: an invalid coach license, when: setting the license, then: an error is thrown', () => {
         // given
-        const coach = new Coach({ naam: 'Jan', coachlicentie: '1234567' });
+        const coach = new Coach({
+            naam: 'John Doe',
+            coachLicentie: '1234567',
+        });
 
         // when
-        const setInvalidLicense = () => coach.setCoachlicentie('12345');
+        const setInvalidLicense = () => coach.setCoachlicentie('12345'); // Te kort
 
         // then
         expect(setInvalidLicense).toThrow('Coachlicentie moet uit zeven cijfers bestaan.');
     });
 
-    test('given: an existing coach, when: setting a valid coach license, then: license is updated correctly', () => {
-        // given
-        const coach = new Coach({ naam: 'Jan', coachlicentie: '1234567' });
-
+    test('given: a coach with an invalid license, when: creating the coach, then: an error is thrown', () => {
         // when
-        coach.setCoachlicentie('7654321');
+        const createInvalidCoach = () => new Coach({
+            naam: 'John Doe',
+            coachLicentie: '12345', // Te kort
+        });
 
         // then
-        expect(coach.getCoachlicentie()).toEqual('7654321');
+        expect(createInvalidCoach).toThrow('Coachlicentie moet uit zeven cijfers bestaan.');
     });
-
-
-    
 });

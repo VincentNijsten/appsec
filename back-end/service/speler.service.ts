@@ -53,13 +53,13 @@ const removeSpeler = async (spelerLicentie: string): Promise<string> => {
         // Controleer of de coach bestaat
         if (speler) {
             await spelersDb.deleteSpeler(spelerLicentie); 
-            return "Coach succesvol verwijderd"; 
+            return "Speler succesvol verwijderd"; 
         } else {
-            throw new Error('Coach niet gevonden');
+            throw new Error('Speler niet gevonden');
         }
         
     } catch (error) {
-        throw new Error('Coach verwijderen mislukt');
+        throw new Error('Speler verwijderen mislukt');
     }
 };
 

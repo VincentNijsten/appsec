@@ -38,6 +38,7 @@ type ZaalInput = {
     address: string;
     naam: string;
     beschikbaarheid: boolean;
+    velden : string[];
 };
 
 type TrainingSessionInput = {

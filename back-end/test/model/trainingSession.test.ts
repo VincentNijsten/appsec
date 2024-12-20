@@ -1,107 +1,85 @@
-import { TrainingSession } from "../../model/trainingSession";
-import { Coach } from "../../model/coach";
-import { Ploeg } from "../../model/ploeg";
-import { Speler } from "../../model/speler";
-import { Zaal } from "../../model/zaal";
+import { TrainingSession } from '../../model/trainingSession';
+import { Ploeg } from '../../model/ploeg';
 
 describe('TrainingSession', () => {
-    const coach = new Coach({ naam: 'Jan', coachlicentie: '1234567' });
-    const speler1 = new Speler({ naam: 'Speler 1', spelerlicentie: '1234567', leeftijd: 20 });
-    const ploeg = new Ploeg({ niveau: 'Professioneel', ploegnaam: 'Team A', spelers: [speler1], coach });
-    const zaal = new Zaal({ naam: 'Zaal 1', address:'teststraat 123', beschikbaarheid: true});
-
-    test('given: valid training session data, when: training session is created, then: training session is created with those values', () => {
+    test('given: valid values for training session, when: training session is created, then: training session is created with those values', () => {
         // given
-        const trainingData = {
-            ploeg,
-            zaal,
-            datum: new Date('2023-10-01'),
-            startTijd: '10:00',
-            eindTijd: '11:00',
+        const validTrainingSessionData = {
+            id: '1',
+            zaalNaam: 'Brussel Zaal 1',
+            datum: new Date('2024-12-18'),
+            startTijd: '20:00',
+            eindTijd: '22:00',
+            ploegen: [],
         };
 
         // when
-        const trainingSession = new TrainingSession(trainingData);
+        const trainingSession = new TrainingSession(validTrainingSessionData);
 
         // then
-        expect(trainingSession.getPloeg()).toEqual(ploeg);
-        expect(trainingSession.getZaal()).toEqual(zaal);
-        expect(trainingSession.getDatum()).toEqual(trainingData.datum);
-        expect(trainingSession.getStartTijd()).toEqual(trainingData.startTijd);
-        expect(trainingSession.getEindTijd()).toEqual(trainingData.eindTijd);
+        expect(trainingSession.getZaalNaam()).toEqual(validTrainingSessionData.zaalNaam);
+        expect(trainingSession.getDatum()).toEqual(validTrainingSessionData.datum);
+        expect(trainingSession.getStartTijd()).toEqual(validTrainingSessionData.startTijd);
+        expect(trainingSession.getEindTijd()).toEqual(validTrainingSessionData.eindTijd);
+        expect(trainingSession.getPloegen()).toEqual(validTrainingSessionData.ploegen);
     });
 
-    test('given: an existing training session, when: changing the date, then: date is updated correctly', () => {
+    test('given: an existing training session, when: adding a ploeg, then: the ploeg is added to the session', () => {
         // given
+        const ploeg = new Ploeg({
+            niveau: 'Professioneel',
+            ploegnaam: 'Heren A',
+            coachLicentie: '1234567',
+        });
         const trainingSession = new TrainingSession({
-            ploeg,
-            zaal,
-            datum: new Date('2023-10-01'),
-            startTijd: '10:00',
-            eindTijd: '11:00',
+            id: '1',
+            zaalNaam: 'Brussel Zaal 1',
+            datum: new Date('2024-12-18'),
+            startTijd: '20:00',
+            eindTijd: '22:00',
+            ploegen: [],
         });
 
         // when
-        const newDate = new Date('2023-10-02');
-        trainingSession.setDatum(newDate);
+        trainingSession.addPloeg(ploeg);
 
         // then
-        expect(trainingSession.getDatum()).toEqual(newDate);
+        expect(trainingSession.getPloegen()).toContain(ploeg);
     });
 
-    test('given: an existing training session, when: setting invalid times, then: an error is thrown', () => {
+    test('given: end time is before start time, when: setting the times, then: an error is thrown', () => {
         // given
         const trainingSession = new TrainingSession({
-            ploeg,
-            zaal,
-            datum: new Date('2023-10-01'),
-            startTijd: '10:00',
-            eindTijd: '11:00',
+            id: '1',
+            zaalNaam: 'Brussel Zaal 1',
+            datum: new Date('2024-12-18'),
+            startTijd: '20:00',
+            eindTijd: '22:00',
+            ploegen: [],
         });
 
         // when
-        const setInvalidTimes = () => trainingSession.setTijden('11:00', '10:00');
+        const setInvalidTimes = () => trainingSession.setTijden('22:00', '20:00');
 
         // then
         expect(setInvalidTimes).toThrow('Start time cannot be after or equal to end time');
     });
 
-    test('given: an existing training session, when: setting valid times, then: times are updated correctly', () => {
+    test('given: a training session, when: setting the zaal, then: the zaal is updated', () => {
         // given
         const trainingSession = new TrainingSession({
-            ploeg,
-            zaal,
-            datum: new Date('2023-10-01'),
-            startTijd: '10:00',
-            eindTijd: '11:00',
+            id: '1',
+            zaalNaam: 'Brussel Zaal 1',
+            datum: new Date('2024-12-18'),
+            startTijd: '20:00',
+            eindTijd: '22:00',
+            ploegen: [],
         });
 
         // when
-        trainingSession.setTijden('09:00', '10:00');
+        trainingSession.setZaal('Brussel Zaal 2');
 
         // then
-        expect(trainingSession.getStartTijd()).toEqual('09:00');
-        expect(trainingSession.getEindTijd()).toEqual('10:00');
-    });
-
-    test('given: an existing training session, when: displaying session details, then: details are displayed correctly', () => {
-        // given
-        const trainingSession = new TrainingSession({
-            ploeg,
-            zaal,
-            datum: new Date('2023-10-01'),
-            startTijd: '10:00',
-            eindTijd: '11:00',
-        });
-
-        // when
-        const details = trainingSession.displaySessionDetails();
-
-        // then
-        expect(details).toContain('Training Session:');
-        expect(details).toContain(`Team: ${ploeg.getPloegnaam()}`);
-        expect(details).toContain(`Hall: ${zaal.getNaam()}`);
-        expect(details).toContain(`Date: ${trainingSession.getDatum().toDateString()}`);
-        expect(details).toContain(`Time: ${trainingSession.getStartTijd()} - ${trainingSession.getEindTijd()}`);
+        expect(trainingSession.getZaalNaam()).toEqual('Brussel Zaal 2');
     });
 });

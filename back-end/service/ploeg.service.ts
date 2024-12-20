@@ -5,6 +5,8 @@ import spelerDb from "../repository/speler.db";
 import spelerService from "./speler.service";
 import coachDb from "../repository/coach.db";
 import { PloegInput } from "../types";
+import trainingSessionDb from "../repository/trainingSession.db";
+import trainingSessionService from "./trainingSession.service";
 
 // Functie om alle ploegen op te halen
 const getAllPloegen = async (): Promise<Ploeg[]> => {
@@ -44,6 +46,11 @@ const addPloeg = async ({ ploegnaam, niveau, coachLicentie }: PloegInput): Promi
 // Functie om een ploeg te verwijderen
 const verwijderPloeg = async (ploegnaam: string): Promise<void> => {
     const exists = await ploegDb.getPloegByNaam(ploegnaam);
+    const trainingExists = await trainingSessionService.getTrainingSessionByPloegNaam(ploegnaam);
+    if (trainingExists) {
+        trainingSessionService.removePloegFromTrainingSession(ploegnaam);
+
+    }
     if (!exists) {
         throw new Error(`De ploeg met naam ${ploegnaam} bestaat niet`);
     }
