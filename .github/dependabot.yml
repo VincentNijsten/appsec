@@ -9,9 +9,11 @@ updates:
     directory: "/front-end"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
   - package-ecosystem: "npm"
     directory: "/back-end"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
