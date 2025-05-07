@@ -8,7 +8,7 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "@testing-library/react": "^16.1.0",
+    "@testing-library/react": "^16.3.0",
     "bootstrap": "^5.3.3",
     "classnames": "^2.5.1",
     "front-end": "file:",
